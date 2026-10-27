@@ -18,6 +18,9 @@
   --cor-aviso-fundo: #fff4d6;
   --cor-borda: #8a94a6;
   --cor-foco: #ff9900;
+  --mapa-fundo-a: #cfe8c3;
+  --mapa-fundo-b: #c4e1b6;
+  --mapa-linha: rgba(0, 0, 0, 0.08);
 
   /* Alvos de toque: pelo menos 48px, com espaço entre botões */
   --alvo-minimo: 48px;
@@ -36,4 +39,7 @@
   --cor-erro: #ff8f8f;
   --cor-aviso-fundo: #1a1a1a;
   --cor-borda: #ffffff;
+  --mapa-fundo-a: #000000;
+  --mapa-fundo-b: #101010;
+  --mapa-linha: #555555;
 }

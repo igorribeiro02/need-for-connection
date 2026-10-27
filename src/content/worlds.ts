@@ -1,4 +1,7 @@
 import type { Fase, Mundo } from '../core/engine/stepTypes'
+import { w0Andar } from './phases/w0-andar'
+import { w0Deslizar } from './phases/w0-deslizar'
+import { w0Teclado } from './phases/w0-teclado'
 import { w0Tocar } from './phases/w0-tocar'
 
 // Para criar uma fase nova: crie o arquivo em phases/ e coloque-a na lista do mundo.
@@ -8,7 +11,7 @@ export const mundos: Mundo[] = [
     titulo: 'Primeiros toques',
     descricao: 'Aprenda os gestos da tela, um de cada vez.',
     obrigatorio: true,
-    fases: [w0Tocar],
+    fases: [w0Tocar, w0Deslizar, w0Teclado, w0Andar],
   },
   { numero: 1, titulo: 'Celular no dia a dia', descricao: 'Volume, brilho, pop-ups e print.', fases: [] },
   { numero: 2, titulo: 'Mensagens', descricao: 'Ler, responder e mandar fotos.', fases: [] },

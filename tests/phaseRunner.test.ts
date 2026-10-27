@@ -104,4 +104,26 @@ describe('phaseRunner', () => {
       if (p.tipo === 'tocar') expect(p.elementos?.some((el) => el.id === p.alvo)).toBe(true)
     }
   })
+
+  it('deslizar e andar comparam a resposta com o alvo, como tocar', () => {
+    const f: Fase = {
+      id: 'x',
+      mundo: 0,
+      titulo: 'X',
+      simulador: 'celular',
+      passos: [
+        { id: 'd', instrucao: 'D', tipo: 'deslizar', alvo: 'fim', dicas: ['d'], erroGentil: 'ed', lembrete: 'ld' },
+        { id: 'w', instrucao: 'W', tipo: 'andar', alvo: 'maca', dicas: ['d'], erroGentil: 'ew', lembrete: 'lw' },
+      ],
+    }
+    let e = iniciar(f)
+    e = responder(f, e, 'inicio')
+    expect(e.indice).toBe(0)
+    e = responder(f, e, 'fim')
+    expect(e.indice).toBe(1)
+    e = responder(f, e, 'chave')
+    expect(e.aviso?.texto).toBe('ew')
+    e = responder(f, e, 'maca')
+    expect(e.concluida).toBe(true)
+  })
 })

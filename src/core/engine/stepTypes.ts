@@ -1,11 +1,14 @@
 // Contratos do jogo: o grupo todo escreve fases usando estes tipos.
 // Regra: este arquivo não importa React nem nada de fora de core/.
 
+import type { MapaDef } from '../world/grid'
+
 export type TipoPasso =
   | 'tocar' // tocar em um elemento da tela simulada (resposta = id do alvo)
   | 'digitar' // digitar um texto
   | 'escolher' // escolher uma opção
   | 'arrastar' // arrastar um elemento até um destino
+  | 'deslizar' // deslizar uma lista até uma ponta (resposta = "inicio" ou "fim")
   | 'andar' // levar o personagem até um objeto do mapa
   | 'julgar' // decidir "golpe" ou "seguro"
 
@@ -20,6 +23,14 @@ export type Passo = {
   dicas: string[] // 1ª discreta, 2ª mostra onde tocar
   erroGentil: string // ex.: "Quase! Procure o botão verde"
   lembrete: string // texto que aparece no Modo Lembrar
+  /** 'deslizar': de que ponta a lista começa (padrão: topo). */
+  posicaoInicial?: 'topo' | 'fim'
+  /** 'digitar': texto que já vem escrito na caixa (para treinar a apagar). */
+  valorInicial?: string
+  /** 'digitar': tipo de teclado que o celular abre. */
+  teclado?: 'texto' | 'numero' | 'email'
+  /** 'andar': verbo do botão de confirmar, ex.: "Pegar" (padrão: "Escolher"). */
+  acao?: string
 }
 
 export type Simulador = 'banco' | 'mensagens' | 'arquivos' | 'celular'
@@ -30,6 +41,8 @@ export type Fase = {
   titulo: string
   simulador: Simulador
   precisaEscolherBanco?: boolean
+  /** Mapa usado pelos passos 'andar' desta fase. */
+  mapa?: MapaDef
   passos: Passo[]
 }
 

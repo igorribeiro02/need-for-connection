@@ -43,7 +43,7 @@ function normalizar(texto: string): string {
 }
 
 function confere(passo: Passo, resposta: string): boolean {
-  if (passo.tipo === 'tocar' || passo.tipo === 'arrastar' || passo.tipo === 'andar') {
+  if (passo.tipo === 'tocar' || passo.tipo === 'arrastar' || passo.tipo === 'andar' || passo.tipo === 'deslizar') {
     return normalizar(resposta) === normalizar(passo.alvo)
   }
   const esperado = Array.isArray(passo.esperado) ? passo.esperado : [passo.esperado ?? '']

@@ -1,0 +1,167 @@
+/* Mapa com personagem, botões direcionais e o celular simulado. */
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.mapa {
+  container-type: inline-size;
+  max-width: 34rem;
+  margin: 0 auto var(--espaco);
+}
+
+.mapa__grade {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(var(--colunas), minmax(0, 1fr));
+  border: 3px solid var(--cor-borda);
+  border-radius: var(--raio);
+  overflow: hidden;
+  touch-action: manipulation;
+}
+
+.mapa__celula {
+  position: relative;
+  min-width: 0;
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(70cqw / var(--colunas));
+  line-height: 1;
+  background: var(--mapa-fundo-a);
+  border: 1px solid var(--mapa-linha);
+  cursor: pointer;
+}
+.mapa__celula--b {
+  background: var(--mapa-fundo-b);
+}
+
+.mapa__objeto {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  font: inherit;
+  background: var(--cor-superficie);
+  border: 2px solid var(--cor-primaria);
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.mapa__selo {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  font-size: 0.45em;
+  background: var(--cor-superficie);
+  border-radius: 50%;
+}
+
+.mapa__personagem {
+  position: absolute;
+  left: calc(var(--x) * 100% / var(--colunas));
+  top: calc(var(--y) * 100% / var(--linhas));
+  width: calc(100% / var(--colunas));
+  height: calc(100% / var(--linhas));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(70cqw / var(--colunas));
+  line-height: 1;
+  transition:
+    left 0.15s linear,
+    top 0.15s linear;
+  pointer-events: none;
+  z-index: 2;
+}
+.mapa__personagem span {
+  width: 82%;
+  height: 82%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8em;
+  background: var(--cor-superficie);
+  border: 3px solid var(--cor-primaria);
+  border-radius: 50%;
+}
+
+.destacado {
+  outline: 4px dashed var(--cor-foco);
+  outline-offset: 3px;
+}
+
+/* Botões em cruz: alvos grandes para o dedo */
+.direcional {
+  display: grid;
+  grid-template-columns: repeat(3, 3.5rem);
+  grid-template-rows: repeat(3, 3.5rem);
+  gap: 0.4rem;
+  justify-content: center;
+  margin: 0 auto var(--espaco);
+}
+.direcional .botao {
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  font-size: 1.4rem;
+}
+.direcional__cima {
+  grid-column: 2;
+  grid-row: 1;
+}
+.direcional__esquerda {
+  grid-column: 1;
+  grid-row: 2;
+}
+.direcional__direita {
+  grid-column: 3;
+  grid-row: 2;
+}
+.direcional__baixo {
+  grid-column: 2;
+  grid-row: 3;
+}
+
+/* Celular simulado */
+.celular {
+  max-width: 26rem;
+  margin: 0 auto var(--espaco);
+  padding: var(--espaco);
+  background: var(--cor-superficie);
+  border: 3px solid var(--cor-borda);
+  border-radius: 1.5rem;
+}
+
+.lista-desliza {
+  height: 11rem;
+  margin-bottom: var(--espaco);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: var(--cor-fundo);
+  border: 2px solid var(--cor-borda);
+  border-radius: var(--raio);
+}
+.lista-desliza ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.lista-desliza li {
+  min-height: 3rem;
+  padding: 0.9rem 1rem;
+  font-weight: 600;
+  border-bottom: 1px solid var(--cor-borda);
+}

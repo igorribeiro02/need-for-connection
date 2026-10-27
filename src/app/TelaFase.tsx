@@ -5,6 +5,7 @@ import { estrelas, iniciar, passoAtual, pedirDica, responder } from '../core/eng
 import type { EstadoFase } from '../core/engine/phaseRunner'
 import { falar, narracaoDisponivel } from '../features/settings/narracao'
 import { BarraAjustes } from '../features/settings/BarraAjustes'
+import { TelaCelular } from '../simulators/celular/TelaCelular'
 
 type Props = { faseId: string; revisao: boolean; aoVoltar: () => void }
 
@@ -85,16 +86,14 @@ export function TelaFase({ faseId, revisao, aoVoltar }: Props) {
         )}
       </div>
 
-      {/* Tela básica: simuladores específicos (banco, mensagens...) entram no lugar disto */}
-      <div className="cartao" role="group" aria-label="Tela do exercício">
-        <div className="linha">
-          {(passo.elementos ?? []).map((el) => (
-            <button key={el.id} className="botao" onClick={() => aplicar(responder(fase, estado, el.id))}>
-              {el.rotulo}
-            </button>
-          ))}
-        </div>
-      </div>
+      {/* Cada simulador (celular, depois banco, mensagens...) entra aqui conforme fase.simulador */}
+      <TelaCelular
+        fase={fase}
+        passo={passo}
+        estado={estado}
+        avatar={dados?.perfil.avatar ?? '🙂'}
+        aoResponder={(resposta) => aplicar(responder(fase, estado, resposta))}
+      />
 
       {estado.aviso && (
         <div className={`mensagem mensagem--${estado.aviso.tipo}`} role="status">

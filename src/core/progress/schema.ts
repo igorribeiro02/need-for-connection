@@ -14,6 +14,7 @@ export type Preferencias = {
   escalaFonte: number // 1 = 100%, até 2 = 200%
   altoContraste: boolean
   narracao: boolean
+  modoMapa: 'mapa' | 'lista' // como a tela inicial mostra os mundos
 }
 
 export type StatusFase = 'nao-iniciada' | 'em-andamento' | 'concluida'
@@ -38,6 +39,7 @@ export const PREFERENCIAS_PADRAO: Preferencias = {
   escalaFonte: 1,
   altoContraste: false,
   narracao: false,
+  modoMapa: 'mapa',
 }
 
 export function novosDados(perfil: Perfil): DadosPerfil {
