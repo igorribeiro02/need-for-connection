@@ -1,0 +1,149 @@
+@import './tokens.css';
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: calc(var(--fonte-base) * var(--escala-fonte));
+}
+
+body {
+  margin: 0;
+  background: var(--cor-fundo);
+  color: var(--cor-texto);
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+  line-height: 1.5;
+  text-align: left; /* nunca justificar nem centralizar parágrafos */
+}
+
+h1,
+h2,
+h3 {
+  line-height: 1.25;
+  margin: 0 0 var(--espaco);
+}
+
+h1 {
+  font-size: 1.6rem;
+}
+h2 {
+  font-size: 1.3rem;
+}
+
+p {
+  margin: 0 0 var(--espaco);
+}
+
+/* Foco sempre bem visível */
+:focus-visible {
+  outline: 4px solid var(--cor-foco);
+  outline-offset: 2px;
+}
+
+/* Sem animações para quem pede menos movimento */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+.pagina {
+  max-width: 40rem;
+  margin: 0 auto;
+  padding: var(--espaco);
+}
+
+.cartao {
+  background: var(--cor-superficie);
+  border: 2px solid var(--cor-borda);
+  border-radius: var(--raio);
+  padding: var(--espaco);
+  margin-bottom: var(--espaco);
+}
+
+.botao {
+  min-height: var(--alvo-minimo);
+  min-width: var(--alvo-minimo);
+  padding: 0.6rem 1.1rem;
+  border-radius: var(--raio);
+  border: 2px solid var(--cor-primaria);
+  background: var(--cor-primaria);
+  color: var(--cor-primaria-texto);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.botao--secundario {
+  background: transparent;
+  color: var(--cor-primaria);
+}
+
+.botao:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.linha {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco);
+  align-items: center;
+}
+
+.campo {
+  display: block;
+  margin-bottom: var(--espaco);
+}
+
+.campo label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.campo input {
+  width: 100%;
+  min-height: var(--alvo-minimo);
+  padding: 0.5rem 0.75rem;
+  font: inherit;
+  border: 2px solid var(--cor-borda);
+  border-radius: var(--raio);
+  background: var(--cor-superficie);
+  color: var(--cor-texto);
+}
+
+.ajuda-campo {
+  color: var(--cor-texto-suave);
+  font-size: 0.9rem;
+  margin: 0.25rem 0 0;
+}
+
+.faixa-simulacao {
+  background: var(--cor-aviso-fundo);
+  border: 2px solid var(--cor-borda);
+  border-radius: var(--raio);
+  padding: 0.5rem var(--espaco);
+  margin-bottom: var(--espaco);
+  font-weight: 600;
+}
+
+.mensagem {
+  border-left: 8px solid var(--cor-borda);
+  padding: 0.5rem var(--espaco);
+  margin: var(--espaco) 0;
+  background: var(--cor-superficie);
+}
+.mensagem--erro {
+  border-color: var(--cor-erro);
+}
+.mensagem--dica {
+  border-color: var(--cor-primaria);
+}
+.mensagem--ok {
+  border-color: var(--cor-acerto);
+}

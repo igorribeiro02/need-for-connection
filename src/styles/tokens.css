@@ -1,0 +1,39 @@
+/* Tokens de acessibilidade para idosos (ver documento de arquitetura).
+   Mexa aqui, não nos componentes: tudo no jogo lê estas variáveis. */
+
+:root {
+  /* Texto: base de 20px; o usuário aumenta com o botão A+ (até 200%) */
+  --fonte-base: 20px;
+  --escala-fonte: 1;
+
+  /* Cores com contraste mínimo de 4,5:1 sobre o fundo */
+  --cor-fundo: #fbfaf7;
+  --cor-superficie: #ffffff;
+  --cor-texto: #1d2430;
+  --cor-texto-suave: #4a5568;
+  --cor-primaria: #1b4b8f;
+  --cor-primaria-texto: #ffffff;
+  --cor-acerto: #1c6b3a;
+  --cor-erro: #a32020;
+  --cor-aviso-fundo: #fff4d6;
+  --cor-borda: #8a94a6;
+  --cor-foco: #ff9900;
+
+  /* Alvos de toque: pelo menos 48px, com espaço entre botões */
+  --alvo-minimo: 48px;
+  --espaco: 16px;
+  --raio: 12px;
+}
+
+:root[data-contraste='alto'] {
+  --cor-fundo: #000000;
+  --cor-superficie: #000000;
+  --cor-texto: #ffffff;
+  --cor-texto-suave: #ffffff;
+  --cor-primaria: #ffd400;
+  --cor-primaria-texto: #000000;
+  --cor-acerto: #7dff9b;
+  --cor-erro: #ff8f8f;
+  --cor-aviso-fundo: #1a1a1a;
+  --cor-borda: #ffffff;
+}
