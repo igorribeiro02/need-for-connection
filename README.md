@@ -66,6 +66,10 @@ Mapa com personagem, simuladores (celular, mensagens, banco), Modo Lembrar compl
   "Mostrar saldo", grade de atalhos, lista de serviços). Os outros bancos usam a mesma estrutura com atalhos genéricos,
   até recebermos capturas deles (campo `inicio` em `src/content/banks.ts`). Não usamos logos, fontes nem imagens dos bancos.
   Para as próximas telas (menu do Pix, digitar a chave, conferência), mandem capturas do app real (sem dados pessoais).
+- **Tela do Pix por banco (`fluxo.menuPix`):** o Bradesco já tem a sua tela do Pix copiada da imagem oficial do app
+  (pergunta "Como você quer transferir?", campo único "Digitar ou colar nome/chave", botões de apoio, "Mais opções" e
+  "Outros Serviços"). Nesse banco não existe a escolha do tipo de chave. Os outros bancos ainda usam o fluxo genérico
+  e serão refeitos um por um. Etapas depois da chave (valor, conta, confirmação, senha) ainda vêm de tutoriais antigos.
 - Dados do exercício (Ana, ana@exemplo.com, R$ 25,00, senha 1234 ou 123456) são inventados e ficam em `montarPix.ts`.
 
 ## Ajuda que se adapta

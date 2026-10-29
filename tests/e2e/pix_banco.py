@@ -160,6 +160,33 @@ with sync_playwright() as p:
     toque("Entrar"); toque("Mostrar saldo")
     page.screenshot(path=f"{OUT}/p5b-itau-home.png", full_page=True)
 
+    # --- Bradesco: a tela do Pix tem o campo da chave (sem escolher o tipo); 10 passos ---
+    page.get_by_role("button", name="Trocar de banco").click()
+    page.get_by_role("button", name="Bradesco", exact=True).click()
+    check("Bradesco tem 10 passos", passo(1, 10))
+    toque("Entrar"); toque("Mostrar saldo"); toque("Pix")
+    check("tela do Pix: pergunta 'Como você quer transferir?'", page.get_by_role("heading", name="Como você quer transferir?").is_visible())
+    check("tela do Pix: campo, botões de apoio e outros serviços",
+          page.get_by_label("Digitar ou colar nome/chave").is_visible()
+          and page.get_by_role("button", name="Escolher um contato").is_visible()
+          and page.get_by_role("button", name="Ler um QR Code").is_visible()
+          and page.get_by_role("heading", name="Outros Serviços").is_visible()
+          and page.get_by_role("button", name="Limites Pix").is_visible())
+    check("não pede o tipo de chave antes", not page.get_by_text("Para quem você quer enviar?").is_visible())
+    page.screenshot(path=f"{OUT}/p5c-bradesco-pix.png", full_page=True)
+    page.get_by_role("button", name="Ler um QR Code").click()
+    check("botão que não faz parte do exercício avisa com calma", page.get_by_role("status").get_by_text("não funciona neste exercício").is_visible())
+    page.get_by_label("Digitar ou colar nome/chave").fill("ana@exemplo.com")
+    page.get_by_role("button", name="Continuar", exact=True).click()
+    check("depois da chave vem o valor", page.get_by_label("Valor em reais").is_visible())
+    page.get_by_label("Valor em reais").fill("25"); page.get_by_role("button", name="Continuar", exact=True).click()
+    toque("Conta corrente")
+    check("Bradesco confere o nome no fim", page.get_by_text("Confira antes de enviar").is_visible())
+    toque("Sim, está certo"); toque("Confirmar")
+    for d in "1234": page.get_by_role("button", name=d, exact=True).click()
+    page.get_by_role("button", name="Confirmar", exact=True).click()
+    check("Bradesco termina no comprovante", page.get_by_role("button", name="Salvar comprovante", exact=True).is_visible())
+
     # alto contraste e letra grande não quebram o simulador
     page.get_by_role("button", name="Alto contraste: desligado").click()
     for _ in range(4): page.get_by_role("button", name="Aumentar letra").click()

@@ -2,6 +2,7 @@ import type { CSSProperties } from 'react'
 import type { BancoConfig, Passo } from '../../core/engine/stepTypes'
 import { CampoDigitar } from '../celular/CampoDigitar'
 import { InicioBanco } from './InicioBanco'
+import { MenuPixBanco } from './MenuPixBanco'
 import { TecladoSenha } from './TecladoSenha'
 
 type Props = {
@@ -27,6 +28,8 @@ export function TelaBanco({ banco, passo, destacar, nome, aoResponder }: Props) 
       </p>
       {passo.tela?.layout === 'inicio' ? (
         <InicioBanco passo={passo} nome={nome} destacar={destacar} aoResponder={aoResponder} />
+      ) : passo.tela?.layout === 'menu-pix' && banco.fluxo.menuPix ? (
+        <MenuPixBanco banco={banco} passo={passo} destacar={destacar} aoResponder={aoResponder} />
       ) : (
         <TelaInterna banco={banco} passo={passo} destacar={destacar} aoResponder={aoResponder} />
       )}

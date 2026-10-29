@@ -482,3 +482,103 @@
   background: var(--cor-fundo);
   border: 2px solid var(--cor-primaria);
 }
+
+/* Tela do Pix do banco (estrutura baseada na imagem oficial do app do Bradesco) */
+.menupix {
+  margin: 0 calc(var(--espaco) * -1) calc(var(--espaco) * -1);
+  padding-bottom: var(--espaco);
+  background: var(--cor-superficie);
+  border-radius: 0 0 1.2rem 1.2rem;
+  overflow: hidden;
+}
+.menupix__topo {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  padding: 0.7rem var(--espaco);
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #ffffff;
+  background: var(--banco-cor);
+}
+.menupix__topo small {
+  margin-left: auto;
+  font-size: 0.75rem;
+  font-weight: 400;
+}
+.menupix__corpo {
+  padding: var(--espaco);
+}
+.menupix__pergunta {
+  margin: 0 0 0.75rem;
+  font-size: 1.25rem;
+  color: var(--banco-cor);
+}
+.menupix__campo {
+  padding: 0.75rem;
+  margin-bottom: 0.75rem;
+  border: 2px solid var(--cor-borda);
+  border-radius: var(--raio);
+}
+.menupix__dica {
+  margin: 0.4rem 0 0;
+  font-size: 0.85rem;
+  color: var(--cor-texto-suave);
+}
+.menupix__botoes,
+.menupix__linha {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 7rem), 1fr));
+  gap: 0.6rem;
+}
+.menupix__grade {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 7rem), 1fr));
+  gap: 0.6rem;
+}
+.menupix__secao {
+  margin: var(--espaco) 0 0.5rem;
+  font-size: 1rem;
+}
+.menupix__apoio,
+.menupix__cartao {
+  min-width: 0;
+  min-height: var(--alvo-minimo);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem;
+  font: inherit;
+  font-size: 0.9rem;
+  line-height: 1.2;
+  color: var(--cor-texto);
+  text-align: left;
+  overflow-wrap: anywhere;
+  background: var(--cor-fundo);
+  border: 2px solid var(--cor-borda);
+  border-radius: var(--raio);
+  cursor: pointer;
+}
+.menupix__cartao {
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+}
+.menupix__icone {
+  flex: none;
+  font-size: 1.3rem;
+}
+.menupix__aviso {
+  min-height: 1.4em;
+  margin: var(--espaco) 0 0;
+  font-size: 0.9rem;
+  color: var(--cor-texto-suave);
+}
+:root[data-contraste='alto'] .menupix__topo {
+  color: var(--cor-texto);
+  background: var(--cor-fundo);
+  border-bottom: 3px solid var(--cor-primaria);
+}
+:root[data-contraste='alto'] .menupix__pergunta {
+  color: var(--cor-texto);
+}

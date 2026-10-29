@@ -163,6 +163,7 @@ export function montarPix(banco: BancoConfig, variante: VariantePix): Passo[] {
     enganos('Ler QR Code', 'Contatos salvos'),
     enganos('Cancelar'),
   ]
+  const menu = f.menuPix
   const caminho = f.caminho.map((no, i) => {
     const titulo = i === 0 ? 'Pix' : f.caminho[i - 1].rotulo
     const elementos = misturar({ id: `caminho-${i}`, rotulo: no.rotulo }, decoys[Math.min(i, 2)], `${semente}-c${i}`)
@@ -197,15 +198,21 @@ export function montarPix(banco: BancoConfig, variante: VariantePix): Passo[] {
 
   const chave: Passo = {
     id: 'chave',
-    instrucao: `Digite o e-mail da ${DADOS.primeiroNome}: ${DADOS.email}`,
+    instrucao: menu
+      ? `Na caixa "${menu.rotuloCampo}", escreva o e-mail da ${DADOS.primeiroNome}: ${DADOS.email}`
+      : `Digite o e-mail da ${DADOS.primeiroNome}: ${DADOS.email}`,
     tipo: 'digitar',
     alvo: 'campo',
     esperado: DADOS.email,
     teclado: 'email',
-    rotuloCampo: 'E-mail da pessoa',
+    rotuloCampo: menu ? menu.rotuloCampo : 'E-mail da pessoa',
     rotuloBotao: f.rotuloAvancar,
-    tela: { titulo: 'Digite a chave', linhas: ['Confira cada letra: um erro manda o dinheiro para outra pessoa.'] },
-    dicas: ['Toque na caixa para abrir o teclado e escreva tudo junto, sem espaços.', `Escreva: ${DADOS.email}`],
+    tela: menu
+      ? { titulo: 'Pix', layout: 'menu-pix', menuPix: menu }
+      : { titulo: 'Digite a chave', linhas: ['Confira cada letra: um erro manda o dinheiro para outra pessoa.'] },
+    dicas: menu
+      ? [`Toque na caixa "${menu.rotuloCampo}", no alto da tela, e escreva tudo junto, sem espaços.`, `Escreva: ${DADOS.email}`]
+      : ['Toque na caixa para abrir o teclado e escreva tudo junto, sem espaços.', `Escreva: ${DADOS.email}`],
     erroGentil: `Quase! Confira se está escrito ${DADOS.email}, sem espaços.`,
     lembrete: 'Digite a chave com calma e confira cada letra antes de continuar. Um erro manda o dinheiro para outra pessoa.',
   }
@@ -359,7 +366,7 @@ export function montarPix(banco: BancoConfig, variante: VariantePix): Passo[] {
 
   // ---- monta na ordem do banco ----
   const antes = [entrar, saldo, irPix, ...caminho]
-  const dados: Passo[] = valorPrimeiro ? [valor, tipoChave, chave] : [tipoChave, chave]
+  const dados: Passo[] = valorPrimeiro ? [valor, tipoChave, chave] : menu ? [chave] : [tipoChave, chave]
   const temConta = f.extras.includes('conta')
   if (confirmaNoDestinatario) dados.push(revisar)
   if (confirmaNoDestinatario && temConta) dados.push(conta) // Itaú e BB: a conta vem antes do valor

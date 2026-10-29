@@ -77,12 +77,38 @@ export const bancos: BancoConfig[] = [
     nomeNaLista: 'Bradesco',
     fluxo: {
       ...PADRAO,
-      caminho: [{ rotulo: 'Transferir', dica: 'Pode ser preciso rolar a tela para baixo até achar.' }],
+      caminho: [],
+      // Tela do Pix: rótulos lidos na imagem oficial do app na Google Play/App Store (2025).
+      menuPix: {
+        titulo: 'Como você quer transferir?',
+        rotuloCampo: 'Digitar ou colar nome/chave',
+        dicaCampo: 'Pode ser nome do contato ou uma chave Pix',
+        botoes: [
+          { rotulo: 'Escolher um contato', icone: '⭐' },
+          { rotulo: 'Digitar agência e conta', icone: '🏦' },
+        ],
+        secaoMais: 'Mais opções',
+        mais: [
+          { rotulo: 'Pix Copia e Cola', icone: '📋' },
+          { rotulo: 'Ler um QR Code', icone: '🔳' },
+          { rotulo: 'Trazer dinheiro', icone: '⤵️' },
+        ],
+        secaoOutros: 'Outros Serviços',
+        outros: [
+          { rotulo: 'Pix Automático', icone: '🔁' },
+          { rotulo: 'Resumo Pix', icone: '📊' },
+          { rotulo: 'Extrato Pix', icone: '📄' },
+          { rotulo: 'Minhas chaves Pix', icone: '🔑' },
+          { rotulo: 'Gerenciar contatos', icone: '👥' },
+          { rotulo: 'Limites Pix', icone: '⚖️' },
+        ],
+      },
       extras: ['conta'],
     },
     inicio: inicioGenerico('Pix'),
     tema: { corPrincipal: '#cc092f', corDestaque: '#1b4b8f' },
-    fonte: 'Canaltech, 2020/2022. Tipo de senha não confirmado.',
+    fonte:
+      'Tela do Pix: imagem oficial do app (Google Play, 2025). Tela inicial e etapas depois da chave (valor, conta, confirmação): Canaltech 2020/2022, NÃO conferidas no app atual; tipo de senha não confirmado.',
   },
   {
     id: 'itau',

@@ -45,8 +45,9 @@ export type Passo = {
     linhas?: string[]
     saldo?: string // cartão de saldo (use "••••••" para saldo escondido)
     resumo?: { rotulo: string; valor: string }[] // conferência: "Para", "Valor"...
-    layout?: 'grade' | 'lista' | 'inicio' // 'inicio' = tela inicial completa do app de banco
+    layout?: 'grade' | 'lista' | 'inicio' | 'menu-pix' // 'inicio' = tela inicial do app; 'menu-pix' = tela do Pix do banco
     inicio?: { secaoAtalhos: string; secaoServicos?: string; colunas: number }
+    menuPix?: MenuPix
   }
   /** 'andar': verbo do botão de confirmar, ex.: "Pegar" (padrão: "Escolher"). */
   acao?: string
@@ -80,13 +81,28 @@ export type Mundo = {
 /** Como o Pix por chave funciona em um banco. Cada banco tem o seu fluxo (ordem das telas e nomes dos botões). */
 export type FluxoPix = {
   entradaPix: string // atalho na tela inicial: "Pix", "Área Pix"
-  caminho: { rotulo: string; dica?: string }[] // botões entre o Pix e a escolha da chave
+  /** Botões entre o Pix e a escolha da chave. Vazio quando `menuPix` existe (a chave é digitada na própria tela do Pix). */
+  caminho: { rotulo: string; dica?: string }[]
+  /** Bancos cuja tela do Pix já tem o campo da chave (sem escolher o tipo da chave antes). */
+  menuPix?: MenuPix
   ordem: 'chave-primeiro' | 'valor-primeiro'
   rotuloAvancar: string // botão depois de digitar: "Continuar", "Avançar"
   /** Telas a mais que alguns bancos têm. */
   extras: ('confirmar-destinatario' | 'conta' | 'data')[]
   rotuloConfirmar: string // botão que envia o Pix
   confirmacao: { nome: 'senha' | 'assinatura eletrônica'; digitos: number }
+}
+
+/** Tela do Pix de um banco: campo da chave no alto, botões de apoio e atalhos de outros serviços. Só o campo funciona no exercício. */
+export type MenuPix = {
+  titulo: string // "Como você quer transferir?"
+  rotuloCampo: string // "Digitar ou colar nome/chave"
+  dicaCampo?: string // texto pequeno abaixo do campo
+  botoes: { rotulo: string; icone: string }[] // ao lado do campo
+  secaoMais?: string // "Mais opções"
+  mais?: { rotulo: string; icone: string }[]
+  secaoOutros?: string // "Outros Serviços"
+  outros?: { rotulo: string; icone: string }[]
 }
 
 /** Como é a tela inicial do aplicativo: grade de atalhos e, às vezes, uma lista de serviços. */

@@ -142,7 +142,7 @@ describe('bancos e fases de Pix', () => {
     for (const b of bancos) {
       expect(b.fonte.length, b.id).toBeGreaterThan(0)
       expect(b.fluxo.entradaPix.length, b.id).toBeGreaterThan(0)
-      expect(b.fluxo.caminho.length, b.id).toBeGreaterThan(0)
+      expect(b.fluxo.caminho.length + (b.fluxo.menuPix ? 1 : 0), b.id).toBeGreaterThan(0)
     }
   })
 
@@ -162,8 +162,11 @@ describe('bancos e fases de Pix', () => {
     const it = idsDe('itau')
     expect(it.indexOf('revisar')).toBeLessThan(it.indexOf('conta'))
     expect(it.indexOf('conta')).toBeLessThan(it.indexOf('valor'))
-    // Bradesco: valor e depois a conta; o nome só é conferido no fim
+    // Bradesco: a chave é digitada na própria tela do Pix (sem escolher o tipo); valor, depois a conta; o nome só no fim
     const br = idsDe('bradesco')
+    expect(br).not.toContain('tipo-chave')
+    expect(br.some((id) => id.startsWith('caminho-'))).toBe(false)
+    expect(br.indexOf('ir-pix') + 1).toBe(br.indexOf('chave'))
     expect(br.indexOf('valor')).toBeLessThan(br.indexOf('conta'))
     expect(br.indexOf('revisar')).toBeGreaterThan(br.indexOf('conta'))
     // BB: tem data
