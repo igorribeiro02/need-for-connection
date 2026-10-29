@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { estrelas, iniciar, passoAtual, pedirDica, responder } from '../src/core/engine/phaseRunner'
+import { estrelas, iniciar, mostrarOnde, passoAtual, pedirDica, responder } from '../src/core/engine/phaseRunner'
 import type { Fase } from '../src/core/engine/stepTypes'
 import { w0Tocar } from '../src/content/phases/w0-tocar'
 
@@ -125,5 +125,31 @@ describe('phaseRunner', () => {
     expect(e.aviso?.texto).toBe('ew')
     e = responder(f, e, 'maca')
     expect(e.concluida).toBe(true)
+  })
+
+  it('conta erros seguidos no passo e zera ao acertar', () => {
+    let e = iniciar(fase)
+    e = responder(fase, e, 'x')
+    e = responder(fase, e, 'y')
+    expect(e.errosNoPasso).toBe(2)
+    expect(e.erros).toBe(2)
+    e = responder(fase, e, 'botao-a')
+    expect(e.errosNoPasso).toBe(0)
+    expect(e.erros).toBe(2)
+  })
+
+  it('"me mostre" vai direto à última dica e conta uma dica só', () => {
+    let e = mostrarOnde(fase, iniciar(fase))
+    expect(e.dicasNoPasso).toBe(2)
+    expect(e.dicasTotais).toBe(1)
+    expect(e.aviso?.texto).toBe('d2')
+    e = mostrarOnde(fase, e) // já estava lá: não conta de novo
+    expect(e.dicasTotais).toBe(1)
+    expect(estrelas(e)).toBe(2)
+  })
+
+  it('"me mostre" depois de uma dica soma só mais uma', () => {
+    const e = mostrarOnde(fase, pedirDica(fase, iniciar(fase)))
+    expect(e.dicasTotais).toBe(2)
   })
 })

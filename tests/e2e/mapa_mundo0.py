@@ -131,8 +131,8 @@ with sync_playwright() as p:
     page.get_by_role("button", name="🗺️ Mapa").click()
     check("Mundo 0 concluído libera os outros", page.get_by_role("button", name="Mundo 4: Banco e Pix", exact=True).count() == 1)
     page.get_by_role("button", name="Mundo 4: Banco e Pix").click()
-    page.get_by_text("Em breve.").wait_for(timeout=6000)
-    check("Mundo 4 agora está aberto (em breve)", True)
+    page.get_by_role("button", name="Fazer um Pix pela chave").wait_for(timeout=6000)
+    check("Mundo 4 agora está aberto e mostra as fases de Pix", True)
     page.screenshot(path=f"{OUT}/m6-liberado.png", full_page=True)
 
     # movimento reduzido: o personagem não deve explodir nada, só chegar

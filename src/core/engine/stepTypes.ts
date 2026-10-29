@@ -28,7 +28,12 @@ export type Passo = {
   /** 'digitar': texto que já vem escrito na caixa (para treinar a apagar). */
   valorInicial?: string
   /** 'digitar': tipo de teclado que o celular abre. */
-  teclado?: 'texto' | 'numero' | 'email'
+  teclado?: 'texto' | 'numero' | 'email' | 'valor' | 'senha'
+  /** 'digitar': nome do campo e do botão de enviar. */
+  rotuloCampo?: string
+  rotuloBotao?: string
+  /** Simulador de banco: como a tela aparece neste passo (os botões vêm de `elementos`). */
+  tela?: { titulo: string; linhas?: string[] }
   /** 'andar': verbo do botão de confirmar, ex.: "Pegar" (padrão: "Escolher"). */
   acao?: string
 }
@@ -43,6 +48,10 @@ export type Fase = {
   precisaEscolherBanco?: boolean
   /** Mapa usado pelos passos 'andar' desta fase. */
   mapa?: MapaDef
+  /** Situação em uma frase, mostrada acima do exercício. */
+  cenario?: string
+  /** Fases de banco: os passos mudam conforme o banco escolhido (menus e nomes diferentes). */
+  gerarPassos?: (banco: BancoConfig) => Passo[]
   passos: Passo[]
 }
 
@@ -60,6 +69,6 @@ export type BancoConfig = {
   nomeNaLista: string // o que a pessoa vê ao escolher
   arquetipo: 'tradicional' | 'digital'
   caminhoAteOPix: string[] // ["home", "pagar-e-transferir", "pix"]
-  rotulos: { pix: string; transferir: string; confirmar: string }
+  rotulos: { pix: string; transferir: string; confirmar: string; menu?: string; pagar?: string }
   tema: { corPrincipal: string; corDestaque: string }
 }

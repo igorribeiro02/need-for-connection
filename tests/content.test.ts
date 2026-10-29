@@ -1,14 +1,15 @@
 import { describe, expect, it } from 'vitest'
 import { mapaDosMundos, mundoEm } from '../src/content/worldMap'
-import { mundos, todasAsFases } from '../src/content/worlds'
+import { bancos } from '../src/content/banks'
+import { mundos, todasAsFases, todasAsFasesResolvidas } from '../src/content/worlds'
 import { caminho, listarObjetos, objetoEm, posicaoInicial } from '../src/core/world/grid'
 import { mundoConcluido, mundoLiberado, pendenciasParaAbrir } from '../src/core/world/unlock'
 
 describe('contrato das fases (vale para qualquer fase nova do grupo)', () => {
-  const fases = todasAsFases()
+  const fases = todasAsFasesResolvidas().map((r) => r.fase) // fases de banco aparecem uma vez por banco
 
   it('ids de fases e de passos são únicos', () => {
-    const ids = fases.map((f) => f.id)
+    const ids = todasAsFases().map((f) => f.id)
     expect(new Set(ids).size).toBe(ids.length)
     for (const f of fases) {
       const passos = f.passos.map((p) => p.id)
@@ -19,8 +20,8 @@ describe('contrato das fases (vale para qualquer fase nova do grupo)', () => {
   it('cada fase está no mundo certo e tem passos', () => {
     for (const m of mundos) for (const f of m.fases) {
       expect(f.mundo, f.id).toBe(m.numero)
-      expect(f.passos.length, f.id).toBeGreaterThan(0)
     }
+    for (const f of fases) expect(f.passos.length, f.id).toBeGreaterThan(0)
   })
 
   it('todo passo tem instrução, ao menos uma dica, erro gentil e lembrete', () => {
@@ -107,5 +108,60 @@ describe('liberação dos mundos', () => {
   it('"em andamento" não conta como concluída', () => {
     const andamento = Object.fromEntries(mundos[0].fases.map((f) => [f.id, { status: 'em-andamento' }]))
     expect(mundoLiberado(1, mundos, andamento)).toBe(false)
+  })
+})
+
+function luminancia(hex: string): number {
+  const [r, g, b] = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255)
+  const lin = (c: number) => (c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4)
+  return 0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(b)
+}
+
+describe('bancos e fases de Pix', () => {
+  it('todo banco tem texto branco legível sobre a cor principal (contraste >= 4,5)', () => {
+    for (const b of bancos) {
+      const contraste = 1.05 / (luminancia(b.tema.corPrincipal) + 0.05)
+      expect(contraste, b.id).toBeGreaterThanOrEqual(4.5)
+    }
+  })
+
+  it('o caminho começa na tela inicial e termina no Pix', () => {
+    for (const b of bancos) {
+      expect(b.caminhoAteOPix[0], b.id).toBe('home')
+      expect(b.caminhoAteOPix[b.caminhoAteOPix.length - 1], b.id).toBe('pix')
+    }
+  })
+
+  it('bancos tradicionais têm mais passos que os digitais (o menu muda a quantidade de passos)', () => {
+    const pix = mundos[4].fases[0]
+    const tamanho = (id: string) => pix.gerarPassos!(bancos.find((b) => b.id === id)!).length
+    expect(tamanho('caixa')).toBe(tamanho('nubank') + 2)
+  })
+
+  it('o jogador consegue concluir cada fase de Pix em cada banco só com as respostas certas', async () => {
+    const { iniciar, passoAtual, responder } = await import('../src/core/engine/phaseRunner')
+    for (const { fase, banco } of todasAsFasesResolvidas()) {
+      if (!banco) continue
+      let e = iniciar(fase)
+      let guarda = 0
+      while (!e.concluida && guarda++ < 50) {
+        const p = passoAtual(fase, e)!
+        const resposta = p.tipo === 'digitar' ? (Array.isArray(p.esperado) ? p.esperado[0] : p.esperado!) : p.alvo
+        e = responder(fase, e, resposta)
+      }
+      expect(e.concluida, `${fase.id} em ${banco.id}`).toBe(true)
+      expect(e.erros, `${fase.id} em ${banco.id}`).toBe(0)
+    }
+  })
+
+  it('nos passos de tocar de banco, o botão certo muda de posição entre os bancos', () => {
+    const pix = mundos[4].fases[0]
+    const posicoes = new Set(
+      bancos.map((b) => {
+        const passo = pix.gerarPassos!(b).find((p) => p.id === 'comprovante')!
+        return passo.elementos!.findIndex((e) => e.id === passo.alvo)
+      }),
+    )
+    expect(posicoes.size).toBeGreaterThan(1)
   })
 })

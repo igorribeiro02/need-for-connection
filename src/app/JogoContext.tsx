@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import type { DadosPerfil, Perfil, Preferencias, ProgressoFase } from '../core/progress/schema'
 import {
   carregarPerfil,
@@ -19,6 +19,8 @@ type Jogo = {
   importar: (dados: DadosPerfil) => void
   atualizarPreferencias: (parcial: Partial<Preferencias>) => void
   atualizarFase: (faseId: string, mudar: (atual: ProgressoFase | undefined) => ProgressoFase) => void
+  /** Muda vários campos de uma vez, sempre sobre o dado mais recente. */
+  atualizar: (mudar: (atual: DadosPerfil) => DadosPerfil) => void
   salvouNoAparelho: boolean
 }
 
@@ -31,6 +33,10 @@ export function JogoProvider({ children }: { children: ReactNode }) {
   })
   const [perfis, setPerfis] = useState<Perfil[]>(() => listarPerfis())
   const [salvouNoAparelho, setSalvou] = useState(true)
+  const recente = useRef(dados)
+  useEffect(() => {
+    recente.current = dados
+  }, [dados])
 
   // aplica as preferências (letra grande e alto contraste) na página inteira
   useEffect(() => {
@@ -40,7 +46,11 @@ export function JogoProvider({ children }: { children: ReactNode }) {
     else raiz.removeAttribute('data-contraste')
   }, [dados?.preferencias.escalaFonte, dados?.preferencias.altoContraste])
 
-  const gravar = useCallback((novos: DadosPerfil) => {
+  const atualizar = useCallback((mudar: (atual: DadosPerfil) => DadosPerfil) => {
+    const atual = recente.current
+    if (!atual) return
+    const novos = mudar(atual)
+    recente.current = novos
     setDados(novos)
     setSalvou(salvarPerfil(novos))
     setPerfis(listarPerfis())
@@ -75,24 +85,19 @@ export function JogoProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const atualizarPreferencias = useCallback(
-    (parcial: Partial<Preferencias>) => {
-      if (!dados) return
-      gravar({ ...dados, preferencias: { ...dados.preferencias, ...parcial } })
-    },
-    [dados, gravar],
+    (parcial: Partial<Preferencias>) => atualizar((d) => ({ ...d, preferencias: { ...d.preferencias, ...parcial } })),
+    [atualizar],
   )
 
   const atualizarFase = useCallback(
-    (faseId: string, mudar: (atual: ProgressoFase | undefined) => ProgressoFase) => {
-      if (!dados) return
-      gravar({ ...dados, fases: { ...dados.fases, [faseId]: mudar(dados.fases[faseId]) } })
-    },
-    [dados, gravar],
+    (faseId: string, mudar: (atual: ProgressoFase | undefined) => ProgressoFase) =>
+      atualizar((d) => ({ ...d, fases: { ...d.fases, [faseId]: mudar(d.fases[faseId]) } })),
+    [atualizar],
   )
 
   const valor = useMemo<Jogo>(
-    () => ({ dados, perfis, entrar, sair, criar, importar, atualizarPreferencias, atualizarFase, salvouNoAparelho }),
-    [dados, perfis, entrar, sair, criar, importar, atualizarPreferencias, atualizarFase, salvouNoAparelho],
+    () => ({ dados, perfis, entrar, sair, criar, importar, atualizarPreferencias, atualizarFase, atualizar, salvouNoAparelho }),
+    [dados, perfis, entrar, sair, criar, importar, atualizarPreferencias, atualizarFase, atualizar, salvouNoAparelho],
   )
 
   return <Contexto.Provider value={valor}>{children}</Contexto.Provider>

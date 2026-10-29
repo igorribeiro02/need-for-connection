@@ -22,7 +22,9 @@ npm run build      # checa os tipos e gera a pasta dist/
 | `src/content/` | As fases, escritas em dados. |
 | `src/app/` | Telas e navegação. |
 | `src/world/` | Mapa com personagem: grade, botões direcionais e movimento (setas, toque). |
-| `src/simulators/` | Telas simuladas usadas pelas fases (hoje: celular; depois banco, mensagens). |
+| `src/simulators/` | Telas simuladas usadas pelas fases: `celular/` e `banco/` (depois mensagens). |
+| `src/content/banks.ts` | Os bancos da lista (cor, caminho até o Pix, nomes dos botões). |
+| `src/content/banco/montarPix.ts` | Gera os passos do Pix para o banco escolhido. |
 | `src/features/` | Cadastro local, backup, ajustes (letra, contraste, narração). |
 | `src/styles/tokens.css` | Tamanhos e cores de acessibilidade. Mexa aqui, não nos componentes. |
 
@@ -50,3 +52,20 @@ Rode `npm run build`, depois `npx vite preview --port 4173` em outro terminal, e
 ## O que falta (ver plano no documento)
 
 Mapa com personagem, simuladores (celular, mensagens, banco), Modo Lembrar completo, mundos 1 a 6.
+
+
+## Banco e Pix (etapa 4)
+
+- Fases de banco têm `precisaEscolherBanco: true` e `gerarPassos(banco)`. O jogo pergunta o banco e gera os passos:
+  bancos "tradicionais" passam por Menu e por Pagar e transferir; os "digitais" têm o Pix na tela inicial.
+  A posição de cada botão também muda por banco, e as dicas dizem onde ele está.
+- **Hipótese a validar:** o caminho de cada banco e os nomes dos botões foram supostos. Antes de testar com os idosos,
+  abram os aplicativos de verdade e ajustem `src/content/banks.ts`. Não usamos logos nem cópias de telas.
+- Dados do exercício (Ana, ana@exemplo.com, R$ 25,00, senha 1234) são inventados e ficam em `montarPix.ts`.
+
+## Ajuda que se adapta
+
+- 2 erros seguidos no mesmo passo: aparece "Me mostre onde tocar" (conta como 1 dica).
+- 3 erros seguidos: o jogo mostra sozinho onde tocar (sem tirar estrelas: errar nunca pune).
+- Modo guiado (botão na fase): mostra sempre onde tocar; a fase termina com no máximo 1 estrela.
+- Dicas dizem a posição do botão ("é o segundo da lista"); a última dica sempre destaca o alvo.

@@ -1,14 +1,14 @@
 import { useEffect, useRef } from 'react'
 import type { Passo } from '../../core/engine/stepTypes'
 
-type Props = { passo: Passo; aoResponder: (resposta: string) => void }
+type Props = { passo: Passo; destacar?: boolean; aoResponder: (resposta: string) => void }
 
 function reduzido(): boolean {
   return typeof window.matchMedia === 'function' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
 }
 
 /** Lista que rola com o dedo, a roda do mouse ou o teclado. Os botões são a alternativa ao gesto. */
-export function ListaDeslizante({ passo, aoResponder }: Props) {
+export function ListaDeslizante({ passo, destacar = false, aoResponder }: Props) {
   const caixa = useRef<HTMLDivElement>(null)
   const respondido = useRef(false)
 
@@ -42,10 +42,18 @@ export function ListaDeslizante({ passo, aoResponder }: Props) {
         </ul>
       </div>
       <div className="linha">
-        <button type="button" className="botao botao--secundario" onClick={() => rolar(1)}>
+        <button
+          type="button"
+          className={`botao botao--secundario${destacar && passo.alvo === 'fim' ? ' destacado' : ''}`}
+          onClick={() => rolar(1)}
+        >
           ▼ Descer
         </button>
-        <button type="button" className="botao botao--secundario" onClick={() => rolar(-1)}>
+        <button
+          type="button"
+          className={`botao botao--secundario${destacar && passo.alvo === 'inicio' ? ' destacado' : ''}`}
+          onClick={() => rolar(-1)}
+        >
           ▲ Subir
         </button>
       </div>

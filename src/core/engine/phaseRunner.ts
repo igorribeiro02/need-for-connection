@@ -11,7 +11,8 @@ export type EstadoFase = {
   concluidos: string[] // ids dos passos já feitos
   dicasNoPasso: number // dicas já pedidas no passo atual
   dicasTotais: number // dicas pedidas na fase inteira
-  erros: number
+  erros: number // erros na fase inteira
+  errosNoPasso: number // erros seguidos no passo atual: dispara a ajuda automática
   concluida: boolean
   aviso?: Aviso
 }
@@ -30,6 +31,7 @@ export function iniciar(fase: Fase, concluidos: string[] = [], dicasTotais = 0):
     dicasNoPasso: 0,
     dicasTotais,
     erros: 0,
+    errosNoPasso: 0,
     concluida: indice === -1,
   }
 }
@@ -59,6 +61,7 @@ export function responder(fase: Fase, estado: EstadoFase, resposta: string): Est
     return {
       ...estado,
       erros: estado.erros + 1,
+      errosNoPasso: estado.errosNoPasso + 1,
       aviso: { tipo: 'erro', texto: passo.erroGentil },
     }
   }
@@ -71,6 +74,7 @@ export function responder(fase: Fase, estado: EstadoFase, resposta: string): Est
     indice,
     concluidos,
     dicasNoPasso: 0,
+    errosNoPasso: 0,
     concluida,
     aviso: concluida ? { tipo: 'ok', texto: 'Muito bem! Você concluiu esta fase.' } : undefined,
   }
@@ -88,6 +92,20 @@ export function pedirDica(fase: Fase, estado: EstadoFase): EstadoFase {
     dicasNoPasso: proxima,
     dicasTotais: estado.dicasTotais + (ehNova ? 1 : 0),
     aviso: { tipo: 'dica', texto: passo.dicas[proxima - 1] },
+  }
+}
+
+/** "Me mostre": vai direto à última dica (a que mostra onde tocar). Conta como uma dica só. */
+export function mostrarOnde(fase: Fase, estado: EstadoFase): EstadoFase {
+  const passo = passoAtual(fase, estado)
+  if (!passo || estado.concluida || passo.dicas.length === 0) return estado
+
+  const ultima = passo.dicas.length
+  return {
+    ...estado,
+    dicasNoPasso: ultima,
+    dicasTotais: estado.dicasTotais + (estado.dicasNoPasso < ultima ? 1 : 0),
+    aviso: { tipo: 'dica', texto: passo.dicas[ultima - 1] },
   }
 }
 

@@ -1,15 +1,21 @@
 import { useState, type FormEvent } from 'react'
 import type { Passo } from '../../core/engine/stepTypes'
 
-type Props = { passo: Passo; aoResponder: (resposta: string) => void }
+type Props = { passo: Passo; destacar?: boolean; aoResponder: (resposta: string) => void }
 
-const MODO: Record<NonNullable<Passo['teclado']>, 'text' | 'numeric' | 'email'> = {
+const MODO: Record<NonNullable<Passo['teclado']>, 'text' | 'numeric' | 'email' | 'decimal'> = {
   texto: 'text',
   numero: 'numeric',
   email: 'email',
+  valor: 'decimal',
+  senha: 'numeric',
 }
 
-export function CampoDigitar({ passo, aoResponder }: Props) {
+function primeiraResposta(passo: Passo): string {
+  return Array.isArray(passo.esperado) ? (passo.esperado[0] ?? '') : (passo.esperado ?? '')
+}
+
+export function CampoDigitar({ passo, destacar = false, aoResponder }: Props) {
   const [texto, setTexto] = useState(passo.valorInicial ?? '')
 
   function enviar(e: FormEvent) {
@@ -20,9 +26,10 @@ export function CampoDigitar({ passo, aoResponder }: Props) {
   return (
     <form onSubmit={enviar}>
       <div className="campo">
-        <label htmlFor="campo-digitar">Escreva aqui</label>
+        <label htmlFor="campo-digitar">{passo.rotuloCampo ?? 'Escreva aqui'}</label>
         <input
           id="campo-digitar"
+          className={destacar ? 'destacado' : undefined}
           value={texto}
           onChange={(e) => setTexto(e.target.value)}
           inputMode={MODO[passo.teclado ?? 'texto']}
@@ -31,9 +38,10 @@ export function CampoDigitar({ passo, aoResponder }: Props) {
           autoCorrect="off"
           spellCheck={false}
         />
+        {destacar && <p className="ajuda-campo">Escreva: {primeiraResposta(passo)}</p>}
       </div>
       <button type="submit" className="botao">
-        Pronto
+        {passo.rotuloBotao ?? 'Pronto'}
       </button>
     </form>
   )

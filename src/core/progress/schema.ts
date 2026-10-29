@@ -15,6 +15,8 @@ export type Preferencias = {
   altoContraste: boolean
   narracao: boolean
   modoMapa: 'mapa' | 'lista' // como a tela inicial mostra os mundos
+  guiado: boolean // modo guiado: o jogo mostra sempre onde tocar
+  bancoPreferido?: string // último banco escolhido
 }
 
 export type StatusFase = 'nao-iniciada' | 'em-andamento' | 'concluida'
@@ -40,6 +42,7 @@ export const PREFERENCIAS_PADRAO: Preferencias = {
   altoContraste: false,
   narracao: false,
   modoMapa: 'mapa',
+  guiado: false,
 }
 
 export function novosDados(perfil: Perfil): DadosPerfil {
