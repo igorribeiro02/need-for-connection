@@ -45,10 +45,13 @@ export type Passo = {
     linhas?: string[]
     saldo?: string // cartão de saldo (use "••••••" para saldo escondido)
     resumo?: { rotulo: string; valor: string }[] // conferência: "Para", "Valor"...
-    layout?: 'grade' | 'lista' | 'inicio' | 'menu-pix' // 'inicio' = tela inicial do app; 'menu-pix' = tela do Pix do banco
+    layout?: 'grade' | 'lista' | 'inicio' | 'menu-pix' | 'app' // 'inicio' = tela inicial do app; 'menu-pix' = tela do Pix; 'app' = tela feita de blocos
     inicio?: { secaoAtalhos: string; secaoServicos?: string; colunas: number }
     menuPix?: MenuPix
+    app?: TelaApp
   }
+  /** Passo 'escolher' de uma tela de app: as opções ficam num painel do exercício, fora do desenho do app. */
+  painelExercicio?: boolean
   /** 'andar': verbo do botão de confirmar, ex.: "Pegar" (padrão: "Escolher"). */
   acao?: string
 }
@@ -90,7 +93,64 @@ export type FluxoPix = {
   /** Telas a mais que alguns bancos têm. */
   extras: ('confirmar-destinatario' | 'conta' | 'data')[]
   rotuloConfirmar: string // botão que envia o Pix
-  confirmacao: { nome: 'senha' | 'assinatura eletrônica'; digitos: number }
+  /** 'confirmação no app' = só tocar em Confirmar (sem digitar senha), como o iSafe do Inter. */
+  confirmacao: { nome: 'senha' | 'assinatura eletrônica' | 'confirmação no app'; digitos: number }
+}
+
+// ---------- Telas de app montadas por blocos (copiadas da estrutura de capturas reais) ----------
+// Textos podem ter {nome} (primeiro nome de quem joga), {iniciais} e {hoje} (data), trocados na hora de desenhar.
+
+/** Um botão ou ícone da tela. Sem `id`, o id é o rótulo em minúsculas. `inerte` = só enfeite, nunca vale como resposta. */
+export type ItemApp = {
+  rotulo: string
+  icone?: string
+  id?: string
+  detalhe?: string
+  etiqueta?: string // selinho: "Novo", "Até 24x"
+  principal?: boolean // botão cheio, na cor do banco
+  inerte?: boolean
+}
+
+export type BlocoApp =
+  | { tipo: 'barra'; titulo?: string; voltar?: boolean | ItemApp; acoes?: ItemApp[]; grande?: 'linha' | 'abaixo' } // seta, título (centro, ou grande à esquerda/abaixo) e botões redondos
+  | { tipo: 'busca'; texto: string }
+  | { tipo: 'faixa'; avatar?: string; saudacao?: string; acoes?: ItemApp[]; busca?: string; contas?: ItemApp[] } // faixa colorida do alto da tela inicial
+  | { tipo: 'abas'; itens: string[]; ativa: number }
+  | { tipo: 'saldo'; rotulo: string; valor: string; olho?: ItemApp; apoio?: string; botao?: ItemApp; extrato?: string; linha?: boolean }
+  | { tipo: 'fichas'; itens: ItemApp[]; ativa?: number }
+  | { tipo: 'atalhos'; titulo?: string; itens: ItemApp[]; estilo: 'quadrados' | 'redondos' | 'caixas' }
+  | { tipo: 'lista'; titulo?: string; acao?: ItemApp; itens: ItemApp[]; estilo?: 'linhas' | 'caixas' }
+  | { tipo: 'promo'; titulo: string; texto?: string; botao?: ItemApp; escura?: boolean }
+  | { tipo: 'titulo'; texto: string; acao?: ItemApp; apoio?: string }
+  | { tipo: 'campo'; icone?: string; valor?: boolean; entre?: string[] } // onde se digita (passo 'digitar'); valor = número grande; entre = linhas entre a caixa e o botão
+  | { tipo: 'dados'; titulo?: string; linhas: { rotulo: string; valor: string }[] }
+  | { tipo: 'destaque'; valor: string; nome?: string; chip?: ItemApp }
+  | { tipo: 'cartao'; titulo: string; texto?: string; link?: string }
+  | { tipo: 'botao'; item: ItemApp }
+  | { tipo: 'folha'; texto: string; botao: ItemApp }
+  | { tipo: 'navegacao'; itens: ItemApp[]; ativo: number; central?: number }
+  | { tipo: 'texto'; texto: string; centro?: boolean; link?: boolean }
+
+export type TelaApp = {
+  escuro?: boolean
+  escurecida?: boolean // fundo apagado atrás de uma folha (confirmação)
+  blocos: BlocoApp[]
+}
+
+/** Dados que mudam as telas (a variante "nome diferente" troca o nome de quem recebe). */
+export type ContextoTela = { saldoVisivel: boolean; nomeDestino: string; email: string; valor: string; saldo: string }
+
+/** Telas próprias de um banco, copiadas de capturas reais. O que não estiver aqui usa a tela genérica. */
+export type TelasBanco = {
+  rotuloCampoChave: string // nome da caixa onde se digita a chave
+  /** Onde está cada botão do exercício, em palavras (para quem não acha). */
+  dicas: { saldo: string; pix: string; caminho?: string[]; confirmar?: string; cancelar?: string; autenticar?: string }
+  inicio: (c: ContextoTela) => TelaApp // deve ter o item 'ver-saldo' (quando escondido) e 'pix'
+  caminho?: ((c: ContextoTela) => TelaApp)[] // uma tela por botão do caminho; o alvo tem id `caminho-N`
+  chave: (c: ContextoTela) => TelaApp
+  valor?: (c: ContextoTela) => TelaApp
+  revisao?: (c: ContextoTela, modo: 'perguntar' | 'pagar') => TelaApp // 'pagar' tem os itens `confirmar` e `cancelar`
+  autenticar?: (c: ContextoTela) => TelaApp // item `autenticar`
 }
 
 /** Tela do Pix de um banco: campo da chave no alto, botões de apoio e atalhos de outros serviços. Só o campo funciona no exercício. */
@@ -120,6 +180,17 @@ export type BancoConfig = {
   nomeNaLista: string // o que a pessoa vê ao escolher
   fluxo: FluxoPix
   inicio: InicioBanco
-  tema: { corPrincipal: string; corDestaque: string }
+  /** Telas copiadas de capturas reais (Inter, PicPay, Mercado Pago...). Quando existe, substitui a tela inicial genérica. */
+  telas?: TelasBanco
+  tema: {
+    corPrincipal: string
+    corDestaque: string
+    /** App escuro (ex.: Inter): fundo e cartões escuros. */
+    escuro?: boolean
+    /** Faixa do alto da tela inicial, quando difere da cor principal (ex.: Mercado Pago, amarelo com texto escuro). */
+    faixa?: { fundo: string; texto: string }
+    /** Cor de links e setas sobre fundo escuro. */
+    link?: string
+  }
   fonte: string // de onde veio o fluxo (para o grupo conferir no app real)
 }

@@ -132,7 +132,7 @@ describe('bancos e fases de Pix', () => {
       const passos = fase.gerarPassos!(b)
       for (const id of ['saldo', 'ir-pix']) {
         const p = passos.find((x) => x.id === id)!
-        expect(p.tela?.layout, `${b.id}/${id}`).toBe('inicio')
+        expect(['inicio', 'app'], `${b.id}/${id}`).toContain(p.tela?.layout)
         expect(p.elementos!.some((e) => e.id === p.alvo), `${b.id}/${id}`).toBe(true)
       }
     }
@@ -142,7 +142,7 @@ describe('bancos e fases de Pix', () => {
     for (const b of bancos) {
       expect(b.fonte.length, b.id).toBeGreaterThan(0)
       expect(b.fluxo.entradaPix.length, b.id).toBeGreaterThan(0)
-      expect(b.fluxo.caminho.length + (b.fluxo.menuPix ? 1 : 0), b.id).toBeGreaterThan(0)
+      expect(b.fluxo.caminho.length + (b.fluxo.menuPix || b.telas ? 1 : 0), b.id).toBeGreaterThan(0)
     }
   })
 
@@ -174,6 +174,35 @@ describe('bancos e fases de Pix', () => {
     expect(idsDe('nubank')).not.toContain('data')
   })
 
+  it('telas copiadas de apps reais: o botão certo existe uma vez e nenhum enfeite vale como resposta', () => {
+    for (const b of bancos.filter((x) => x.telas)) {
+      for (const variante of [0, 1]) {
+        const passos = mundos[4].fases[variante].gerarPassos!(b)
+        for (const p of passos.filter((x) => x.tela?.layout === 'app' && x.tipo === 'tocar')) {
+          const ids = p.elementos!.map((e) => e.id)
+          expect(ids.filter((id) => id === p.alvo).length, `${b.id}/${p.id}`).toBe(1)
+        }
+      }
+    }
+  })
+
+  it('Inter: caminho Pix > Pagar > chave > valor > revisão > iSafe, com o nome do destinatário na tela do valor', () => {
+    const inter = bancos.find((b) => b.id === 'inter')!
+    const ids = mundos[4].fases[0].gerarPassos!(inter).map((p) => p.id)
+    expect(ids).toEqual(['entrar', 'saldo', 'ir-pix', 'caminho-1', 'chave', 'valor', 'revisar', 'confirmar', 'autenticar', 'comprovante'])
+    const valor = mundos[4].fases[1].gerarPassos!(inter).find((p) => p.id === 'valor')!
+    const campo = valor.tela!.app!.blocos.find((x) => x.tipo === 'campo')!
+    expect(campo.tipo === 'campo' && campo.entre).toContain('Carlos Alberto Lima')
+  })
+
+  it('PicPay e Mercado Pago: a chave é digitada na tela copiada, sem escolher o tipo de chave', () => {
+    for (const id of ['picpay', 'mercado-pago']) {
+      const ids = idsDe(id)
+      expect(ids, id).not.toContain('tipo-chave')
+      expect(ids.indexOf('ir-pix') + (id === 'picpay' ? 2 : 1), id).toBe(ids.indexOf('chave'))
+    }
+  })
+
   it('a quantidade de passos muda por banco', () => {
     const tamanhos = new Set(bancos.map((b) => idsDe(b.id).length))
     expect(tamanhos.size).toBeGreaterThan(2)
@@ -182,7 +211,14 @@ describe('bancos e fases de Pix', () => {
   it('a senha tem o tamanho certo para cada banco (BB: 6 números)', () => {
     const fase = mundos[4].fases[0]
     for (const b of bancos) {
-      const senha = fase.gerarPassos!(b).find((p) => p.id === 'senha')!
+      const passos = fase.gerarPassos!(b)
+      if (b.fluxo.confirmacao.digitos === 0) {
+        // Inter: só toca em CONFIRMAR (iSafe), sem digitar senha
+        expect(passos.some((p) => p.id === 'senha'), b.id).toBe(false)
+        expect(passos.some((p) => p.id === 'autenticar'), b.id).toBe(true)
+        continue
+      }
+      const senha = passos.find((p) => p.id === 'senha')!
       expect(String(senha.esperado).length, b.id).toBe(b.fluxo.confirmacao.digitos)
     }
     expect(bancos.find((b) => b.id === 'banco-do-brasil')!.fluxo.confirmacao.digitos).toBe(6)

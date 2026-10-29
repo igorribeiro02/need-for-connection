@@ -2,7 +2,8 @@
 // o atalho do Pix, os botões do caminho, a ordem chave/valor, telas extras e a confirmação mudam por banco.
 // As dicas dizem onde o botão está ("é o segundo da lista").
 
-import type { BancoConfig, Passo } from '../../core/engine/stepTypes'
+import type { BancoConfig, ContextoTela, Passo, TelaApp } from '../../core/engine/stepTypes'
+import { elementosDaTela } from '../../core/engine/telaApp'
 
 export type VariantePix = 'normal' | 'nome-diferente'
 
@@ -84,6 +85,31 @@ function passoEscolha(
   return { id, instrucao, tipo: 'escolher', alvo: certo, esperado: certo, tela, elementos, dicas, erroGentil, lembrete }
 }
 
+/** Passo de tocar numa tela de app desenhada por blocos (copiada de um app real). */
+function passoToqueApp(
+  id: string,
+  instrucao: string,
+  app: TelaApp,
+  alvoId: string,
+  rotuloAlvo: string,
+  lembrete: string,
+  ondeEsta?: string,
+): Passo {
+  const dicas = [`Procure o botão "${rotuloAlvo}".`]
+  if (ondeEsta) dicas.push(ondeEsta)
+  return {
+    id,
+    instrucao,
+    tipo: 'tocar',
+    alvo: alvoId,
+    tela: { titulo: '', layout: 'app', app },
+    elementos: elementosDaTela(app),
+    dicas,
+    erroGentil: `Quase! Procure o botão escrito "${rotuloAlvo}".`,
+    lembrete,
+  }
+}
+
 export function montarPix(banco: BancoConfig, variante: VariantePix): Passo[] {
   const f = banco.fluxo
   const semente = banco.id
@@ -92,6 +118,8 @@ export function montarPix(banco: BancoConfig, variante: VariantePix): Passo[] {
   const senha = SENHA_TREINO.slice(0, digitos)
   const confirmaNoDestinatario = f.extras.includes('confirmar-destinatario')
   const valorPrimeiro = f.ordem === 'valor-primeiro'
+  const T = banco.telas
+  const ctx: ContextoTela = { saldoVisivel: false, nomeDestino: nomeNaTela, email: DADOS.email, valor: DADOS.valor, saldo: DADOS.saldo }
 
   // ---- tela inicial e caminho até a escolha da chave ----
   const entrar = passoToque(
@@ -126,7 +154,7 @@ export function montarPix(banco: BancoConfig, variante: VariantePix): Passo[] {
     inicio: { secaoAtalhos: ini.secaoAtalhos, secaoServicos: ini.secaoServicos, colunas: ini.colunas },
   })
 
-  const saldo: Passo = {
+  const saldoGenerico: Passo = {
     id: 'saldo',
     instrucao: 'Veja quanto você tem: toque em Mostrar saldo.',
     tipo: 'tocar',
@@ -143,7 +171,7 @@ export function montarPix(banco: BancoConfig, variante: VariantePix): Passo[] {
   const coluna = posicaoNoAtalho % ini.colunas
   const dicaGrade = `Está na ${ORDINAL[fila] ?? `${fila + 1}ª`} fileira de atalhos, na ${ORDINAL[coluna] ?? `${coluna + 1}ª`} posição, contando da esquerda.`
   const tambemNaLista = (ini.servicos ?? []).some((v) => v.rotulo === f.entradaPix)
-  const irPix: Passo = {
+  const irPixGenerico: Passo = {
     id: 'ir-pix',
     instrucao: `Toque em ${f.entradaPix}: é por onde se manda e se recebe dinheiro.`,
     tipo: 'tocar',
@@ -158,13 +186,51 @@ export function montarPix(banco: BancoConfig, variante: VariantePix): Passo[] {
     lembrete: `No aplicativo do banco, procure a palavra ${f.entradaPix}, na tela inicial.`,
   }
 
+  const saldo: Passo = T
+    ? passoToqueApp(
+        'saldo',
+        'Veja quanto você tem: toque em Mostrar saldo.',
+        T.inicio({ ...ctx, saldoVisivel: false }),
+        'ver-saldo',
+        'Mostrar saldo',
+        'O saldo costuma vir escondido. O desenho do olho, ou "Mostrar saldo", revela o valor.',
+        T.dicas.saldo,
+      )
+    : saldoGenerico
+  const irPix: Passo = T
+    ? {
+        ...passoToqueApp(
+          'ir-pix',
+          `Toque em ${f.entradaPix}: é por onde se manda e se recebe dinheiro.`,
+          T.inicio({ ...ctx, saldoVisivel: true }),
+          'pix',
+          f.entradaPix,
+          `No aplicativo do banco, procure a palavra ${f.entradaPix}, na tela inicial.`,
+          T.dicas.pix,
+        ),
+        erroGentil: `Quase! Procure o atalho escrito "${f.entradaPix}".`,
+      }
+    : irPixGenerico
+
   const decoys = [
     enganos('Ler QR Code', 'Pix Copia e Cola', 'Minhas chaves'),
     enganos('Ler QR Code', 'Contatos salvos'),
     enganos('Cancelar'),
   ]
   const menu = f.menuPix
+  const semTipoDeChave = !!menu || !!T
   const caminho = f.caminho.map((no, i) => {
+    if (T?.caminho?.[i]) {
+      return passoToqueApp(
+        `caminho-${i + 1}`,
+        `Toque em ${no.rotulo}.`,
+        T.caminho[i](ctx),
+        `caminho-${i}`,
+        no.rotulo,
+        `Neste banco, para pagar por chave, toque em "${no.rotulo}".`,
+        T.dicas.caminho?.[i],
+      )
+    }
     const titulo = i === 0 ? 'Pix' : f.caminho[i - 1].rotulo
     const elementos = misturar({ id: `caminho-${i}`, rotulo: no.rotulo }, decoys[Math.min(i, 2)], `${semente}-c${i}`)
     return passoToque(
@@ -196,22 +262,25 @@ export function montarPix(banco: BancoConfig, variante: VariantePix): Passo[] {
     'Pergunte à pessoa qual é a chave Pix dela (CPF, celular ou e-mail) e escolha o mesmo tipo no aplicativo.',
   )
 
+  const caixaDaChave = T ? T.rotuloCampoChave : menu?.rotuloCampo
   const chave: Passo = {
     id: 'chave',
-    instrucao: menu
-      ? `Na caixa "${menu.rotuloCampo}", escreva o e-mail da ${DADOS.primeiroNome}: ${DADOS.email}`
+    instrucao: caixaDaChave
+      ? `Na caixa "${caixaDaChave}", escreva o e-mail da ${DADOS.primeiroNome}: ${DADOS.email}`
       : `Digite o e-mail da ${DADOS.primeiroNome}: ${DADOS.email}`,
     tipo: 'digitar',
     alvo: 'campo',
     esperado: DADOS.email,
     teclado: 'email',
-    rotuloCampo: menu ? menu.rotuloCampo : 'E-mail da pessoa',
+    rotuloCampo: caixaDaChave ?? 'E-mail da pessoa',
     rotuloBotao: f.rotuloAvancar,
-    tela: menu
-      ? { titulo: 'Pix', layout: 'menu-pix', menuPix: menu }
-      : { titulo: 'Digite a chave', linhas: ['Confira cada letra: um erro manda o dinheiro para outra pessoa.'] },
-    dicas: menu
-      ? [`Toque na caixa "${menu.rotuloCampo}", no alto da tela, e escreva tudo junto, sem espaços.`, `Escreva: ${DADOS.email}`]
+    tela: T
+      ? { titulo: 'Chave', layout: 'app', app: T.chave(ctx) }
+      : menu
+        ? { titulo: 'Pix', layout: 'menu-pix', menuPix: menu }
+        : { titulo: 'Digite a chave', linhas: ['Confira cada letra: um erro manda o dinheiro para outra pessoa.'] },
+    dicas: caixaDaChave
+      ? [`Toque na caixa "${caixaDaChave}" e escreva tudo junto, sem espaços.`, `Escreva: ${DADOS.email}`]
       : ['Toque na caixa para abrir o teclado e escreva tudo junto, sem espaços.', `Escreva: ${DADOS.email}`],
     erroGentil: `Quase! Confira se está escrito ${DADOS.email}, sem espaços.`,
     lembrete: 'Digite a chave com calma e confira cada letra antes de continuar. Um erro manda o dinheiro para outra pessoa.',
@@ -226,7 +295,7 @@ export function montarPix(banco: BancoConfig, variante: VariantePix): Passo[] {
     teclado: 'valor',
     rotuloCampo: 'Valor em reais',
     rotuloBotao: f.rotuloAvancar,
-    tela: { titulo: 'Quanto você quer enviar?' },
+    tela: T?.valor ? { titulo: 'Valor', layout: 'app', app: T.valor(ctx) } : { titulo: 'Quanto você quer enviar?' },
     dicas: ['Digite só os números. Pode escrever 25 ou 25,00.', 'Escreva: 25'],
     erroGentil: 'Quase! O valor deste exercício é 25 reais. Escreva 25.',
     lembrete: 'Confira o valor e as vírgulas: 25,00 é vinte e cinco reais; 250,00 é dez vezes mais.',
@@ -274,7 +343,7 @@ export function montarPix(banco: BancoConfig, variante: VariantePix): Passo[] {
 
   // bancos com "confirmar destinatário" mostram o nome logo depois da chave; os outros, no fim
   const valorJaEscolhido = valorPrimeiro
-  const revisar: Passo =
+  const revisarBase: Passo =
     variante === 'normal'
       ? passoEscolha(
           'revisar',
@@ -310,7 +379,7 @@ export function montarPix(banco: BancoConfig, variante: VariantePix): Passo[] {
       ? [{ id: 'confirmar', rotulo: f.rotuloConfirmar }, { id: 'cancelar', rotulo: 'Cancelar' }]
       : [{ id: 'cancelar', rotulo: 'Cancelar' }, { id: 'confirmar', rotulo: f.rotuloConfirmar }]
 
-  const confirmar = passoToque(
+  const confirmarBase = passoToque(
     'confirmar',
     `Tudo certo. Toque em ${f.rotuloConfirmar}.`,
     { titulo: 'Confirmar o Pix', resumo: resumoFinal },
@@ -320,7 +389,7 @@ export function montarPix(banco: BancoConfig, variante: VariantePix): Passo[] {
     `O botão "${f.rotuloConfirmar}" segue para o envio do dinheiro. Só toque nele depois de conferir nome e valor.`,
   )
 
-  const cancelar = passoToque(
+  const cancelarBase = passoToque(
     'cancelar',
     'Toque em Cancelar. Depois, confirme a chave com a Ana, por outro meio.',
     { titulo: 'Confirmar o Pix', resumo: resumoFinal },
@@ -329,6 +398,36 @@ export function montarPix(banco: BancoConfig, variante: VariantePix): Passo[] {
     'Cancelar',
     'Cancelar é sempre permitido. Nada foi enviado. Confirme a chave com a pessoa antes de tentar de novo.',
   )
+
+  // bancos com tela de revisão copiada de um app real (Inter): o app aparece inteiro e a pergunta do exercício vem num painel à parte
+  const revisar: Passo = T?.revisao
+    ? { ...revisarBase, tela: { titulo: 'Revisão', layout: 'app', app: T.revisao(ctx, 'perguntar') }, painelExercicio: true }
+    : revisarBase
+  const confirmar: Passo = T?.revisao
+    ? passoToqueApp(
+        'confirmar',
+        `Tudo certo. Toque em ${f.rotuloConfirmar}.`,
+        T.revisao(ctx, 'pagar'),
+        'confirmar',
+        f.rotuloConfirmar,
+        `O botão "${f.rotuloConfirmar}" segue para o envio do dinheiro. Só toque nele depois de conferir nome e valor.`,
+        T.dicas.confirmar,
+      )
+    : confirmarBase
+  const cancelar: Passo = T?.revisao
+    ? {
+        ...passoToqueApp(
+          'cancelar',
+          'Toque na seta ← do alto, para voltar sem pagar. Depois, confirme a chave com a Ana, por outro meio.',
+          T.revisao(ctx, 'pagar'),
+          'cancelar',
+          'seta ←',
+          'Voltar é sempre permitido. Nada foi enviado. Confirme a chave com a pessoa antes de tentar de novo.',
+          T.dicas.cancelar,
+        ),
+        erroGentil: 'Quase! Toque na seta ← que fica no canto de cima, à esquerda.',
+      }
+    : cancelarBase
 
   const nomeSenha = f.confirmacao.nome === 'senha' ? `a sua senha de ${digitos} números` : 'a sua assinatura eletrônica'
   const passoSenha: Passo = {
@@ -348,6 +447,18 @@ export function montarPix(banco: BancoConfig, variante: VariantePix): Passo[] {
     lembrete: 'A senha é só sua. Nunca diga a senha nem o código recebido por mensagem a ninguém, nem a quem diz ser do banco.',
   }
 
+  const passoAutenticar: Passo = T?.autenticar
+    ? passoToqueApp(
+        'autenticar',
+        'Toque em CONFIRMAR para autorizar o pagamento.',
+        T.autenticar(ctx),
+        'autenticar',
+        'CONFIRMAR',
+        'O app pode pedir a sua digital, o seu rosto ou só um toque em Confirmar. Faça isso só depois de conferir nome e valor.',
+        T.dicas.autenticar,
+      )
+    : passoSenha
+
   const comprovante = passoToque(
     'comprovante',
     'O Pix foi enviado! Toque em Salvar comprovante.',
@@ -366,7 +477,7 @@ export function montarPix(banco: BancoConfig, variante: VariantePix): Passo[] {
 
   // ---- monta na ordem do banco ----
   const antes = [entrar, saldo, irPix, ...caminho]
-  const dados: Passo[] = valorPrimeiro ? [valor, tipoChave, chave] : menu ? [chave] : [tipoChave, chave]
+  const dados: Passo[] = valorPrimeiro ? [valor, tipoChave, chave] : semTipoDeChave ? [chave] : [tipoChave, chave]
   const temConta = f.extras.includes('conta')
   if (confirmaNoDestinatario) dados.push(revisar)
   if (confirmaNoDestinatario && temConta) dados.push(conta) // Itaú e BB: a conta vem antes do valor
@@ -380,5 +491,5 @@ export function montarPix(banco: BancoConfig, variante: VariantePix): Passo[] {
     const corte = dados.indexOf(revisar)
     return [...antes, ...dados.slice(0, corte + 1), cancelar]
   }
-  return [...antes, ...dados, confirmar, passoSenha, comprovante]
+  return [...antes, ...dados, confirmar, passoAutenticar, comprovante]
 }

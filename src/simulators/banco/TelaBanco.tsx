@@ -3,6 +3,7 @@ import type { BancoConfig, Passo } from '../../core/engine/stepTypes'
 import { CampoDigitar } from '../celular/CampoDigitar'
 import { InicioBanco } from './InicioBanco'
 import { MenuPixBanco } from './MenuPixBanco'
+import { TelaApp } from './TelaApp'
 import { TecladoSenha } from './TecladoSenha'
 
 type Props = {
@@ -17,7 +18,7 @@ type Props = {
 export function TelaBanco({ banco, passo, destacar, nome, aoResponder }: Props) {
   return (
     <div
-      className="celular banco"
+      className={`celular banco${banco.tema.escuro ? ' banco--escuro' : ''}`}
       role="group"
       aria-label="Tela do aplicativo de banco (simulação)"
       style={{ '--banco-cor': banco.tema.corPrincipal } as CSSProperties}
@@ -26,7 +27,9 @@ export function TelaBanco({ banco, passo, destacar, nome, aoResponder }: Props) 
         Simulação no estilo do app: {banco.nomeNaLista === 'Outro banco / não sei' ? 'um banco qualquer' : banco.nomeNaLista}. Nada aqui é
         de verdade. Só funcionam os botões do exercício.
       </p>
-      {passo.tela?.layout === 'inicio' ? (
+      {passo.tela?.layout === 'app' && passo.tela.app ? (
+        <TelaApp banco={banco} passo={passo} nome={nome} destacar={destacar} aoResponder={aoResponder} />
+      ) : passo.tela?.layout === 'inicio' ? (
         <InicioBanco passo={passo} nome={nome} destacar={destacar} aoResponder={aoResponder} />
       ) : passo.tela?.layout === 'menu-pix' && banco.fluxo.menuPix ? (
         <MenuPixBanco banco={banco} passo={passo} destacar={destacar} aoResponder={aoResponder} />

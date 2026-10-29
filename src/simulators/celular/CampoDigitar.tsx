@@ -1,7 +1,7 @@
-import { useState, type FormEvent } from 'react'
+import { useState, type FormEvent, type ReactNode } from 'react'
 import type { Passo } from '../../core/engine/stepTypes'
 
-type Props = { passo: Passo; destacar?: boolean; aoResponder: (resposta: string) => void }
+type Props = { passo: Passo; destacar?: boolean; aoResponder: (resposta: string) => void; children?: ReactNode }
 
 const MODO: Record<NonNullable<Passo['teclado']>, 'text' | 'numeric' | 'email' | 'decimal'> = {
   texto: 'text',
@@ -15,7 +15,7 @@ function primeiraResposta(passo: Passo): string {
   return Array.isArray(passo.esperado) ? (passo.esperado[0] ?? '') : (passo.esperado ?? '')
 }
 
-export function CampoDigitar({ passo, destacar = false, aoResponder }: Props) {
+export function CampoDigitar({ passo, destacar = false, aoResponder, children }: Props) {
   const [texto, setTexto] = useState(passo.valorInicial ?? '')
 
   function enviar(e: FormEvent) {
@@ -31,6 +31,7 @@ export function CampoDigitar({ passo, destacar = false, aoResponder }: Props) {
           id="campo-digitar"
           className={destacar ? 'destacado' : undefined}
           value={texto}
+          placeholder={passo.teclado === 'valor' ? 'R$ 0,00' : undefined}
           onChange={(e) => setTexto(e.target.value)}
           inputMode={MODO[passo.teclado ?? 'texto']}
           autoComplete="off"
@@ -40,6 +41,7 @@ export function CampoDigitar({ passo, destacar = false, aoResponder }: Props) {
         />
         {destacar && <p className="ajuda-campo">Escreva: {primeiraResposta(passo)}</p>}
       </div>
+      {children}
       <button type="submit" className="botao">
         {passo.rotuloBotao ?? 'Pronto'}
       </button>

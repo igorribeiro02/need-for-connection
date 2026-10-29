@@ -70,6 +70,13 @@ Mapa com personagem, simuladores (celular, mensagens, banco), Modo Lembrar compl
   (pergunta "Como você quer transferir?", campo único "Digitar ou colar nome/chave", botões de apoio, "Mais opções" e
   "Outros Serviços"). Nesse banco não existe a escolha do tipo de chave. Os outros bancos ainda usam o fluxo genérico
   e serão refeitos um por um. Etapas depois da chave (valor, conta, confirmação, senha) ainda vêm de tutoriais antigos.
+- **Telas de app por blocos (`telas` em `src/content/banco/telas/`):** Inter, PicPay e Mercado Pago têm telas copiadas da
+  ESTRUTURA de capturas reais (out/2026), montadas com blocos (barra, faixa, saldo, atalhos, lista, campo, navegação...)
+  e desenhadas por `src/simulators/banco/TelaApp.tsx`. Para refazer outro banco, crie `telas/<banco>.ts` com as telas
+  (início, caminho, chave, valor, revisão, autenticar) e ligue em `banks.ts`. O que não tiver tela própria usa a genérica.
+  - Inter: fluxo completo (Pix > Pagar > chave > valor > revisão > iSafe). Falta o comprovante e o que vem depois do CONFIRMAR.
+  - PicPay: início, Área Pix e "Escolha pra quem transferir". Mercado Pago: início e tela do Pix.
+  - Na revisão, a pergunta "o nome é o da Ana?" fica num painel do exercício, fora do desenho do app.
 - Dados do exercício (Ana, ana@exemplo.com, R$ 25,00, senha 1234 ou 123456) são inventados e ficam em `montarPix.ts`.
 
 ## Ajuda que se adapta

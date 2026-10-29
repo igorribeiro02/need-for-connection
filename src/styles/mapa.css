@@ -582,3 +582,755 @@
 :root[data-contraste='alto'] .menupix__pergunta {
   color: var(--cor-texto);
 }
+
+/* Telas de app por blocos (estrutura copiada de capturas reais; cores e fontes são nossas) */
+.app {
+  --app-fundo: var(--cor-fundo);
+  --app-cartao: var(--cor-superficie);
+  --app-texto: var(--cor-texto);
+  --app-suave: var(--cor-texto-suave);
+  --app-borda: var(--cor-borda);
+  --app-leve: color-mix(in srgb, var(--banco-cor) 10%, var(--cor-superficie));
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  margin: 0 calc(var(--espaco) * -1) calc(var(--espaco) * -1);
+  padding-bottom: var(--espaco);
+  color: var(--app-texto);
+  background: var(--app-fundo);
+  border-radius: 0 0 1.2rem 1.2rem;
+  overflow: hidden;
+}
+.app--escuro {
+  --app-fundo: #141414;
+  --app-cartao: #222222;
+  --app-texto: #f5f5f5;
+  --app-suave: #cfcfcf;
+  --app-borda: #5a5a5a;
+  --app-leve: #2b2b2b;
+}
+:root[data-contraste='alto'] .app--escuro {
+  --app-fundo: var(--cor-fundo);
+  --app-cartao: var(--cor-superficie);
+  --app-texto: var(--cor-texto);
+  --app-suave: var(--cor-texto-suave);
+  --app-borda: var(--cor-borda);
+  --app-leve: var(--cor-fundo);
+}
+.app > * {
+  margin-left: var(--espaco);
+  margin-right: var(--espaco);
+}
+.app > .app__faixa,
+.app > .app__selo,
+.app > .app__nav {
+  margin-left: 0;
+  margin-right: 0;
+}
+.app--escurecida > *:not(.app__folha):not(.app__selo) {
+  opacity: 0.45;
+}
+.app__selo {
+  margin: 0;
+  padding: 0.15rem var(--espaco);
+  font-size: 0.7rem;
+  text-align: center;
+  color: var(--app-suave);
+  background: var(--app-leve);
+}
+.app__espaco {
+  flex: 1;
+}
+.app__link {
+  color: var(--app-link);
+  font-weight: 700;
+}
+.app--escuro .app__link,
+.app--escuro .app__link-botao,
+.app--escuro .app__seta {
+  color: var(--app-link);
+}
+.app__icone {
+  font-size: 1.4rem;
+}
+.app__selo-item {
+  padding: 0.05rem 0.4rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #1d2430;
+  background: #ffffff;
+  border: 1px solid var(--app-borda);
+  border-radius: 0.4rem;
+}
+
+/* Barra do alto e faixa colorida */
+.app__barra {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding-top: 0.6rem;
+}
+.app__barra-linha {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-width: 0;
+}
+.app__titulo-barra {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: 55%;
+  margin: 0;
+  font-size: 1.05rem;
+  text-align: center;
+}
+.app__titulo-grande {
+  margin: 0.4rem 0 0;
+  font-size: 1.7rem;
+  line-height: 1.15;
+}
+.app__redondo {
+  flex: none;
+  display: grid;
+  place-items: center;
+  min-width: var(--alvo-minimo);
+  min-height: var(--alvo-minimo);
+  padding: 0;
+  font: inherit;
+  font-size: 1.2rem;
+  color: inherit;
+  background: color-mix(in srgb, currentColor 12%, transparent);
+  border: 2px solid transparent;
+  border-radius: 999px;
+  cursor: pointer;
+}
+.app__faixa {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  padding: 0.7rem var(--espaco) var(--espaco);
+  color: var(--app-faixa-texto);
+  background: var(--app-faixa-fundo);
+  border-radius: 0 0 1.2rem 1.2rem;
+}
+:root[data-contraste='alto'] .app__faixa {
+  color: var(--cor-texto);
+  background: var(--cor-fundo);
+  border-bottom: 3px solid var(--cor-primaria);
+}
+.app__avatar {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 2.8rem;
+  height: 2.8rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #1d2430;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+}
+.app__avatar--grande {
+  width: 3.6rem;
+  height: 3.6rem;
+  color: var(--app-texto);
+  background: var(--app-leve);
+}
+.app__saudacao {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.app__busca {
+  flex: 1;
+  min-width: 0;
+  padding: 0.7rem 0.9rem;
+  color: inherit;
+  background: color-mix(in srgb, currentColor 14%, transparent);
+  border-radius: 999px;
+  overflow-wrap: anywhere;
+}
+.app__contas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.app__conta {
+  min-height: var(--alvo-minimo);
+  padding: 0.4rem 1rem;
+  font: inherit;
+  font-weight: 700;
+  color: inherit;
+  background: color-mix(in srgb, currentColor 14%, transparent);
+  border: 2px solid transparent;
+  border-radius: 999px;
+  cursor: pointer;
+}
+.app__conta--ativa {
+  color: #1d2430;
+  background: #ffffff;
+}
+.app__abas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.2rem 1rem;
+  margin-top: -0.4rem;
+  font-weight: 600;
+}
+.app__aba--ativa {
+  font-weight: 800;
+  border-bottom: 3px solid var(--app-link);
+}
+
+/* Saldo, fichas, atalhos, listas */
+.app__saldo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: var(--espaco);
+  background: var(--app-cartao);
+  border: 2px solid var(--app-borda);
+  border-radius: var(--raio);
+}
+.app__faixa + .app__saldo {
+  margin-top: -0.4rem;
+}
+.app__saldo--linha {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  padding: 0.3rem var(--espaco);
+}
+.app__saldo--linha .app__saldo-topo {
+  flex: 1;
+  min-width: 0;
+}
+.app__saldo-topo {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  color: var(--app-suave);
+}
+.app__saldo-valor {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  font-size: 1.6rem;
+}
+.app__saldo--linha .app__saldo-valor {
+  font-size: 1.05rem;
+  gap: 0.6rem;
+}
+.app__olho {
+  min-width: var(--alvo-minimo);
+  min-height: var(--alvo-minimo);
+  padding: 0;
+  font: inherit;
+  font-size: 1.3rem;
+  color: var(--app-link);
+  background: transparent;
+  border: 2px solid transparent;
+  border-radius: 999px;
+  cursor: pointer;
+}
+.app__apoio {
+  margin: 0;
+  color: var(--app-suave);
+}
+.app__apoio--cheio {
+  flex-basis: 100%;
+}
+.app__botao-largo {
+  width: 100%;
+  min-height: var(--alvo-minimo);
+  padding: 0.6rem 1rem;
+  font: inherit;
+  font-weight: 700;
+  color: var(--app-texto);
+  background: var(--app-leve);
+  border: 2px solid transparent;
+  border-radius: var(--raio);
+  cursor: pointer;
+}
+.app__cheio {
+  color: #ffffff;
+  background: var(--banco-cor);
+}
+:root[data-contraste='alto'] .app__cheio {
+  color: var(--cor-primaria-texto);
+  background: var(--cor-primaria);
+}
+.app__fichas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.app__ficha {
+  min-height: var(--alvo-minimo);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 1rem;
+  font: inherit;
+  font-weight: 700;
+  color: var(--app-texto);
+  background: var(--app-leve);
+  border: 2px solid transparent;
+  border-radius: 999px;
+  cursor: pointer;
+}
+.app__ficha--ativa {
+  color: var(--cor-fundo);
+  background: var(--app-texto);
+}
+.app__secao {
+  margin: 0;
+  font-size: 1.1rem;
+}
+.app__titulo-linha {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.4rem;
+}
+.app__link-botao {
+  min-height: var(--alvo-minimo);
+  padding: 0 0.3rem;
+  font: inherit;
+  font-weight: 700;
+  color: var(--app-link);
+  background: transparent;
+  border: 2px solid transparent;
+  border-radius: var(--raio);
+  cursor: pointer;
+}
+.app__bloco {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+.app__atalhos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 4.6rem), 1fr));
+  gap: 0.6rem;
+}
+.app__atalho {
+  position: relative;
+  min-width: 0;
+  min-height: var(--alvo-minimo);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.5rem 0.2rem;
+  font: inherit;
+  font-size: 0.85rem;
+  line-height: 1.2;
+  color: var(--app-texto);
+  text-align: center;
+  overflow-wrap: break-word;
+  background: transparent;
+  border: 2px solid transparent;
+  border-radius: var(--raio);
+  cursor: pointer;
+}
+.app__atalho small {
+  color: var(--app-suave);
+}
+.app__atalhos--quadrados .app__icone,
+.app__atalhos--redondos .app__icone {
+  display: grid;
+  place-items: center;
+  width: 3.4rem;
+  height: 3.4rem;
+  background: var(--app-leve);
+  border-radius: 1rem;
+}
+.app__atalhos--redondos .app__icone {
+  border-radius: 50%;
+}
+.app__atalhos--quadrados .app__cheio .app__icone {
+  color: #ffffff;
+  background: color-mix(in srgb, #ffffff 0%, var(--banco-cor));
+}
+.app__atalhos--quadrados .app__cheio {
+  color: var(--app-texto);
+  background: transparent;
+}
+.app__atalhos--quadrados .app__cheio .app__icone {
+  background: var(--banco-cor);
+}
+.app__atalhos--caixas .app__atalho {
+  min-height: 5.5rem;
+  justify-content: center;
+  background: var(--app-cartao);
+  border: 2px solid var(--app-borda);
+}
+.app__atalho .app__selo-item {
+  position: absolute;
+  top: 0.2rem;
+  right: 0.2rem;
+}
+.app__lista {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.app__lista li {
+  border-bottom: 1px solid var(--app-borda);
+}
+.app__lista--caixas {
+  gap: 0.7rem;
+}
+.app__lista--caixas li {
+  border: 2px solid var(--app-borda);
+  border-radius: var(--raio);
+}
+.app__linha {
+  width: 100%;
+  min-height: 3.6rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.5rem 0.8rem;
+  font: inherit;
+  color: var(--app-texto);
+  text-align: left;
+  background: transparent;
+  border: 2px solid transparent;
+  border-radius: var(--raio);
+  cursor: pointer;
+}
+.app__linha > span:first-child {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.app__linha small {
+  display: block;
+  color: var(--app-suave);
+}
+.app__seta {
+  font-size: 1.6rem;
+  color: var(--app-link);
+}
+.app__promo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: var(--espaco);
+  background: var(--app-leve);
+  border-radius: var(--raio);
+}
+.app__promo p {
+  margin: 0;
+}
+.app__promo--escura {
+  color: #ffffff;
+  background: #20232b;
+}
+.app__promo--escura .app__botao-largo {
+  width: auto;
+  align-self: flex-start;
+}
+.app__cartao {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  padding: var(--espaco);
+  background: var(--app-cartao);
+  border: 2px solid var(--app-borda);
+  border-radius: var(--raio);
+}
+.app__cartao span {
+  color: var(--app-suave);
+}
+.app__cartao .app__link {
+  color: var(--app-link);
+}
+
+/* Campo de digitar, dados, valor em destaque */
+.app__campo {
+  padding: 0.7rem;
+  background: var(--app-cartao);
+  border: 2px solid var(--app-borda);
+  border-radius: var(--raio);
+}
+.app__campo .campo label {
+  color: var(--app-suave);
+}
+.app__campo {
+  position: relative;
+}
+.app__campo-icone {
+  position: absolute;
+  top: 0.7rem;
+  right: 0.8rem;
+  font-size: 1.4rem;
+}
+.app__campo--icone .campo label {
+  padding-right: 2.4rem;
+}
+.app__campo-vazio {
+  margin: 0;
+  color: var(--app-suave);
+}
+.app__campo--valor {
+  text-align: center;
+  background: transparent;
+  border-color: transparent;
+}
+.app__campo--valor .campo input {
+  font-size: 2.2rem;
+  font-weight: 700;
+  text-align: center;
+  background: transparent;
+  border-width: 0 0 3px;
+  border-radius: 0;
+}
+.app__campo--valor .campo label {
+  text-align: center;
+}
+.app__campo .botao {
+  width: 100%;
+  margin-top: 0.7rem;
+  color: #ffffff;
+  background: var(--banco-cor);
+  border-color: var(--banco-cor);
+}
+:root[data-contraste='alto'] .app__campo .botao {
+  color: var(--cor-primaria-texto);
+  background: var(--cor-primaria);
+  border-color: var(--cor-primaria);
+}
+.app__dados {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin: 0;
+}
+.app__dados div {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.2rem 1rem;
+}
+.app__dados dt {
+  color: var(--app-suave);
+}
+.app__dados dd {
+  margin: 0;
+  font-weight: 700;
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+.app__destaque {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  text-align: center;
+}
+.app__valor-grande {
+  font-size: 2rem;
+}
+.app__nome-destino {
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+.app__chip {
+  min-height: var(--alvo-minimo);
+  padding: 0.3rem 1rem;
+  font: inherit;
+  color: #1d2430;
+  background: #f1f1f1;
+  border: 2px solid var(--app-borda);
+  border-radius: 999px;
+  cursor: pointer;
+}
+.app__texto {
+  margin: 0;
+}
+.app__texto--centro {
+  text-align: center;
+  color: var(--app-suave);
+}
+
+/* Rodapé, folha de confirmação, menu de baixo */
+.app__rodape {
+  position: sticky;
+  bottom: 0;
+}
+.app__folha {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  align-items: center;
+  margin: 0 !important;
+  padding: var(--espaco);
+  text-align: center;
+  background: var(--app-cartao);
+  border-top: 3px solid var(--app-borda);
+  border-radius: 1.2rem 1.2rem 0 0;
+}
+.app__folha p {
+  margin: 0;
+}
+.app__nav {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(3rem, 1fr));
+  align-items: end;
+  gap: 0.2rem;
+  padding: 0.4rem 0.3rem;
+  background: var(--app-cartao);
+  border-top: 2px solid var(--app-borda);
+}
+.app__nav-item {
+  flex: 1;
+  min-width: 0;
+  min-height: var(--alvo-minimo);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+  padding: 0.2rem 0;
+  font: inherit;
+  font-size: 0.72rem;
+  line-height: 1.15;
+  color: var(--app-suave);
+  overflow-wrap: break-word;
+  background: transparent;
+  border: 2px solid transparent;
+  border-radius: var(--raio);
+  cursor: pointer;
+}
+.app__nav-item--ativo {
+  font-weight: 800;
+  color: var(--app-link);
+}
+.app__nav-item--central .app__icone {
+  display: grid;
+  place-items: center;
+  width: 3.2rem;
+  height: 3.2rem;
+  margin-top: -1.2rem;
+  color: #ffffff;
+  background: var(--banco-cor);
+  border: 3px solid var(--app-cartao);
+  border-radius: 50%;
+}
+.app__painel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: var(--espaco);
+  color: var(--cor-texto);
+  background: var(--cor-aviso-fundo);
+  border: 2px dashed var(--cor-borda);
+  border-radius: var(--raio);
+}
+.app__painel p {
+  margin: 0;
+  font-weight: 700;
+}
+.app__aviso {
+  min-height: 1.3em;
+  margin-top: 0;
+  font-size: 0.9rem;
+  color: var(--app-suave);
+}
+.app__busca--sozinha {
+  background: var(--app-leve);
+}
+.app__entre {
+  margin: 0.4rem 0 0;
+  text-align: center;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+.app__barra > .app__barra-linha > .app__titulo-grande {
+  margin: 0;
+  flex: 0 1 auto;
+}
+
+/* Banco de app escuro (Inter): as telas genéricas também ficam escuras */
+.banco--escuro {
+  --cor-fundo: #141414;
+  --cor-superficie: #222222;
+  --cor-texto: #f5f5f5;
+  --cor-texto-suave: #cfcfcf;
+  --cor-borda: #5a5a5a;
+  color: var(--cor-texto);
+  background: var(--cor-superficie);
+}
+:root[data-contraste='alto'] .banco--escuro {
+  --cor-fundo: #000000;
+  --cor-superficie: #000000;
+  --cor-texto: #ffffff;
+  --cor-texto-suave: #ffffff;
+  --cor-borda: #ffffff;
+}
+:root[data-contraste='alto'] .app {
+  --app-link: var(--cor-primaria) !important;
+}
+
+/* Cabeçalho com busca: a busca vai para a linha de baixo (os botões mantêm o tamanho mínimo de toque) */
+.app__faixa .app__barra-linha {
+  flex-wrap: wrap;
+}
+.app__faixa .app__busca {
+  order: 10;
+  flex: 1 1 100%;
+}
+.app__atalhos--redondos {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 5.4rem), 1fr));
+}
+.app__atalhos--quadrados .app__selo-item {
+  position: static;
+  color: #ffffff;
+  background: #111111;
+  border-color: #111111;
+}
+.app__texto {
+  margin-block: 0;
+  margin-inline: var(--espaco);
+}
+/* Aviso e painel legíveis também no app escuro */
+.banco--escuro .faixa-simulacao,
+.app__painel {
+  color: #1d2430;
+}
+.app__painel .botao {
+  color: #ffffff;
+}
+:root[data-contraste='alto'] .banco--escuro .faixa-simulacao,
+:root[data-contraste='alto'] .app__painel {
+  color: var(--cor-texto);
+}
+
+.app__atalho .app__selo-item {
+  color: #1d2430;
+}
+.app__atalhos--quadrados .app__atalho .app__selo-item {
+  color: #ffffff;
+}
+:root[data-contraste='alto'] .app__ficha,
+:root[data-contraste='alto'] .app__conta,
+:root[data-contraste='alto'] .app__atalho,
+:root[data-contraste='alto'] .app__chip {
+  border-color: var(--cor-borda);
+}
+:root[data-contraste='alto'] .app__ficha--ativa {
+  color: var(--cor-primaria-texto);
+  background: var(--cor-primaria);
+}

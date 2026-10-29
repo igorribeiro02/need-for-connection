@@ -1,4 +1,7 @@
 import type { BancoConfig, FluxoPix, InicioBanco } from '../core/engine/stepTypes'
+import { telasInter } from './banco/telas/inter'
+import { telasMercadoPago } from './banco/telas/mercadopago'
+import { telasPicPay } from './banco/telas/picpay'
 
 // Fluxos montados a partir de tutoriais publicados (2020 a 2024), NÃO dos aplicativos de hoje.
 // Cada banco tem o campo `fonte`. Antes de testar com idosos, o grupo deve abrir o app de verdade e
@@ -156,37 +159,45 @@ export const bancos: BancoConfig[] = [
     nomeNaLista: 'Mercado Pago',
     fluxo: {
       ...PADRAO,
-      entradaPix: 'Área Pix',
-      caminho: [{ rotulo: 'Transferir' }, { rotulo: 'Nova transferência' }],
+      caminho: [],
       rotuloConfirmar: 'Transferir',
     },
-    inicio: inicioGenerico('Área Pix'),
-    tema: { corPrincipal: '#00709f', corDestaque: '#b34f00' },
-    fonte: 'Olhar Digital, 2023.',
+    inicio: inicioGenerico('Pix'),
+    telas: telasMercadoPago,
+    tema: { corPrincipal: '#3b3fc4', corDestaque: '#b34f00', faixa: { fundo: '#ffe600', texto: '#1d1d1d' } },
+    fonte:
+      'Capturas reais do app (out/2026): início e tela do Pix (campo "Informe o que você quer fazer"). Não sabemos o que vem depois de escrever a chave: valor, revisão, confirmação e comprovante usam a tela genérica.',
   },
   {
     id: 'picpay',
     nomeNaLista: 'PicPay',
     fluxo: {
       ...PADRAO,
-      caminho: [{ rotulo: 'Enviar', dica: 'É a primeira opção do grupo "Enviar".' }],
+      caminho: [{ rotulo: 'Transferir' }],
       rotuloAvancar: 'Avançar',
       rotuloConfirmar: 'Pagar',
     },
     inicio: inicioGenerico('Pix'),
-    tema: { corPrincipal: '#0b7a3f', corDestaque: '#1b4b8f' },
-    fonte: 'Canaltech, 2020/2022.',
+    telas: telasPicPay,
+    tema: { corPrincipal: '#0b7a63', corDestaque: '#1b4b8f' },
+    fonte:
+      'Capturas reais do app (out/2026): início, Área Pix e "Escolha pra quem transferir". Valor, revisão, confirmação e comprovante ainda usam a tela genérica.',
   },
   {
     id: 'inter',
     nomeNaLista: 'Inter',
     fluxo: {
       ...PADRAO,
-      caminho: [{ rotulo: 'Pagar com chave Pix', dica: 'Fica no grupo "Pagar".' }],
+      caminho: [{ rotulo: 'Pagar' }],
+      rotuloAvancar: 'Continuar',
+      rotuloConfirmar: 'Pagar R$ 25,00',
+      confirmacao: { nome: 'confirmação no app', digitos: 0 },
     },
     inicio: inicioGenerico('Pix'),
-    tema: { corPrincipal: '#c24a00', corDestaque: '#1b4b8f' },
-    fonte: 'Canaltech, 2021/2022. Nome do botão não confirmado.',
+    telas: telasInter,
+    tema: { corPrincipal: '#c24a00', corDestaque: '#1b4b8f', escuro: true, link: '#ff9a45' },
+    fonte:
+      'Capturas reais do app (out/2026): início, Pix, Pagar com Pix, Valor a pagar, Revisão e confirmação (iSafe). Falta o que vem depois do CONFIRMAR e o comprovante.',
   },
   {
     id: 'outro',
