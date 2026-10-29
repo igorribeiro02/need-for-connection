@@ -125,6 +125,19 @@ describe('bancos e fases de Pix', () => {
     }
   })
 
+  it('a tela inicial de cada banco tem o atalho do Pix e os passos de início usam o layout de início', () => {
+    const fase = mundos[4].fases[0]
+    for (const b of bancos) {
+      expect(b.inicio.atalhos.some((a) => a.rotulo === b.fluxo.entradaPix), b.id).toBe(true)
+      const passos = fase.gerarPassos!(b)
+      for (const id of ['saldo', 'ir-pix']) {
+        const p = passos.find((x) => x.id === id)!
+        expect(p.tela?.layout, `${b.id}/${id}`).toBe('inicio')
+        expect(p.elementos!.some((e) => e.id === p.alvo), `${b.id}/${id}`).toBe(true)
+      }
+    }
+  })
+
   it('todo banco diz de onde veio o fluxo e tem o atalho do Pix', () => {
     for (const b of bancos) {
       expect(b.fonte.length, b.id).toBeGreaterThan(0)

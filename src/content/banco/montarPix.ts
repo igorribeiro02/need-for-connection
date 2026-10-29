@@ -17,7 +17,7 @@ const DADOS = {
 }
 const SENHA_TREINO = '123456'
 
-type Elemento = { id: string; rotulo: string; icone?: string }
+type Elemento = NonNullable<Passo['elementos']>[number]
 type Tela = NonNullable<Passo['tela']>
 
 const ORDINAL = ['primeiro', 'segundo', 'terceiro', 'quarto', 'quinto', 'sexto']
@@ -104,34 +104,59 @@ export function montarPix(banco: BancoConfig, variante: VariantePix): Passo[] {
     'Abra o aplicativo do seu banco e entre com a sua digital, o seu rosto ou a sua senha.',
   )
 
-  const saldo = passoToque(
-    'saldo',
-    'Veja quanto você tem: toque em Mostrar saldo.',
-    { titulo: 'Início', saldo: '••••••' },
-    misturar({ id: 'ver-saldo', rotulo: 'Mostrar saldo', icone: '👁' }, enganos('Extrato'), `${semente}-saldo`),
-    'ver-saldo',
-    'Mostrar saldo',
-    'O saldo costuma vir escondido. O desenho do olho, ou "Mostrar saldo", revela o valor.',
-  )
+  // ---- tela inicial: a mesma estrutura do app (cabeçalho, atalhos, lista de serviços) ----
+  const ini = banco.inicio
+  const slug = (t: string) => t.toLowerCase().normalize('NFD').replace(/[^a-z0-9]+/g, '-')
+  const idDoAtalho = (rotulo: string, grupo: string) => (rotulo === f.entradaPix ? 'pix' : `${grupo}-${slug(rotulo)}`)
+  const elementosInicio = (saldoEscondido: boolean): Elemento[] => [
+    ...(saldoEscondido ? [{ id: 'ver-saldo', rotulo: 'Mostrar saldo', icone: '👁', grupo: 'saldo' as const }] : []),
+    ...ini.atalhos.map((a) => ({ id: idDoAtalho(a.rotulo, 'atalho'), rotulo: a.rotulo, icone: a.icone, grupo: 'atalho' as const })),
+    ...(ini.servicos ?? []).map((v) => ({
+      id: idDoAtalho(v.rotulo, 'servico'),
+      rotulo: v.rotulo,
+      icone: v.icone,
+      detalhe: v.detalhe,
+      grupo: 'servico' as const,
+    })),
+  ]
+  const telaInicio = (saldo: string): Tela => ({
+    titulo: 'Início',
+    saldo,
+    layout: 'inicio',
+    inicio: { secaoAtalhos: ini.secaoAtalhos, secaoServicos: ini.secaoServicos, colunas: ini.colunas },
+  })
 
-  const atalhos = misturar(
-    { id: 'pix', rotulo: f.entradaPix, icone: '💠' },
-    [
-      { id: '', rotulo: 'Extrato', icone: '🧾' },
-      { id: '', rotulo: 'Cartões', icone: '💳' },
-      { id: '', rotulo: 'Investir', icone: '📈' },
+  const saldo: Passo = {
+    id: 'saldo',
+    instrucao: 'Veja quanto você tem: toque em Mostrar saldo.',
+    tipo: 'tocar',
+    alvo: 'ver-saldo',
+    tela: telaInicio('••••••'),
+    elementos: elementosInicio(true),
+    dicas: ['Procure o botão com o desenho de um olho.', 'Fica no alto da tela, na parte colorida, logo abaixo do seu nome.'],
+    erroGentil: 'Quase! Procure o botão "Mostrar saldo", na parte colorida do alto da tela.',
+    lembrete: 'O saldo costuma vir escondido. O desenho do olho, ou "Mostrar saldo", revela o valor.',
+  }
+
+  const posicaoNoAtalho = ini.atalhos.findIndex((a) => a.rotulo === f.entradaPix)
+  const fila = Math.floor(posicaoNoAtalho / ini.colunas)
+  const coluna = posicaoNoAtalho % ini.colunas
+  const dicaGrade = `Está na ${ORDINAL[fila] ?? `${fila + 1}ª`} fileira de atalhos, na ${ORDINAL[coluna] ?? `${coluna + 1}ª`} posição, contando da esquerda.`
+  const tambemNaLista = (ini.servicos ?? []).some((v) => v.rotulo === f.entradaPix)
+  const irPix: Passo = {
+    id: 'ir-pix',
+    instrucao: `Toque em ${f.entradaPix}: é por onde se manda e se recebe dinheiro.`,
+    tipo: 'tocar',
+    alvo: 'pix',
+    tela: telaInicio(DADOS.saldo),
+    elementos: elementosInicio(false),
+    dicas: [
+      `Procure a palavra "${f.entradaPix}", nos atalhos da tela inicial.`,
+      dicaGrade + (tambemNaLista ? ' Também há um item Pix na lista mais abaixo.' : ''),
     ],
-    `${semente}-home`,
-  )
-  const irPix = passoToque(
-    'ir-pix',
-    `Toque em ${f.entradaPix}: é por onde se manda e se recebe dinheiro.`,
-    { titulo: 'Início', saldo: DADOS.saldo, layout: 'grade' },
-    atalhos,
-    'pix',
-    f.entradaPix,
-    `No aplicativo do banco, procure a palavra ${f.entradaPix}, na tela inicial.`,
-  )
+    erroGentil: `Quase! Procure o atalho escrito "${f.entradaPix}".`,
+    lembrete: `No aplicativo do banco, procure a palavra ${f.entradaPix}, na tela inicial.`,
+  }
 
   const decoys = [
     enganos('Ler QR Code', 'Pix Copia e Cola', 'Minhas chaves'),

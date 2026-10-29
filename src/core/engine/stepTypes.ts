@@ -18,7 +18,14 @@ export type Passo = {
   tipo: TipoPasso
   alvo: string // elemento da tela simulada
   /** Botões da tela básica (usada nas fases simples). Os simuladores de banco etc. ignoram. */
-  elementos?: { id: string; rotulo: string; icone?: string }[]
+  elementos?: {
+    id: string
+    rotulo: string
+    icone?: string
+    /** Tela inicial do banco: onde o botão aparece (pílula de saldo, grade de atalhos ou lista de serviços). */
+    grupo?: 'saldo' | 'atalho' | 'servico'
+    detalhe?: string // segunda linha, nos itens da lista de serviços
+  }[]
   esperado?: string | string[] // resposta certa (digitar, escolher, julgar)
   dicas: string[] // 1ª discreta, 2ª mostra onde tocar
   erroGentil: string // ex.: "Quase! Procure o botão verde"
@@ -38,7 +45,8 @@ export type Passo = {
     linhas?: string[]
     saldo?: string // cartão de saldo (use "••••••" para saldo escondido)
     resumo?: { rotulo: string; valor: string }[] // conferência: "Para", "Valor"...
-    layout?: 'grade' | 'lista' // atalhos em grade (tela inicial) ou lista com seta
+    layout?: 'grade' | 'lista' | 'inicio' // 'inicio' = tela inicial completa do app de banco
+    inicio?: { secaoAtalhos: string; secaoServicos?: string; colunas: number }
   }
   /** 'andar': verbo do botão de confirmar, ex.: "Pegar" (padrão: "Escolher"). */
   acao?: string
@@ -81,11 +89,21 @@ export type FluxoPix = {
   confirmacao: { nome: 'senha' | 'assinatura eletrônica'; digitos: number }
 }
 
+/** Como é a tela inicial do aplicativo: grade de atalhos e, às vezes, uma lista de serviços. */
+export type InicioBanco = {
+  secaoAtalhos: string // "Movimente sua conta"
+  secaoServicos?: string // "Serviços e Produtos"
+  colunas: number // atalhos por fileira
+  atalhos: { rotulo: string; icone: string }[] // deve conter o atalho do Pix (fluxo.entradaPix)
+  servicos?: { rotulo: string; detalhe: string; icone: string }[]
+}
+
 /** Configuração de um banco simulado (ver seção "Simulador de bancos e Pix"). */
 export type BancoConfig = {
   id: string // "nubank"
   nomeNaLista: string // o que a pessoa vê ao escolher
   fluxo: FluxoPix
+  inicio: InicioBanco
   tema: { corPrincipal: string; corDestaque: string }
   fonte: string // de onde veio o fluxo (para o grupo conferir no app real)
 }

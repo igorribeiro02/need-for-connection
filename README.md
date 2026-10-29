@@ -62,9 +62,10 @@ Mapa com personagem, simuladores (celular, mensagens, banco), Modo Lembrar compl
 - **De onde vêm os fluxos:** tutoriais de sites de tecnologia e finanças (2020 a 2024), citados no campo `fonte` de cada banco.
   Não são os aplicativos de hoje. **Antes de testar com idosos, abram o app de verdade e conferam** nomes, ordem e confirmações.
   Onde a fonte não dizia (por exemplo, a senha de alguns bancos), usamos o padrão e deixamos isso escrito na `fonte`.
-- **Visual:** o simulador reproduz a estrutura de um app de banco (barra na cor do banco, cartão de saldo, atalhos em grade,
-  listas com seta, conferência em linhas). Não usa logos, fontes nem cópias de tela dos bancos. Para chegar mais perto do app real,
-  mandem capturas de tela do celular de vocês (sem dados pessoais) e ajustem cores e ordem dos ícones.
+- **Visual:** a tela inicial segue a estrutura de uma captura real do Caixa Tem (cabeçalho colorido com saudação e
+  "Mostrar saldo", grade de atalhos, lista de serviços). Os outros bancos usam a mesma estrutura com atalhos genéricos,
+  até recebermos capturas deles (campo `inicio` em `src/content/banks.ts`). Não usamos logos, fontes nem imagens dos bancos.
+  Para as próximas telas (menu do Pix, digitar a chave, conferência), mandem capturas do app real (sem dados pessoais).
 - Dados do exercício (Ana, ana@exemplo.com, R$ 25,00, senha 1234 ou 123456) são inventados e ficam em `montarPix.ts`.
 
 ## Ajuda que se adapta

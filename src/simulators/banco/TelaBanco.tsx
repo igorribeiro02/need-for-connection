@@ -1,20 +1,19 @@
 import type { CSSProperties } from 'react'
 import type { BancoConfig, Passo } from '../../core/engine/stepTypes'
 import { CampoDigitar } from '../celular/CampoDigitar'
+import { InicioBanco } from './InicioBanco'
 import { TecladoSenha } from './TecladoSenha'
 
 type Props = {
   banco: BancoConfig
   passo: Passo
   destacar: boolean
+  nome: string // nome de quem joga, para a saudação
   aoResponder: (resposta: string) => void
 }
 
 /** Aplicativo de banco simulado. A tela de cada passo vem pronta do gerador (passo.tela e passo.elementos). */
-export function TelaBanco({ banco, passo, destacar, aoResponder }: Props) {
-  const tela = passo.tela
-  const senha = passo.tipo === 'digitar' && passo.teclado === 'senha'
-
+export function TelaBanco({ banco, passo, destacar, nome, aoResponder }: Props) {
   return (
     <div
       className="celular banco"
@@ -23,9 +22,23 @@ export function TelaBanco({ banco, passo, destacar, aoResponder }: Props) {
       style={{ '--banco-cor': banco.tema.corPrincipal } as CSSProperties}
     >
       <p className="faixa-simulacao">
-        Simulação no estilo do aplicativo {banco.nomeNaLista === 'Outro banco / não sei' ? 'de um banco' : `do ${banco.nomeNaLista}`}. Nada
-        aqui é de verdade.
+        Simulação no estilo do app: {banco.nomeNaLista === 'Outro banco / não sei' ? 'um banco qualquer' : banco.nomeNaLista}. Nada aqui é
+        de verdade. Só funcionam os botões do exercício.
       </p>
+      {passo.tela?.layout === 'inicio' ? (
+        <InicioBanco passo={passo} nome={nome} destacar={destacar} aoResponder={aoResponder} />
+      ) : (
+        <TelaInterna banco={banco} passo={passo} destacar={destacar} aoResponder={aoResponder} />
+      )}
+    </div>
+  )
+}
+
+function TelaInterna({ passo, destacar, aoResponder }: Omit<Props, 'nome'>) {
+  const tela = passo.tela
+  const senha = passo.tipo === 'digitar' && passo.teclado === 'senha'
+  return (
+    <>
       <div className="banco__topo">Banco simulado</div>
 
       {tela?.saldo && (
@@ -80,6 +93,6 @@ export function TelaBanco({ banco, passo, destacar, aoResponder }: Props) {
 
       {passo.tipo === 'digitar' && !senha && <CampoDigitar key={passo.id} passo={passo} destacar={destacar} aoResponder={aoResponder} />}
       {senha && <TecladoSenha key={passo.id} passo={passo} destacar={destacar} aoResponder={aoResponder} />}
-    </div>
+    </>
   )
 }

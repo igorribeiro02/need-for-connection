@@ -175,7 +175,7 @@ function Exercicio({ base, bancoId, revisao, aoVoltar, aoTrocarBanco }: PropsExe
       </div>
 
       {fase.simulador === 'banco' && banco ? (
-        <TelaBanco banco={banco} passo={passo} destacar={destacar} aoResponder={(r) => aplicar(responder(fase, estado, r))} />
+        <TelaBanco banco={banco} passo={passo} destacar={destacar} nome={dados?.perfil.nome ?? ''} aoResponder={(r) => aplicar(responder(fase, estado, r))} />
       ) : (
         <TelaCelular fase={fase} passo={passo} destacar={destacar} avatar={dados?.perfil.avatar ?? '🙂'} aoResponder={(r) => aplicar(responder(fase, estado, r))} />
       )}
