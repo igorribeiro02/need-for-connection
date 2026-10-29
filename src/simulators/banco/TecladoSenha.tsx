@@ -4,12 +4,12 @@ import type { Passo } from '../../core/engine/stepTypes'
 type Props = { passo: Passo; destacar: boolean; aoResponder: (resposta: string) => void }
 
 const TECLAS = ['1', '2', '3', '4', '5', '6', '7', '8', '9']
-const MAXIMO = 6
 
 /** Teclado numérico na tela, como nos aplicativos de banco. Os números ficam escondidos por bolinhas. */
 export function TecladoSenha({ passo, destacar, aoResponder }: Props) {
   const [digitos, setDigitos] = useState('')
   const esperado = Array.isArray(passo.esperado) ? (passo.esperado[0] ?? '') : (passo.esperado ?? '')
+  const MAXIMO = esperado.length || 6 // quantos números a senha deste banco tem
 
   // última dica: mostra a próxima tecla certa (ou o apagar, se já errou)
   const certoAteAqui = esperado.startsWith(digitos)

@@ -56,12 +56,16 @@ Mapa com personagem, simuladores (celular, mensagens, banco), Modo Lembrar compl
 
 ## Banco e Pix (etapa 4)
 
-- Fases de banco têm `precisaEscolherBanco: true` e `gerarPassos(banco)`. O jogo pergunta o banco e gera os passos:
-  bancos "tradicionais" passam por Menu e por Pagar e transferir; os "digitais" têm o Pix na tela inicial.
-  A posição de cada botão também muda por banco, e as dicas dizem onde ele está.
-- **Hipótese a validar:** o caminho de cada banco e os nomes dos botões foram supostos. Antes de testar com os idosos,
-  abram os aplicativos de verdade e ajustem `src/content/banks.ts`. Não usamos logos nem cópias de telas.
-- Dados do exercício (Ana, ana@exemplo.com, R$ 25,00, senha 1234) são inventados e ficam em `montarPix.ts`.
+- Fases de banco têm `precisaEscolherBanco: true` e `gerarPassos(banco)`. O jogo pergunta o banco e gera os passos
+  a partir do **fluxo daquele banco** (`fluxo` em `src/content/banks.ts`): nome do atalho do Pix, botões do caminho,
+  ordem chave/valor, telas extras (confirmar destinatário, conta, data) e tipo de senha (4 ou 6 números, assinatura eletrônica).
+- **De onde vêm os fluxos:** tutoriais de sites de tecnologia e finanças (2020 a 2024), citados no campo `fonte` de cada banco.
+  Não são os aplicativos de hoje. **Antes de testar com idosos, abram o app de verdade e conferam** nomes, ordem e confirmações.
+  Onde a fonte não dizia (por exemplo, a senha de alguns bancos), usamos o padrão e deixamos isso escrito na `fonte`.
+- **Visual:** o simulador reproduz a estrutura de um app de banco (barra na cor do banco, cartão de saldo, atalhos em grade,
+  listas com seta, conferência em linhas). Não usa logos, fontes nem cópias de tela dos bancos. Para chegar mais perto do app real,
+  mandem capturas de tela do celular de vocês (sem dados pessoais) e ajustem cores e ordem dos ícones.
+- Dados do exercício (Ana, ana@exemplo.com, R$ 25,00, senha 1234 ou 123456) são inventados e ficam em `montarPix.ts`.
 
 ## Ajuda que se adapta
 

@@ -18,7 +18,7 @@ export type Passo = {
   tipo: TipoPasso
   alvo: string // elemento da tela simulada
   /** Botões da tela básica (usada nas fases simples). Os simuladores de banco etc. ignoram. */
-  elementos?: { id: string; rotulo: string }[]
+  elementos?: { id: string; rotulo: string; icone?: string }[]
   esperado?: string | string[] // resposta certa (digitar, escolher, julgar)
   dicas: string[] // 1ª discreta, 2ª mostra onde tocar
   erroGentil: string // ex.: "Quase! Procure o botão verde"
@@ -33,7 +33,13 @@ export type Passo = {
   rotuloCampo?: string
   rotuloBotao?: string
   /** Simulador de banco: como a tela aparece neste passo (os botões vêm de `elementos`). */
-  tela?: { titulo: string; linhas?: string[] }
+  tela?: {
+    titulo: string
+    linhas?: string[]
+    saldo?: string // cartão de saldo (use "••••••" para saldo escondido)
+    resumo?: { rotulo: string; valor: string }[] // conferência: "Para", "Valor"...
+    layout?: 'grade' | 'lista' // atalhos em grade (tela inicial) ou lista com seta
+  }
   /** 'andar': verbo do botão de confirmar, ex.: "Pegar" (padrão: "Escolher"). */
   acao?: string
 }
@@ -63,12 +69,23 @@ export type Mundo = {
   obrigatorio?: boolean
 }
 
+/** Como o Pix por chave funciona em um banco. Cada banco tem o seu fluxo (ordem das telas e nomes dos botões). */
+export type FluxoPix = {
+  entradaPix: string // atalho na tela inicial: "Pix", "Área Pix"
+  caminho: { rotulo: string; dica?: string }[] // botões entre o Pix e a escolha da chave
+  ordem: 'chave-primeiro' | 'valor-primeiro'
+  rotuloAvancar: string // botão depois de digitar: "Continuar", "Avançar"
+  /** Telas a mais que alguns bancos têm. */
+  extras: ('confirmar-destinatario' | 'conta' | 'data')[]
+  rotuloConfirmar: string // botão que envia o Pix
+  confirmacao: { nome: 'senha' | 'assinatura eletrônica'; digitos: number }
+}
+
 /** Configuração de um banco simulado (ver seção "Simulador de bancos e Pix"). */
 export type BancoConfig = {
-  id: string // "banco-a"
+  id: string // "nubank"
   nomeNaLista: string // o que a pessoa vê ao escolher
-  arquetipo: 'tradicional' | 'digital'
-  caminhoAteOPix: string[] // ["home", "pagar-e-transferir", "pix"]
-  rotulos: { pix: string; transferir: string; confirmar: string; menu?: string; pagar?: string }
+  fluxo: FluxoPix
   tema: { corPrincipal: string; corDestaque: string }
+  fonte: string // de onde veio o fluxo (para o grupo conferir no app real)
 }

@@ -125,17 +125,60 @@ describe('bancos e fases de Pix', () => {
     }
   })
 
-  it('o caminho começa na tela inicial e termina no Pix', () => {
+  it('todo banco diz de onde veio o fluxo e tem o atalho do Pix', () => {
     for (const b of bancos) {
-      expect(b.caminhoAteOPix[0], b.id).toBe('home')
-      expect(b.caminhoAteOPix[b.caminhoAteOPix.length - 1], b.id).toBe('pix')
+      expect(b.fonte.length, b.id).toBeGreaterThan(0)
+      expect(b.fluxo.entradaPix.length, b.id).toBeGreaterThan(0)
+      expect(b.fluxo.caminho.length, b.id).toBeGreaterThan(0)
     }
   })
 
-  it('bancos tradicionais têm mais passos que os digitais (o menu muda a quantidade de passos)', () => {
-    const pix = mundos[4].fases[0]
-    const tamanho = (id: string) => pix.gerarPassos!(bancos.find((b) => b.id === id)!).length
-    expect(tamanho('caixa')).toBe(tamanho('nubank') + 2)
+  const idsDe = (id: string, variante: 'normal' | 'nome-diferente' = 'normal') => {
+    const fase = mundos[4].fases[variante === 'normal' ? 0 : 1]
+    return fase.gerarPassos!(bancos.find((b) => b.id === id)!).map((p) => p.id)
+  }
+
+  it('os fluxos seguem o que as fontes descrevem (ordem das telas)', () => {
+    // Nubank: valor antes da chave
+    const nu = idsDe('nubank')
+    expect(nu.indexOf('valor')).toBeLessThan(nu.indexOf('tipo-chave'))
+    // Caixa: chave e depois valor
+    const cx = idsDe('caixa')
+    expect(cx.indexOf('tipo-chave')).toBeLessThan(cx.indexOf('valor'))
+    // Itaú: confirma o destinatário, escolhe a conta e só depois digita o valor
+    const it = idsDe('itau')
+    expect(it.indexOf('revisar')).toBeLessThan(it.indexOf('conta'))
+    expect(it.indexOf('conta')).toBeLessThan(it.indexOf('valor'))
+    // Bradesco: valor e depois a conta; o nome só é conferido no fim
+    const br = idsDe('bradesco')
+    expect(br.indexOf('valor')).toBeLessThan(br.indexOf('conta'))
+    expect(br.indexOf('revisar')).toBeGreaterThan(br.indexOf('conta'))
+    // BB: tem data
+    expect(idsDe('banco-do-brasil')).toContain('data')
+    expect(idsDe('nubank')).not.toContain('data')
+  })
+
+  it('a quantidade de passos muda por banco', () => {
+    const tamanhos = new Set(bancos.map((b) => idsDe(b.id).length))
+    expect(tamanhos.size).toBeGreaterThan(2)
+  })
+
+  it('a senha tem o tamanho certo para cada banco (BB: 6 números)', () => {
+    const fase = mundos[4].fases[0]
+    for (const b of bancos) {
+      const senha = fase.gerarPassos!(b).find((p) => p.id === 'senha')!
+      expect(String(senha.esperado).length, b.id).toBe(b.fluxo.confirmacao.digitos)
+    }
+    expect(bancos.find((b) => b.id === 'banco-do-brasil')!.fluxo.confirmacao.digitos).toBe(6)
+  })
+
+  it('na variante do nome diferente o aluno para na conferência e cancela', () => {
+    for (const b of bancos) {
+      const ids = idsDe(b.id, 'nome-diferente')
+      expect(ids[ids.length - 1], b.id).toBe('cancelar')
+      expect(ids[ids.length - 2], b.id).toBe('revisar')
+      expect(ids).not.toContain('senha')
+    }
   })
 
   it('o jogador consegue concluir cada fase de Pix em cada banco só com as respostas certas', async () => {

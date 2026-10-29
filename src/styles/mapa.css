@@ -236,3 +236,104 @@
   width: 100%;
   text-align: center;
 }
+
+/* Cartão de saldo, atalhos em grade, itens de lista e conferência */
+.banco__saldo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  margin-bottom: var(--espaco);
+  padding: 0.75rem var(--espaco);
+  background: var(--banco-cor);
+  color: #ffffff;
+  border-radius: var(--raio);
+}
+.banco__saldo strong {
+  font-size: 1.5rem;
+}
+:root[data-contraste='alto'] .banco__saldo {
+  background: var(--cor-fundo);
+  color: var(--cor-texto);
+  border: 3px solid var(--cor-primaria);
+}
+.banco__grade {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 6.5rem), 1fr));
+  gap: 0.75rem;
+  margin-bottom: var(--espaco);
+}
+.banco__atalho {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  min-height: 5.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  padding: 0.5rem;
+  font: inherit;
+  font-weight: 700;
+  color: var(--cor-texto);
+  background: var(--cor-superficie);
+  border: 2px solid var(--banco-cor);
+  border-radius: var(--raio);
+  cursor: pointer;
+}
+.banco__icone {
+  display: grid;
+  place-items: center;
+  width: 2.6rem;
+  height: 2.6rem;
+  font-size: 1.4rem;
+  background: var(--cor-fundo);
+  border: 2px solid var(--banco-cor);
+  border-radius: 50%;
+}
+.banco .banco__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+:root[data-contraste='alto'] .banco__atalho,
+:root[data-contraste='alto'] .banco__icone {
+  border-color: var(--cor-primaria);
+}
+.banco__resumo {
+  margin: 0 0 var(--espaco);
+  padding: 0.25rem var(--espaco);
+  background: var(--cor-fundo);
+  border: 2px solid var(--cor-borda);
+  border-radius: var(--raio);
+}
+.banco__resumo div {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--espaco);
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--cor-borda);
+}
+.banco__resumo div:last-child {
+  border-bottom: 0;
+}
+.banco__resumo dt {
+  color: var(--cor-texto-suave);
+}
+.banco__resumo dd {
+  margin: 0;
+  font-weight: 700;
+  text-align: right;
+}
+
+/* Botão de enviar dentro do app de banco usa a cor do banco */
+.banco form .botao {
+  background: var(--banco-cor);
+  border-color: var(--banco-cor);
+  color: #ffffff;
+}
+:root[data-contraste='alto'] .banco form .botao {
+  background: var(--cor-primaria);
+  border-color: var(--cor-primaria);
+  color: var(--cor-primaria-texto);
+}
