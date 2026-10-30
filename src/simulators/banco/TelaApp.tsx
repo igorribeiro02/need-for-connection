@@ -4,7 +4,9 @@ import { idDoItem } from '../../core/engine/telaApp'
 import { CampoDigitar } from '../celular/CampoDigitar'
 
 type Props = {
-  banco: BancoConfig
+  tema: BancoConfig['tema']
+  /** Texto pequeno no alto da tela (ex.: "Banco simulado"). */
+  seloTopo?: string
   passo: Passo
   nome: string
   destacar: boolean
@@ -16,7 +18,7 @@ type Props = {
  * cores, fontes e ícones são nossos. Em passos de tocar, cada botão responde com o seu id (o certo avança, os outros
  * mostram a dica gentil). Botões "inertes" e botões em passos de digitar só avisam que não fazem parte do exercício.
  */
-export function TelaApp({ banco, passo, nome, destacar, aoResponder }: Props) {
+export function TelaApp({ tema, seloTopo = 'Banco simulado', passo, nome, destacar, aoResponder }: Props) {
   const tela = passo.tela!.app!
   const [aviso, setAviso] = useState('')
   const toque = passo.tipo === 'tocar'
@@ -95,6 +97,12 @@ export function TelaApp({ banco, passo, nome, destacar, aoResponder }: Props) {
         return (
           <div key={i} className="app__busca app__busca--sozinha" aria-hidden="true">
             🔍 {b.texto}
+          </div>
+        )
+      case 'pesquisa':
+        return (
+          <div key={i} className="app__bloco">
+            {botao(b.item, 'app__pesquisa', <><span aria-hidden="true">{b.item.icone ?? '🔍'}</span><strong>{b.item.rotulo}</strong></>, 'pq')}
           </div>
         )
       case 'faixa':
@@ -309,15 +317,15 @@ export function TelaApp({ banco, passo, nome, destacar, aoResponder }: Props) {
   }
 
   const estilo = {
-    '--banco-cor': banco.tema.corPrincipal,
-    '--app-faixa-fundo': banco.tema.faixa?.fundo ?? banco.tema.corPrincipal,
-    '--app-faixa-texto': banco.tema.faixa?.texto ?? '#ffffff',
-    '--app-link': banco.tema.link ?? banco.tema.corPrincipal,
+    '--banco-cor': tema.corPrincipal,
+    '--app-faixa-fundo': tema.faixa?.fundo ?? tema.corPrincipal,
+    '--app-faixa-texto': tema.faixa?.texto ?? '#ffffff',
+    '--app-link': tema.link ?? tema.corPrincipal,
   } as CSSProperties
 
   return (
     <div className={`app${tela.escuro ? ' app--escuro' : ''}${tela.escurecida ? ' app--escurecida' : ''}`} style={estilo}>
-      <p className="app__selo">Banco simulado</p>
+      <p className="app__selo">{seloTopo}</p>
       {tela.blocos.map(bloco)}
 
       {passo.painelExercicio && passo.elementos && (

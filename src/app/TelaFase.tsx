@@ -9,6 +9,7 @@ import { falar, narracaoDisponivel } from '../features/settings/narracao'
 import { BarraAjustes } from '../features/settings/BarraAjustes'
 import { SeletorBanco } from '../simulators/banco/SeletorBanco'
 import { TelaBanco } from '../simulators/banco/TelaBanco'
+import { TelaTransporte } from '../simulators/transporte/TelaTransporte'
 import { TelaCelular } from '../simulators/celular/TelaCelular'
 
 type Props = { faseId: string; revisao: boolean; aoVoltar: () => void }
@@ -176,6 +177,8 @@ function Exercicio({ base, bancoId, revisao, aoVoltar, aoTrocarBanco }: PropsExe
 
       {fase.simulador === 'banco' && banco ? (
         <TelaBanco banco={banco} passo={passo} destacar={destacar} nome={dados?.perfil.nome ?? ''} aoResponder={(r) => aplicar(responder(fase, estado, r))} />
+      ) : fase.simulador === 'transporte' && fase.aplicativo ? (
+        <TelaTransporte app={fase.aplicativo} passo={passo} destacar={destacar} nome={dados?.perfil.nome ?? ''} aoResponder={(r) => aplicar(responder(fase, estado, r))} />
       ) : (
         <TelaCelular fase={fase} passo={passo} destacar={destacar} avatar={dados?.perfil.avatar ?? '🙂'} aoResponder={(r) => aplicar(responder(fase, estado, r))} />
       )}

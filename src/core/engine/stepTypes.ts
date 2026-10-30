@@ -56,7 +56,7 @@ export type Passo = {
   acao?: string
 }
 
-export type Simulador = 'banco' | 'mensagens' | 'arquivos' | 'celular'
+export type Simulador = 'banco' | 'mensagens' | 'arquivos' | 'celular' | 'transporte'
 
 export type Fase = {
   id: string // ex.: "w4-pix-chave"
@@ -64,6 +64,8 @@ export type Fase = {
   titulo: string
   simulador: Simulador
   precisaEscolherBanco?: boolean
+  /** Simulador 'transporte': de qual aplicativo (Uber, 99) são as telas. */
+  aplicativo?: AppTransporte
   /** Mapa usado pelos passos 'andar' desta fase. */
   mapa?: MapaDef
   /** Situação em uma frase, mostrada acima do exercício. */
@@ -116,6 +118,7 @@ export type ItemApp = {
 export type BlocoApp =
   | { tipo: 'barra'; titulo?: string; voltar?: boolean | ItemApp; acoes?: ItemApp[]; grande?: 'linha' | 'abaixo'; sobretitulo?: string } // seta, título (centro, ou grande à esquerda/abaixo), linha pequena acima do título e botões redondos
   | { tipo: 'busca'; texto: string }
+  | { tipo: 'pesquisa'; item: ItemApp } // barra de pesquisa que funciona como botão ("Para onde?")
   | { tipo: 'faixa'; avatar?: string; saudacao?: string; acoes?: ItemApp[]; busca?: string; contas?: ItemApp[] } // faixa colorida do alto da tela inicial
   | { tipo: 'abas'; itens: string[]; ativa: number }
   | { tipo: 'saldo'; rotulo: string; valor: string; olho?: ItemApp; apoio?: string; botao?: ItemApp; extrato?: string; linha?: boolean }
@@ -156,6 +159,15 @@ export type TelasBanco = {
   rotuloConta?: string // nome do botão da conta, ex.: "Conta Itaú"
   revisao?: (c: ContextoTela, modo: 'perguntar' | 'pagar') => TelaApp // 'pagar' tem os itens `confirmar` e `cancelar`
   autenticar?: (c: ContextoTela) => TelaApp // item `autenticar`
+}
+
+/** Aplicativo de transporte simulado (Uber, 99). As telas são blocos, como nos bancos. */
+export type AppTransporte = {
+  id: string // "uber"
+  nome: string // "Uber"
+  tema: BancoConfig['tema']
+  /** De onde veio o desenho das telas (para o grupo conferir no app real). */
+  fonte: string
 }
 
 /** Tela do Pix de um banco: campo da chave no alto, botões de apoio e atalhos de outros serviços. Só o campo funciona no exercício. */

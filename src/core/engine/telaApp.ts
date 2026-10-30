@@ -30,6 +30,8 @@ export function itensDoBloco(b: BlocoApp): ItemApp[] {
       return b.itens
     case 'lista':
       return [...(b.acao ? [b.acao] : []), ...b.itens]
+    case 'pesquisa':
+      return [b.item]
     case 'promo':
       return b.botao ? [b.botao] : []
     case 'titulo':

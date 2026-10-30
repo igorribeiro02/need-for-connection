@@ -3,10 +3,10 @@ import { objetoEm } from '../core/world/grid'
 import { mundos } from './worlds'
 
 // O "vilarejo": cada número é a entrada do mundo correspondente; T é árvore.
-const EMOJI: Record<number, string> = { 0: '👆', 1: '📱', 2: '💬', 3: '🖼️', 4: '🏦', 5: '🛡️', 6: '🛒' }
+const EMOJI: Record<number, string> = { 0: '👆', 1: '📱', 2: '💬', 3: '🖼️', 4: '🏦', 5: '🛡️', 6: '🛒', 7: '🚗' }
 
 export const mapaDosMundos: MapaDef = {
-  linhas: ['T.1...2.T', '...T.T...', '3.......4', '.T..@..T.', '.........', '5.T...T.6', 'T...0...T'],
+  linhas: ['T.1...2.T', '...T.7...', '3.......4', '.T..@..T.', '.........', '5.T...T.6', 'T...0...T'],
   legenda: Object.fromEntries(
     mundos.map((m) => [
       String(m.numero),

@@ -5,6 +5,7 @@ import { w0Deslizar } from './phases/w0-deslizar'
 import { w0Teclado } from './phases/w0-teclado'
 import { w0Tocar } from './phases/w0-tocar'
 import { w4PixChave, w4PixNome } from './phases/w4-pix'
+import { w799Pedir, w7ConferirMotorista, w7UberPedir } from './phases/w7-transporte'
 
 // Para criar uma fase nova: crie o arquivo em phases/ e coloque-a na lista do mundo.
 export const mundos: Mundo[] = [
@@ -21,6 +22,12 @@ export const mundos: Mundo[] = [
   { numero: 4, titulo: 'Banco e Pix', descricao: 'Fazer um Pix passo a passo, no aplicativo parecido com o do seu banco.', fases: [w4PixChave, w4PixNome] },
   { numero: 5, titulo: 'Golpes', descricao: 'Saber quando desconfiar.', fases: [] },
   { numero: 6, titulo: 'Serviços e compras', descricao: 'Consulta, gov.br e compras.', fases: [] },
+  {
+    numero: 7,
+    titulo: 'Transporte por aplicativo',
+    descricao: 'Pedir um carro no Uber ou na 99 e conferir o motorista, passo a passo.',
+    fases: [w7UberPedir, w799Pedir, w7ConferirMotorista],
+  },
 ]
 
 export function todasAsFases(): Fase[] {

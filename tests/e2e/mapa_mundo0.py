@@ -49,9 +49,9 @@ with sync_playwright() as p:
 
     # modo lista (e lembra a escolha depois de recarregar)
     page.get_by_role("button", name="📋 Lista").click()
-    check("lista mostra os 7 mundos", page.get_by_role("heading", level=2).count() == 7)
+    check("lista mostra os 8 mundos", page.get_by_role("heading", level=2).count() == 8)
     page.reload()
-    check("modo lista foi lembrado", page.get_by_role("heading", level=2).count() == 7)
+    check("modo lista foi lembrado", page.get_by_role("heading", level=2).count() == 8)
     page.screenshot(path=f"{OUT}/m3-lista.png", full_page=True)
 
     # --- Mundo 0 ---

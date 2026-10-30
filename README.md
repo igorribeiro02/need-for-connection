@@ -51,7 +51,7 @@ Rode `npm run build`, depois `npx vite preview --port 4173` em outro terminal, e
 
 ## O que falta (ver plano no documento)
 
-Mapa com personagem, simuladores (celular, mensagens, banco), Modo Lembrar completo, mundos 1 a 6.
+Mapa com personagem, simuladores (celular, mensagens, banco), Modo Lembrar completo, mundos 1 a 3, 5 e 6.
 
 
 ## Banco e Pix (etapa 4)
@@ -79,6 +79,17 @@ Mapa com personagem, simuladores (celular, mensagens, banco), Modo Lembrar compl
   - PicPay: início, Área Pix e "Escolha pra quem transferir". Mercado Pago: início e tela do Pix.
   - Na revisão, a pergunta "o nome é o da Ana?" fica num painel do exercício, fora do desenho do app.
 - Dados do exercício (Ana, ana@exemplo.com, R$ 25,00, senha 1234 ou 123456) são inventados e ficam em `montarPix.ts`.
+
+## Transporte por aplicativo (Mundo 7: Uber e 99)
+
+- Simulador `transporte` (`src/simulators/transporte/TelaTransporte.tsx`): usa o mesmo desenhador de telas por blocos dos bancos
+  (`TelaApp`, agora recebendo só o `tema`). Cada fase diz de qual app são as telas em `aplicativo` (nome, cores e `fonte`).
+- Telas em `src/content/transporte/telas.ts`; dados de mentira (destino, placa, código) em `dados.ts`; fases em `phases/w7-transporte.ts`.
+- Fases: Pedir um Uber (Para onde? > destino > UberX > Confirmar UberX > Confirmar partida), Pedir um carro na 99
+  (Para onde vamos? > destino > Pop > Confirmar > "Tudo certo, pode chamar!") e Conferir o motorista (placa, nome, código da viagem).
+- ATENÇÃO: as telas vêm de TEXTO (páginas oficiais e tutoriais), NÃO de capturas. Cada app tem o campo `fonte` dizendo o que não foi
+  conferido (ícones, ordem, menu de baixo, preços, como cancelar). Quando chegarem capturas de tela reais, refaça as telas como nos bancos.
+- `tests/e2e/transporte.py` percorre as três fases.
 
 ## Ajuda que se adapta
 

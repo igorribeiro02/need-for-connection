@@ -28,7 +28,7 @@ export function TelaBanco({ banco, passo, destacar, nome, aoResponder }: Props) 
         de verdade. Só funcionam os botões do exercício.
       </p>
       {passo.tela?.layout === 'app' && passo.tela.app ? (
-        <TelaApp banco={banco} passo={passo} nome={nome} destacar={destacar} aoResponder={aoResponder} />
+        <TelaApp tema={banco.tema} passo={passo} nome={nome} destacar={destacar} aoResponder={aoResponder} />
       ) : passo.tela?.layout === 'inicio' ? (
         <InicioBanco passo={passo} nome={nome} destacar={destacar} aoResponder={aoResponder} />
       ) : passo.tela?.layout === 'menu-pix' && banco.fluxo.menuPix ? (

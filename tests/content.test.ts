@@ -262,3 +262,63 @@ describe('bancos e fases de Pix', () => {
     expect(posicoes.size).toBeGreaterThan(1)
   })
 })
+
+describe('transporte por aplicativo (Uber e 99)', () => {
+  const mundo = mundos.find((m) => m.numero === 7)!
+  const fase = (id: string) => mundo.fases.find((f) => f.id === id)!
+
+  it('o Mundo 7 existe, tem as três fases e cada fase diz de qual app são as telas', () => {
+    expect(mundo.titulo).toContain('Transporte')
+    expect(mundo.fases.map((f) => f.id)).toEqual(['w7-uber-pedir', 'w7-99-pedir', 'w7-conferir-motorista'])
+    for (const f of mundo.fases) {
+      expect(f.simulador, f.id).toBe('transporte')
+      expect(f.aplicativo?.fonte.length, f.id).toBeGreaterThan(0)
+    }
+  })
+
+  it('todos os passos usam telas de app e o botão certo aparece uma única vez', () => {
+    for (const f of mundo.fases) for (const p of f.passos) {
+      expect(p.tela?.layout, p.id).toBe('app')
+      if (p.tipo === 'tocar') expect(p.elementos!.filter((e) => e.id === p.alvo), `${f.id}/${p.id}`).toHaveLength(1)
+    }
+  })
+
+  it('o pedido no Uber segue a ordem: Para onde? > destino > carro > Confirmar > partida', () => {
+    expect(fase('w7-uber-pedir').passos.map((p) => p.id)).toEqual(['inicio', 'destino', 'categoria', 'confirmar-uber', 'partida'])
+    expect(fase('w7-uber-pedir').passos[0].alvo).toBe('para-onde')
+  })
+
+  it('o pedido na 99 usa os nomes dos botões da central de ajuda', () => {
+    const f = fase('w7-99-pedir')
+    expect(f.passos.map((p) => p.alvo)).toEqual(['para-onde', 'campo', 'pop', 'confirmar', 'tudo-certo'])
+    expect(f.passos[f.passos.length - 1].dicas.join(' ')).toContain('Tudo certo, pode chamar!')
+  })
+
+  it('na conferência, a placa do primeiro carro é diferente da do app e a resposta certa é "não"', () => {
+    const [errada, certa] = fase('w7-conferir-motorista').passos
+    expect(errada.alvo).toBe('nao')
+    expect(errada.instrucao).toContain('XYZ-9K87')
+    expect(errada.instrucao).not.toContain('ABC-1D23')
+    expect(certa.alvo).toBe('sim')
+  })
+
+  it('as fases se completam só com as respostas certas, sem erros', async () => {
+    const { iniciar, passoAtual, responder } = await import('../src/core/engine/phaseRunner')
+    for (const f of mundo.fases) {
+      let e = iniciar(f)
+      let guarda = 0
+      while (!e.concluida && guarda++ < 20) {
+        const p = passoAtual(f, e)!
+        e = responder(f, e, p.esperado ? (Array.isArray(p.esperado) ? p.esperado[0] : p.esperado) : p.alvo)
+      }
+      expect(e.concluida, f.id).toBe(true)
+      expect(e.erros, f.id).toBe(0)
+    }
+  })
+
+  it('o mundo abre depois do Mundo 0', () => {
+    expect(mundoLiberado(7, mundos, {})).toBe(false)
+    const m0 = Object.fromEntries(mundos[0].fases.map((f) => [f.id, { status: 'concluida' }]))
+    expect(mundoLiberado(7, mundos, m0)).toBe(true)
+  })
+})
