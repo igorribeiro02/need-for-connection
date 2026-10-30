@@ -314,6 +314,18 @@ export function montarPix(banco: BancoConfig, variante: VariantePix): Passo[] {
     'Confira de qual conta o dinheiro vai sair antes de continuar.',
   )
 
+  const contaApp: Passo | undefined = T?.conta
+    ? passoToqueApp(
+        'conta',
+        `Escolha de onde sai o dinheiro: toque em ${T.rotuloConta ?? 'Conta corrente'}.`,
+        T.conta(ctx),
+        'corrente',
+        T.rotuloConta ?? 'Conta corrente',
+        'Confira de qual conta o dinheiro vai sair antes de continuar.',
+        T.dicas.conta,
+      )
+    : undefined
+
   const data = passoEscolha(
     'data',
     'Escolha quando enviar: Hoje.',
@@ -400,9 +412,12 @@ export function montarPix(banco: BancoConfig, variante: VariantePix): Passo[] {
   )
 
   // bancos com tela de revisão copiada de um app real (Inter): o app aparece inteiro e a pergunta do exercício vem num painel à parte
+  const nomeNaTelaDoValor = !!T?.valor && confirmaNoDestinatario && !T.revisao // Itaú: o nome aparece junto do valor
   const revisar: Passo = T?.revisao
     ? { ...revisarBase, tela: { titulo: 'Revisão', layout: 'app', app: T.revisao(ctx, 'perguntar') }, painelExercicio: true }
-    : revisarBase
+    : nomeNaTelaDoValor
+      ? { ...revisarBase, tela: { titulo: 'Valor', layout: 'app', app: T!.valor!(ctx) }, painelExercicio: true }
+      : revisarBase
   const confirmar: Passo = T?.revisao
     ? passoToqueApp(
         'confirmar',
@@ -427,7 +442,20 @@ export function montarPix(banco: BancoConfig, variante: VariantePix): Passo[] {
         ),
         erroGentil: 'Quase! Toque na seta ← que fica no canto de cima, à esquerda.',
       }
-    : cancelarBase
+    : nomeNaTelaDoValor
+      ? {
+          ...passoToqueApp(
+            'cancelar',
+            'Toque na seta < do alto, para voltar sem transferir. Depois, confirme a chave com a Ana, por outro meio.',
+            T!.valor!(ctx),
+            'cancelar',
+            'seta <',
+            'Voltar é sempre permitido. Nada foi enviado. Confirme a chave com a pessoa antes de tentar de novo.',
+            T!.dicas.cancelar,
+          ),
+          erroGentil: 'Quase! Toque na seta < que fica no canto de cima, à esquerda.',
+        }
+      : cancelarBase
 
   const nomeSenha = f.confirmacao.nome === 'senha' ? `a sua senha de ${digitos} números` : 'a sua assinatura eletrônica'
   const passoSenha: Passo = {
@@ -479,10 +507,12 @@ export function montarPix(banco: BancoConfig, variante: VariantePix): Passo[] {
   const antes = [entrar, saldo, irPix, ...caminho]
   const dados: Passo[] = valorPrimeiro ? [valor, tipoChave, chave] : semTipoDeChave ? [chave] : [tipoChave, chave]
   const temConta = f.extras.includes('conta')
+  const contaPasso = contaApp ?? conta
+  const contaAntes = confirmaNoDestinatario && !f.contaDepoisDoValor // BB: a conta vem antes do valor
   if (confirmaNoDestinatario) dados.push(revisar)
-  if (confirmaNoDestinatario && temConta) dados.push(conta) // Itaú e BB: a conta vem antes do valor
+  if (contaAntes && temConta) dados.push(contaPasso)
   if (!valorPrimeiro) dados.push(valor)
-  if (!confirmaNoDestinatario && temConta) dados.push(conta) // Bradesco: valor e depois a conta
+  if (!contaAntes && temConta) dados.push(contaPasso) // Bradesco e Itaú: valor e depois a conta
   if (f.extras.includes('data')) dados.push(data)
   if (!confirmaNoDestinatario) dados.push(revisar)
 

@@ -158,10 +158,12 @@ describe('bancos e fases de Pix', () => {
     // Caixa: chave e depois valor
     const cx = idsDe('caixa')
     expect(cx.indexOf('tipo-chave')).toBeLessThan(cx.indexOf('valor'))
-    // Itaú: confirma o destinatário, escolhe a conta e só depois digita o valor
+    // Itaú (capturas reais): o nome aparece com o valor; escolhe-se o valor e só depois a conta de onde sai
     const it = idsDe('itau')
-    expect(it.indexOf('revisar')).toBeLessThan(it.indexOf('conta'))
-    expect(it.indexOf('conta')).toBeLessThan(it.indexOf('valor'))
+    expect(it.slice(it.indexOf('caminho-1'))).toEqual(expect.arrayContaining(['chave', 'revisar', 'valor', 'conta']))
+    expect(it.indexOf('revisar')).toBeLessThan(it.indexOf('valor'))
+    expect(it.indexOf('valor')).toBeLessThan(it.indexOf('conta'))
+    expect(it).not.toContain('tipo-chave')
     // Bradesco: a chave é digitada na própria tela do Pix (sem escolher o tipo); valor, depois a conta; o nome só no fim
     const br = idsDe('bradesco')
     expect(br).not.toContain('tipo-chave')

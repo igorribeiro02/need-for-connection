@@ -1,5 +1,6 @@
 import type { BancoConfig, FluxoPix, InicioBanco } from '../core/engine/stepTypes'
 import { telasInter } from './banco/telas/inter'
+import { telasItau } from './banco/telas/itau'
 import { telasMercadoPago } from './banco/telas/mercadopago'
 import { telasPicPay } from './banco/telas/picpay'
 
@@ -118,13 +119,17 @@ export const bancos: BancoConfig[] = [
     nomeNaLista: 'Itaú',
     fluxo: {
       ...PADRAO,
-      caminho: [{ rotulo: 'Transferir' }, { rotulo: 'Chave' }],
+      entradaPix: 'Pix e transferir',
+      caminho: [{ rotulo: 'Nova transferência' }],
       extras: ['confirmar-destinatario', 'conta'],
+      contaDepoisDoValor: true,
       rotuloConfirmar: 'Confirmar transferência',
     },
-    inicio: inicioGenerico('Pix'),
-    tema: { corPrincipal: '#b34f00', corDestaque: '#1b4b8f' },
-    fonte: 'Canaltech, 2020/2022. Tipo de senha não confirmado.',
+    inicio: inicioGenerico('Pix e transferir'),
+    telas: telasItau,
+    tema: { corPrincipal: '#b34f00', corDestaque: '#1b4b8f', link: '#0a2a7a' },
+    fonte:
+      'Capturas reais do app (out/2026): início, Pix e transferir, Para quem, Quanto (com o nome de quem recebe) e Escolha a conta. Falta o que vem depois de escolher a conta: revisão, senha ou biometria e comprovante (telas genéricas).',
   },
   {
     id: 'banco-do-brasil',

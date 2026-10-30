@@ -86,6 +86,7 @@ export function TelaApp({ banco, passo, nome, destacar, aoResponder }: Props) {
                 botao(a, 'app__redondo', <><span aria-hidden="true">{a.icone ?? '•'}</span><span className="sr-only">{a.rotulo}</span></>, `a${k}`),
               )}
             </div>
+            {b.sobretitulo && <p className="app__sobretitulo">{t(b.sobretitulo)}</p>}
             {b.grande === 'abaixo' && titulo}
           </div>
         )
@@ -206,13 +207,19 @@ export function TelaApp({ banco, passo, nome, destacar, aoResponder }: Props) {
         return (
           <div key={i} className="app__titulo-linha app__bloco">
             <h3 className="app__secao">{t(b.texto)}</h3>
-            {b.acao && botao(b.acao, 'app__link-botao', b.acao.rotulo, 'ta')}
+            {b.acao &&
+              botao(
+                b.acao,
+                'app__link-botao',
+                b.acao.icone ? <><span aria-hidden="true">{b.acao.icone}</span><span className="sr-only">{b.acao.rotulo}</span></> : b.acao.rotulo,
+                'ta',
+              )}
             {b.apoio && <p className="app__apoio app__apoio--cheio">{b.apoio}</p>}
           </div>
         )
       case 'campo':
         return (
-          <div key={i} className={`app__campo${b.valor ? ' app__campo--valor' : ''}${b.icone ? ' app__campo--icone' : ''}`}>
+          <div key={i} className={`app__campo${b.valor === 'esquerda' ? ' app__campo--valor-esq' : b.valor ? ' app__campo--valor' : ''}${b.icone ? ' app__campo--icone' : ''}`}>
             {passo.tipo === 'digitar' ? (
               <CampoDigitar key={passo.id} passo={passo} destacar={destacar} aoResponder={aoResponder}>
                 {b.entre?.map((linha) => (
@@ -222,7 +229,7 @@ export function TelaApp({ banco, passo, nome, destacar, aoResponder }: Props) {
                 ))}
               </CampoDigitar>
             ) : (
-              <p className="app__campo-vazio">{passo.rotuloCampo}</p>
+              <p className="app__campo-vazio">{passo.rotuloCampo ?? (b.valor ? 'R$ 0,00' : '')}</p>
             )}
             {b.icone && (
               <span className="app__campo-icone" aria-hidden="true">
@@ -279,7 +286,7 @@ export function TelaApp({ banco, passo, nome, destacar, aoResponder }: Props) {
         )
       case 'navegacao':
         return (
-          <nav key={i} className="app__nav" aria-label="Menu do aplicativo (simulação)">
+          <nav key={i} className={`app__nav${b.ativoCheio ? ' app__nav--cheio' : ''}`} aria-label="Menu do aplicativo (simulação)">
             {b.itens.map((n, k) =>
               botao(
                 n,
@@ -290,6 +297,8 @@ export function TelaApp({ banco, passo, nome, destacar, aoResponder }: Props) {
             )}
           </nav>
         )
+      case 'espaco':
+        return <div key={i} className="app__espaco-bloco" aria-hidden="true" />
       case 'texto':
         return (
           <p key={i} className={`app__texto${b.centro ? ' app__texto--centro' : ''}${b.link ? ' app__link' : ''}`}>

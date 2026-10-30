@@ -1334,3 +1334,35 @@
   color: var(--cor-primaria-texto);
   background: var(--cor-primaria);
 }
+
+/* Ajustes para as telas do Itaú */
+.app__sobretitulo {
+  margin: 0.6rem 0 0;
+  color: var(--app-suave);
+}
+.app__sobretitulo + .app__titulo-grande {
+  margin-top: 0.1rem;
+}
+.app__espaco-bloco {
+  min-height: 7rem;
+}
+.app__campo--valor-esq {
+  padding: 0;
+  background: transparent;
+  border-color: transparent;
+}
+.app__campo--valor-esq .campo input {
+  font-size: 1.6rem;
+  background: transparent;
+  border-width: 0 0 3px;
+  border-color: var(--banco-cor);
+  border-radius: 0;
+}
+.app__nav--cheio .app__nav-item--ativo {
+  color: #ffffff;
+  background: var(--app-link);
+}
+:root[data-contraste='alto'] .app__nav--cheio .app__nav-item--ativo {
+  color: var(--cor-primaria-texto);
+  background: var(--cor-primaria);
+}

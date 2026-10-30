@@ -93,6 +93,8 @@ export type FluxoPix = {
   /** Telas a mais que alguns bancos têm. */
   extras: ('confirmar-destinatario' | 'conta' | 'data')[]
   rotuloConfirmar: string // botão que envia o Pix
+  /** A escolha da conta vem depois do valor (Itaú). Padrão: antes, nos bancos com conferência do destinatário. */
+  contaDepoisDoValor?: boolean
   /** 'confirmação no app' = só tocar em Confirmar (sem digitar senha), como o iSafe do Inter. */
   confirmacao: { nome: 'senha' | 'assinatura eletrônica' | 'confirmação no app'; digitos: number }
 }
@@ -112,7 +114,7 @@ export type ItemApp = {
 }
 
 export type BlocoApp =
-  | { tipo: 'barra'; titulo?: string; voltar?: boolean | ItemApp; acoes?: ItemApp[]; grande?: 'linha' | 'abaixo' } // seta, título (centro, ou grande à esquerda/abaixo) e botões redondos
+  | { tipo: 'barra'; titulo?: string; voltar?: boolean | ItemApp; acoes?: ItemApp[]; grande?: 'linha' | 'abaixo'; sobretitulo?: string } // seta, título (centro, ou grande à esquerda/abaixo), linha pequena acima do título e botões redondos
   | { tipo: 'busca'; texto: string }
   | { tipo: 'faixa'; avatar?: string; saudacao?: string; acoes?: ItemApp[]; busca?: string; contas?: ItemApp[] } // faixa colorida do alto da tela inicial
   | { tipo: 'abas'; itens: string[]; ativa: number }
@@ -122,13 +124,14 @@ export type BlocoApp =
   | { tipo: 'lista'; titulo?: string; acao?: ItemApp; itens: ItemApp[]; estilo?: 'linhas' | 'caixas' }
   | { tipo: 'promo'; titulo: string; texto?: string; botao?: ItemApp; escura?: boolean }
   | { tipo: 'titulo'; texto: string; acao?: ItemApp; apoio?: string }
-  | { tipo: 'campo'; icone?: string; valor?: boolean; entre?: string[] } // onde se digita (passo 'digitar'); valor = número grande; entre = linhas entre a caixa e o botão
+  | { tipo: 'campo'; icone?: string; valor?: boolean | 'esquerda'; entre?: string[] } // onde se digita (passo 'digitar'); valor = número grande; entre = linhas entre a caixa e o botão
   | { tipo: 'dados'; titulo?: string; linhas: { rotulo: string; valor: string }[] }
   | { tipo: 'destaque'; valor: string; nome?: string; chip?: ItemApp }
   | { tipo: 'cartao'; titulo: string; texto?: string; link?: string }
   | { tipo: 'botao'; item: ItemApp }
   | { tipo: 'folha'; texto: string; botao: ItemApp }
-  | { tipo: 'navegacao'; itens: ItemApp[]; ativo: number; central?: number }
+  | { tipo: 'navegacao'; itens: ItemApp[]; ativo: number; central?: number; ativoCheio?: boolean }
+  | { tipo: 'espaco' } // empurra o que vem depois para baixo (botão no pé da tela)
   | { tipo: 'texto'; texto: string; centro?: boolean; link?: boolean }
 
 export type TelaApp = {
@@ -144,11 +147,13 @@ export type ContextoTela = { saldoVisivel: boolean; nomeDestino: string; email: 
 export type TelasBanco = {
   rotuloCampoChave: string // nome da caixa onde se digita a chave
   /** Onde está cada botão do exercício, em palavras (para quem não acha). */
-  dicas: { saldo: string; pix: string; caminho?: string[]; confirmar?: string; cancelar?: string; autenticar?: string }
+  dicas: { saldo: string; pix: string; caminho?: string[]; conta?: string; confirmar?: string; cancelar?: string; autenticar?: string }
   inicio: (c: ContextoTela) => TelaApp // deve ter o item 'ver-saldo' (quando escondido) e 'pix'
   caminho?: ((c: ContextoTela) => TelaApp)[] // uma tela por botão do caminho; o alvo tem id `caminho-N`
   chave: (c: ContextoTela) => TelaApp
-  valor?: (c: ContextoTela) => TelaApp
+  valor?: (c: ContextoTela) => TelaApp // se o banco mostra o nome de quem recebe aqui, também serve de conferência (passo 'revisar')
+  conta?: (c: ContextoTela) => TelaApp // escolher de qual conta sai o dinheiro; o alvo tem id `corrente`
+  rotuloConta?: string // nome do botão da conta, ex.: "Conta Itaú"
   revisao?: (c: ContextoTela, modo: 'perguntar' | 'pagar') => TelaApp // 'pagar' tem os itens `confirmar` e `cancelar`
   autenticar?: (c: ContextoTela) => TelaApp // item `autenticar`
 }

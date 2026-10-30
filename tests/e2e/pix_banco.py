@@ -156,7 +156,7 @@ with sync_playwright() as p:
     page.get_by_role("button", name="Trocar de banco").click()
     check("trocar de banco volta à lista", page.get_by_role("heading", name="Qual é o seu banco?").is_visible())
     page.get_by_role("button", name="Itaú", exact=True).click()
-    check("novo banco começa do início (Itaú: 13 passos)", passo(1, 13) and page.get_by_text("Banco escolhido: Itaú.").is_visible())
+    check("novo banco começa do início (Itaú: 11 passos)", passo(1, 11) and page.get_by_text("Banco escolhido: Itaú.").is_visible())
     toque("Entrar"); toque("Mostrar saldo")
     page.screenshot(path=f"{OUT}/p5b-itau-home.png", full_page=True)
 
