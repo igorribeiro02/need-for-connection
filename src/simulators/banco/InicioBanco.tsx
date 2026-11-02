@@ -6,6 +6,7 @@ type Props = {
   nome: string
   destacar: boolean
   aoResponder: (resposta: string) => void
+  aoVoltarPasso: () => void
 }
 
 /**
@@ -13,7 +14,7 @@ type Props = {
  * e lista de serviços. Estrutura baseada numa captura real do aplicativo da Caixa (Caixa Tem).
  * Os ícones do alto (sino, busca...) são só enfeite: nesta simulação só os botões do exercício funcionam.
  */
-export function InicioBanco({ passo, nome, destacar, aoResponder }: Props) {
+export function InicioBanco({ passo, nome, destacar, aoResponder, aoVoltarPasso }: Props) {
   const tela = passo.tela
   const todos = passo.elementos ?? []
   const pilula = todos.find((e) => e.grupo === 'saldo')
@@ -25,6 +26,9 @@ export function InicioBanco({ passo, nome, destacar, aoResponder }: Props) {
     <div className="inicio">
       <div className="inicio__topo">
         <div className="inicio__barra">
+          <button type="button" className="banco__voltar" onClick={aoVoltarPasso} aria-label="Voltar">
+            <span aria-hidden="true">←</span>
+          </button>
           <strong>Banco simulado</strong>
           <span aria-hidden="true">🔔 ▶ 🔍 ⋮</span>
         </div>

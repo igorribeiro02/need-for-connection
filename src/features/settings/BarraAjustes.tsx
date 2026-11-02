@@ -10,9 +10,9 @@ export function BarraAjustes() {
   const { escalaFonte, altoContraste } = dados.preferencias
 
   return (
-    <div className="linha" role="group" aria-label="Ajustes de leitura" style={{ marginBottom: 'var(--espaco)' }}>
+    <div className="barra-ajustes" role="group" aria-label="Ajustes de leitura">
       <button
-        className="botao botao--secundario"
+        className="botao botao--secundario botao--pilula"
         onClick={() => atualizarPreferencias({ escalaFonte: Math.max(MIN, escalaFonte - PASSO) })}
         disabled={escalaFonte <= MIN}
         aria-label="Diminuir letra"
@@ -20,7 +20,7 @@ export function BarraAjustes() {
         A−
       </button>
       <button
-        className="botao botao--secundario"
+        className="botao botao--secundario botao--pilula"
         onClick={() => atualizarPreferencias({ escalaFonte: Math.min(MAX, escalaFonte + PASSO) })}
         disabled={escalaFonte >= MAX}
         aria-label="Aumentar letra"
@@ -28,7 +28,7 @@ export function BarraAjustes() {
         A+
       </button>
       <button
-        className="botao botao--secundario"
+        className="botao botao--secundario botao--pilula"
         aria-pressed={altoContraste}
         onClick={() => atualizarPreferencias({ altoContraste: !altoContraste })}
       >

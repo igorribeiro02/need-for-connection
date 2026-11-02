@@ -15,7 +15,7 @@ body {
   margin: 0;
   background: var(--cor-fundo);
   color: var(--cor-texto);
-  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+  font-family: 'Atkinson Hyperlegible', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
   line-height: 1.5;
   text-align: left; /* nunca justificar nem centralizar parágrafos */
 }
@@ -28,7 +28,7 @@ h3 {
 }
 
 h1 {
-  font-size: 1.6rem;
+  font-size: 1.8rem;
 }
 h2 {
   font-size: 1.3rem;
@@ -67,15 +67,15 @@ p {
 }
 
 .botao {
-  min-height: var(--alvo-minimo);
+  min-height: 3.2rem;
   min-width: var(--alvo-minimo);
-  padding: 0.6rem 1.1rem;
-  border-radius: var(--raio);
+  padding: 0.6rem 1.2rem;
+  border-radius: 14px;
   border: 2px solid var(--cor-primaria);
   background: var(--cor-primaria);
   color: var(--cor-primaria-texto);
   font: inherit;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
 }
 

@@ -80,6 +80,20 @@ export function responder(fase: Fase, estado: EstadoFase, resposta: string): Est
   }
 }
 
+/** Volta um passo. Nunca pune: não conta erro, só desfaz o passo anterior para a pessoa poder refazer. */
+export function voltarPasso(fase: Fase, estado: EstadoFase): EstadoFase {
+  if (estado.concluida || estado.indice <= 0) return estado
+  const indice = estado.indice - 1
+  return {
+    ...estado,
+    indice,
+    concluidos: fase.passos.slice(0, indice).map((p) => p.id),
+    dicasNoPasso: 0,
+    errosNoPasso: 0,
+    aviso: { tipo: 'dica', texto: 'Voltamos um passo. Sem problema, é só tentar de novo.' },
+  }
+}
+
 /** Pede uma dica. A 1ª é discreta; a última dica da lista mostra onde tocar. */
 export function pedirDica(fase: Fase, estado: EstadoFase): EstadoFase {
   const passo = passoAtual(fase, estado)

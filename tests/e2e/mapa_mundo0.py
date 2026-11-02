@@ -62,7 +62,7 @@ with sync_playwright() as p:
     page.get_by_role("button", name="Começar").click()
     page.get_by_role("button", name="Verde").click()
     page.get_by_role("button", name="Confirmar", exact=True).click()
-    check("fase tocar concluída", page.get_by_role("heading", name="Fase concluída!").is_visible())
+    check("fase tocar concluída", page.get_by_role("heading", name="Você conseguiu!").is_visible())
     page.get_by_role("button", name="Voltar ao mapa").click()
 
     # deslizar (com os botões; o gesto usa a mesma rolagem)
@@ -73,9 +73,9 @@ with sync_playwright() as p:
         page.get_by_role("button", name="▼ Descer").click(); page.wait_for_timeout(250)
     check("chegar ao fim da lista avança", page.get_by_text("Passo 2 de 2").is_visible())
     for _ in range(12):
-        if page.get_by_role("heading", name="Fase concluída!").count(): break
+        if page.get_by_role("heading", name="Você conseguiu!").count(): break
         page.get_by_role("button", name="▲ Subir").click(); page.wait_for_timeout(250)
-    check("voltar ao início conclui", page.get_by_role("heading", name="Fase concluída!").is_visible())
+    check("voltar ao início conclui", page.get_by_role("heading", name="Você conseguiu!").is_visible())
     page.get_by_role("button", name="Voltar ao mapa").click()
 
     # deslizar de verdade com a roda do mouse na lista
@@ -100,7 +100,7 @@ with sync_playwright() as p:
     campo.press("End"); campo.press("Backspace"); page.get_by_role("button", name="Pronto").click()
     campo = page.get_by_label("Escreva aqui")
     campo.fill("ANA@exemplo.com "); page.get_by_role("button", name="Pronto").click()
-    check("fase teclado concluída (ignora maiúsculas e espaço final)", page.get_by_role("heading", name="Fase concluída!").is_visible())
+    check("fase teclado concluída (ignora maiúsculas e espaço final)", page.get_by_role("heading", name="Você conseguiu!").is_visible())
     page.get_by_role("button", name="Voltar ao mapa").click()
 
     # andar
@@ -124,7 +124,7 @@ with sync_playwright() as p:
     page.get_by_role("button", name="Porta").click()
     page.get_by_role("button", name="Abrir: Porta").wait_for(timeout=6000)
     page.get_by_role("button", name="Abrir: Porta").click()
-    check("fase andar concluída", page.get_by_role("heading", name="Fase concluída!").is_visible())
+    check("fase andar concluída", page.get_by_role("heading", name="Você conseguiu!").is_visible())
     page.get_by_role("button", name="Voltar ao mapa").click()
 
     # liberação

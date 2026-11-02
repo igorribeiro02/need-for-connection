@@ -98,7 +98,7 @@ with sync_playwright() as p:
     page.get_by_role("button", name="Confirmar", exact=True).click()
     check("comprovante", page.get_by_text("Pix enviado ✓").is_visible())
     toque("Salvar comprovante")
-    check("fase concluída", page.get_by_role("heading", name="Fase concluída!").is_visible())
+    check("fase concluída", page.get_by_role("heading", name="Você conseguiu!").is_visible())
     check("'me mostre' custou 1 dica: 2 estrelas", page.get_by_label("2 estrelas").is_visible())
     page.get_by_role("button", name="Voltar ao mapa").click()
 
@@ -117,7 +117,7 @@ with sync_playwright() as p:
     check("confirmar um nome diferente é recusado com aviso", page.get_by_text("Atenção! O nome na tela não é o da Ana").is_visible())
     toque("Não, está diferente")
     toque("Cancelar")
-    check("variante concluída", page.get_by_role("heading", name="Fase concluída!").is_visible())
+    check("variante concluída", page.get_by_role("heading", name="Você conseguiu!").is_visible())
     check("modo guiado limita a 1 estrela", page.get_by_label("1 estrelas").is_visible())
     page.get_by_role("button", name="Voltar ao mapa").click()
     page.get_by_role("button", name="Conferir o nome antes de enviar — ★ Rever").click()
@@ -142,7 +142,7 @@ with sync_playwright() as p:
     for d in "123456": toque(d)
     page.get_by_role("button", name="Confirmar", exact=True).click()
     toque("Salvar comprovante")
-    check("Pix no BB concluído", page.get_by_role("heading", name="Fase concluída!").is_visible())
+    check("Pix no BB concluído", page.get_by_role("heading", name="Você conseguiu!").is_visible())
     page.get_by_role("button", name="Voltar ao mapa").click()
 
     # --- Nubank: valor antes da chave; trocar de banco recomeça ---

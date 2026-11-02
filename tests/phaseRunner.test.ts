@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { estrelas, iniciar, mostrarOnde, passoAtual, pedirDica, responder } from '../src/core/engine/phaseRunner'
+import { estrelas, iniciar, mostrarOnde, passoAtual, pedirDica, responder, voltarPasso } from '../src/core/engine/phaseRunner'
 import type { Fase } from '../src/core/engine/stepTypes'
 import { w0Tocar } from '../src/content/phases/w0-tocar'
 
@@ -151,5 +151,41 @@ describe('phaseRunner', () => {
   it('"me mostre" depois de uma dica soma só mais uma', () => {
     const e = mostrarOnde(fase, pedirDica(fase, iniciar(fase)))
     expect(e.dicasTotais).toBe(2)
+  })
+
+  describe('voltar um passo', () => {
+    it('desfaz o passo anterior, sem contar erro nem tirar estrela', () => {
+      let e = responder(fase, iniciar(fase), 'botao-a')
+      expect(e.indice).toBe(1)
+      e = voltarPasso(fase, e)
+      expect(e.indice).toBe(0)
+      expect(e.concluidos).toEqual([])
+      expect(e.erros).toBe(0)
+      expect(e.errosNoPasso).toBe(0)
+      expect(e.aviso?.tipo).toBe('dica')
+      expect(passoAtual(fase, e)?.id).toBe('a')
+    })
+
+    it('no primeiro passo não faz nada', () => {
+      const e = iniciar(fase)
+      expect(voltarPasso(fase, e)).toBe(e)
+    })
+
+    it('depois de concluída a fase não desfaz nada', () => {
+      let e = responder(fase, iniciar(fase), 'botao-a')
+      e = responder(fase, e, 'Maria')
+      expect(e.concluida).toBe(true)
+      expect(voltarPasso(fase, e)).toBe(e)
+    })
+
+    it('dá para voltar e refazer o passo até concluir, mantendo as dicas já pedidas', () => {
+      let e = pedirDica(fase, iniciar(fase))
+      e = responder(fase, e, 'botao-a')
+      e = voltarPasso(fase, e)
+      e = responder(fase, e, 'botao-a')
+      e = responder(fase, e, 'Maria')
+      expect(e.concluida).toBe(true)
+      expect(e.dicasTotais).toBe(1)
+    })
   })
 })

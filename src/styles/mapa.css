@@ -1384,3 +1384,195 @@
   text-align: left;
   cursor: pointer;
 }
+
+/* Seta de voltar nas telas simuladas (sempre grande o bastante para tocar) */
+.banco__voltar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  margin-right: 0.5rem;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.22);
+  color: inherit;
+  font: inherit;
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+}
+.banco__topo {
+  display: flex;
+  align-items: center;
+}
+.inicio__barra .banco__voltar {
+  margin-right: 0.25rem;
+}
+
+/* ===== Visual simples (projeto no Claude Design) ===== */
+.botao.botao--grande {
+  min-height: 3.8rem;
+  width: 100%;
+  font-size: 1.15rem;
+}
+.botao.botao--pilula {
+  min-height: 3rem;
+  min-width: 3rem;
+  border-radius: 999px;
+  padding: 0.25rem 0.9rem;
+  font-size: 0.85rem;
+  border-width: 2px;
+}
+.barra-ajustes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: var(--espaco);
+}
+.topo-fase {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: var(--espaco);
+}
+.topo-fase .barra-ajustes {
+  margin-bottom: 0;
+}
+.titulo-fase {
+  font-size: 1.1rem;
+  color: var(--cor-texto-suave);
+  margin-bottom: 0.25rem;
+}
+.passo-rotulo {
+  font-weight: 700;
+  margin-bottom: 0.4rem;
+}
+.progresso-passos {
+  display: flex;
+  gap: 6px;
+  margin-bottom: var(--espaco);
+}
+.progresso-passos span {
+  flex: 1;
+  height: 0.6rem;
+  border-radius: 5px;
+  background: var(--cor-borda);
+  opacity: 0.45;
+}
+.progresso-passos .feito {
+  background: var(--cor-acerto);
+  opacity: 1;
+}
+.progresso-passos .atual {
+  background: var(--cor-primaria);
+  opacity: 1;
+}
+.instrucao {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.9rem;
+  background: var(--cor-superficie);
+  border: 3px solid var(--cor-primaria);
+  border-radius: 18px;
+  padding: 0.9rem 1rem;
+  margin-bottom: var(--espaco);
+}
+.instrucao__texto {
+  flex: 1 1 11rem;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  margin: 0;
+  font-size: 1.35rem;
+  line-height: 1.25;
+  font-weight: 700;
+}
+.instrucao__ouvir {
+  flex: none;
+  min-height: 3.2rem;
+  padding: 0 1rem;
+  gap: 0.5rem;
+  border-radius: 999px;
+  border: 2px solid var(--cor-primaria);
+  background: transparent;
+  color: var(--cor-primaria);
+  font: inherit;
+  font-size: 1.3rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.instrucao__ouvir span {
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+.controles-fase {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin: var(--espaco) 0;
+}
+.guiado {
+  margin-top: var(--espaco);
+}
+.proxima-missao {
+  background: var(--cor-primaria);
+  color: var(--cor-primaria-texto);
+  border-radius: 20px;
+  padding: 1.1rem;
+  margin-bottom: var(--espaco);
+}
+.proxima-missao__rotulo {
+  font-weight: 700;
+  margin: 0 0 0.6rem;
+}
+.proxima-missao .proxima-missao__botao {
+  background: var(--cor-superficie);
+  color: var(--cor-primaria);
+  border-color: var(--cor-superficie);
+}
+:root[data-contraste='alto'] .proxima-missao .proxima-missao__botao {
+  background: #000;
+  color: #ffd400;
+  border-color: #000;
+}
+:root[data-contraste='alto'] .proxima-missao {
+  border: 3px solid #ffd400;
+}
+.vitoria {
+  text-align: center;
+  padding-top: 1rem;
+}
+.vitoria .mensagem {
+  text-align: center;
+  border-left-width: 2px;
+  border: 2px solid var(--cor-acerto);
+  border-radius: 14px;
+}
+.vitoria__selo {
+  width: 5.5rem;
+  height: 5.5rem;
+  margin: 0 auto 1rem;
+  border-radius: 50%;
+  background: var(--cor-acerto);
+  color: #fff;
+  font-size: 3.2rem;
+  line-height: 5.5rem;
+  font-weight: 700;
+}
+:root[data-contraste='alto'] .vitoria__selo {
+  color: #000;
+}
+.vitoria__estrelas {
+  font-size: 2.4rem;
+  letter-spacing: 0.3rem;
+  color: #b07a00;
+  margin: 0 0 0.5rem;
+}
+:root[data-contraste='alto'] .vitoria__estrelas {
+  color: #ffd400;
+}

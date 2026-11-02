@@ -7,13 +7,14 @@ type Props = {
   passo: Passo
   destacar: boolean
   aoResponder: (resposta: string) => void
+  aoVoltarPasso: () => void
 }
 
 /**
  * Tela do Pix copiada da estrutura do app do banco: faixa colorida com seta e "Pix", pergunta, campo da chave,
  * botões de apoio e atalhos de outros serviços. Só o campo da chave funciona; os outros botões avisam isso com calma.
  */
-export function MenuPixBanco({ banco, passo, destacar, aoResponder }: Props) {
+export function MenuPixBanco({ banco, passo, destacar, aoResponder, aoVoltarPasso }: Props) {
   const menu = banco.fluxo.menuPix!
   const [aviso, setAviso] = useState('')
   const inerte = (rotulo: string) => setAviso(`"${rotulo}" não funciona neste exercício. Use a caixa de cima, onde se escreve a chave.`)
@@ -30,9 +31,9 @@ export function MenuPixBanco({ banco, passo, destacar, aoResponder }: Props) {
   return (
     <div className="menupix">
       <div className="menupix__topo">
-        <span className="menupix__voltar" aria-hidden="true">
-          ←
-        </span>
+        <button type="button" className="banco__voltar" onClick={aoVoltarPasso} aria-label="Voltar">
+          <span aria-hidden="true">←</span>
+        </button>
         <span>Pix</span>
         <small>Banco simulado</small>
       </div>

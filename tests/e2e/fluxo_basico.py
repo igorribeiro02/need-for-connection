@@ -47,7 +47,7 @@ with sync_playwright() as p:
 
     page.get_by_role("button", name="Verde").click()
     page.get_by_role("button", name="Confirmar", exact=True).click()
-    check("fase concluída", page.get_by_role("heading", name="Fase concluída!").is_visible())
+    check("fase concluída", page.get_by_role("heading", name="Você conseguiu!").is_visible())
     check("2 estrelas (usou 1 dica)", page.get_by_label("2 estrelas").is_visible())
     page.screenshot(path=f"{OUT}/3-concluida.png", full_page=True)
     page.get_by_role("button", name="Voltar ao mapa").click()

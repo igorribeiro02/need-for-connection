@@ -97,3 +97,18 @@ Mapa com personagem, simuladores (celular, mensagens, banco), Modo Lembrar compl
 - 3 erros seguidos: o jogo mostra sozinho onde tocar (sem tirar estrelas: errar nunca pune).
 - Modo guiado (botão na fase): mostra sempre onde tocar; a fase termina com no máximo 1 estrela.
 - Dicas dizem a posição do botão ("é o segundo da lista"); a última dica sempre destaca o alvo.
+
+
+## Botão Voltar em todo lugar
+
+- Dentro do aplicativo simulado, a seta ← volta uma tela. Se ela for o alvo do passo (ex.: "Cancelar"), responde ao passo.
+- Em toda fase há "← Voltar um passo" (sem perder estrela) e "← Voltar ao mapa".
+- O botão Voltar do celular/navegador respeita as mesmas regras e nunca fecha o jogo por engano.
+- Testes: `tests/e2e/voltar.py` e `voltarPasso` em `tests/phaseRunner.test.ts`.
+
+## Interface (Claude Design)
+
+O visual foi desenhado no Claude Design com as personas Maria Alice, Elaine e Eduardo: uma ação principal por tela,
+letra grande (fonte Atkinson Hyperlegible, embutida, sem depender da internet), progresso em segmentos,
+instrução em destaque com botão "Ouvir", botões grandes e "Continue de onde parou" no mapa.
+A lista de prints necessários para mapear mais telas está em `docs/prints-necessarios.md`.

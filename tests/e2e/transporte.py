@@ -68,7 +68,7 @@ with sync_playwright() as p:
     check("passo 5: confirmar o local de partida", passo(5, 5))
     shot("uber-5-partida")
     page.get_by_role("button", name="Confirmar", exact=True).click()
-    check("Uber conclui a fase", page.get_by_text("Fase concluída!").is_visible())
+    check("Uber conclui a fase", page.get_by_text("Você conseguiu!").is_visible())
     page.get_by_role("button", name="Voltar ao mapa").click()
 
     # ---------------- 99 ----------------
@@ -85,7 +85,7 @@ with sync_playwright() as p:
     page.get_by_role("button", name="Confirmar", exact=True).click()
     shot("99-5-partida")
     page.get_by_role("button", name="Tudo certo, pode chamar!").click()
-    check("99 conclui a fase", page.get_by_text("Fase concluída!").is_visible())
+    check("99 conclui a fase", page.get_by_text("Você conseguiu!").is_visible())
     page.get_by_role("button", name="Voltar ao mapa").click()
 
     # ---------------- Conferir o motorista ----------------
@@ -103,7 +103,7 @@ with sync_playwright() as p:
     check("passo 4: o código aparece na tela", passo(4, 4) and page.get_by_text("Código da viagem: 4821").is_visible())
     shot("conf-4-codigo")
     page.get_by_role("button", name="Para o motorista, antes de entrar no carro").click()
-    check("conferência conclui a fase", page.get_by_text("Fase concluída!").is_visible())
+    check("conferência conclui a fase", page.get_by_text("Você conseguiu!").is_visible())
 
     # letra 200% e alto contraste na tela do app: sem rolagem lateral
     page.get_by_role("button", name="Voltar ao mapa").click()

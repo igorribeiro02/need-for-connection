@@ -1,9 +1,9 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { JogoProvider, useJogo } from './JogoContext'
 import { TelaEntrada } from '../features/auth/TelaEntrada'
 import { TelaBackup } from '../features/backup/TelaBackup'
 import { TelaMapa } from './TelaMapa'
-import { TelaFase } from './TelaFase'
+import { TelaFase, type VoltarInterno } from './TelaFase'
 import type { Posicao } from '../core/world/grid'
 
 type Tela = { nome: 'mapa' } | { nome: 'fase'; id: string; revisao: boolean } | { nome: 'backup' }
@@ -14,15 +14,59 @@ function Rotas() {
   // onde o personagem está no mapa: continua no mesmo lugar ao voltar de uma fase
   const [posicaoMapa, setPosicaoMapa] = useState<Posicao | null>(null)
 
-  if (tela.nome === 'backup') return <TelaBackup aoVoltar={() => setTela({ nome: 'mapa' })} />
-  if (!dados) return <TelaEntrada aoImportar={() => setTela({ nome: 'backup' })} />
+  // Botão voltar do celular/navegador: fora do mapa, ele volta um passo (ou ao mapa) em vez de sair do jogo.
+  // Guardamos UMA entrada extra no histórico enquanto a pessoa não está no mapa.
+  const voltarInterno = useRef<VoltarInterno | null>(null)
+  const armado = useRef(false)
+  const ignorarProximo = useRef(false)
+
+  const armar = () => {
+    if (armado.current) return
+    window.history.pushState({ nfc: 'voltar' }, '')
+    armado.current = true
+  }
+  const desarmar = () => {
+    if (!armado.current) return
+    armado.current = false
+    ignorarProximo.current = true
+    window.history.back()
+  }
+  const irParaMapa = () => {
+    desarmar()
+    setTela({ nome: 'mapa' })
+  }
+  const abrir = (t: Tela) => {
+    armar()
+    setTela(t)
+  }
+
+  useEffect(() => {
+    const aoVoltarNoNavegador = () => {
+      if (ignorarProximo.current) {
+        ignorarProximo.current = false
+        return
+      }
+      if (!armado.current) return
+      armado.current = false // a entrada extra foi usada
+      if (voltarInterno.current?.()) armar() // voltou um passo: continua dentro da fase
+      else setTela({ nome: 'mapa' })
+    }
+    window.addEventListener('popstate', aoVoltarNoNavegador)
+    return () => window.removeEventListener('popstate', aoVoltarNoNavegador)
+  }, [])
+
+  if (tela.nome === 'backup') return <TelaBackup aoVoltar={irParaMapa} />
+  if (!dados) return <TelaEntrada aoImportar={() => abrir({ nome: 'backup' })} />
   if (tela.nome === 'fase') {
     return (
       <TelaFase
         key={`${tela.id}-${tela.revisao}`}
         faseId={tela.id}
         revisao={tela.revisao}
-        aoVoltar={() => setTela({ nome: 'mapa' })}
+        aoVoltar={irParaMapa}
+        registrarVoltar={(fn) => {
+          voltarInterno.current = fn
+        }}
       />
     )
   }
@@ -30,8 +74,8 @@ function Rotas() {
     <TelaMapa
       posicao={posicaoMapa}
       definirPosicao={setPosicaoMapa}
-      aoAbrirFase={(id, revisao) => setTela({ nome: 'fase', id, revisao })}
-      aoAbrirBackup={() => setTela({ nome: 'backup' })}
+      aoAbrirFase={(id, revisao) => abrir({ nome: 'fase', id, revisao })}
+      aoAbrirBackup={() => abrir({ nome: 'backup' })}
     />
   )
 }

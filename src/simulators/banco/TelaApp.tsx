@@ -11,6 +11,8 @@ type Props = {
   nome: string
   destacar: boolean
   aoResponder: (resposta: string) => void
+  /** A seta ← de dentro do app: volta ao passo anterior (no primeiro passo, sai da fase). */
+  aoVoltarPasso: () => void
 }
 
 /**
@@ -18,7 +20,7 @@ type Props = {
  * cores, fontes e ícones são nossos. Em passos de tocar, cada botão responde com o seu id (o certo avança, os outros
  * mostram a dica gentil). Botões "inertes" e botões em passos de digitar só avisam que não fazem parte do exercício.
  */
-export function TelaApp({ tema, seloTopo = 'Banco simulado', passo, nome, destacar, aoResponder }: Props) {
+export function TelaApp({ tema, seloTopo = 'Banco simulado', passo, nome, destacar, aoResponder, aoVoltarPasso }: Props) {
   const tela = passo.tela!.app!
   const [aviso, setAviso] = useState('')
   const toque = passo.tipo === 'tocar'
@@ -75,13 +77,21 @@ export function TelaApp({ tema, seloTopo = 'Banco simulado', passo, nome, destac
         return (
           <div key={i} className="app__barra">
             <div className="app__barra-linha">
-              {b.voltar &&
-                botao(
-                  typeof b.voltar === 'object' ? b.voltar : { rotulo: 'Voltar', inerte: true },
-                  'app__redondo',
-                  <span aria-hidden="true">{typeof b.voltar === 'object' && b.voltar.icone ? b.voltar.icone : '←'}</span>,
-                  'voltar',
-                )}
+              {b.voltar && (
+                <button
+                  key="voltar"
+                  type="button"
+                  className={`app__redondo${typeof b.voltar === 'object' ? marca(b.voltar) : ''}`}
+                  aria-label="Voltar"
+                  onClick={() => {
+                    // a seta é a resposta certa só quando o passo pede esse botão (ex.: cancelar); nos outros casos, volta um passo
+                    if (typeof b.voltar === 'object' && toque && idDoItem(b.voltar) === passo.alvo) tocou(b.voltar)
+                    else aoVoltarPasso()
+                  }}
+                >
+                  <span aria-hidden="true">{typeof b.voltar === 'object' && b.voltar.icone ? b.voltar.icone : '←'}</span>
+                </button>
+              )}
               {b.grande !== 'abaixo' && titulo}
               <span className="app__espaco" />
               {b.acoes?.map((a, k) =>

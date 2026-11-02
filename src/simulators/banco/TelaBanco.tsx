@@ -12,10 +12,11 @@ type Props = {
   destacar: boolean
   nome: string // nome de quem joga, para a saudação
   aoResponder: (resposta: string) => void
+  aoVoltarPasso: () => void
 }
 
 /** Aplicativo de banco simulado. A tela de cada passo vem pronta do gerador (passo.tela e passo.elementos). */
-export function TelaBanco({ banco, passo, destacar, nome, aoResponder }: Props) {
+export function TelaBanco({ banco, passo, destacar, nome, aoResponder, aoVoltarPasso }: Props) {
   return (
     <div
       className={`celular banco${banco.tema.escuro ? ' banco--escuro' : ''}`}
@@ -28,24 +29,29 @@ export function TelaBanco({ banco, passo, destacar, nome, aoResponder }: Props) 
         de verdade. Só funcionam os botões do exercício.
       </p>
       {passo.tela?.layout === 'app' && passo.tela.app ? (
-        <TelaApp tema={banco.tema} passo={passo} nome={nome} destacar={destacar} aoResponder={aoResponder} />
+        <TelaApp tema={banco.tema} passo={passo} nome={nome} destacar={destacar} aoResponder={aoResponder} aoVoltarPasso={aoVoltarPasso} />
       ) : passo.tela?.layout === 'inicio' ? (
-        <InicioBanco passo={passo} nome={nome} destacar={destacar} aoResponder={aoResponder} />
+        <InicioBanco passo={passo} nome={nome} destacar={destacar} aoResponder={aoResponder} aoVoltarPasso={aoVoltarPasso} />
       ) : passo.tela?.layout === 'menu-pix' && banco.fluxo.menuPix ? (
-        <MenuPixBanco banco={banco} passo={passo} destacar={destacar} aoResponder={aoResponder} />
+        <MenuPixBanco banco={banco} passo={passo} destacar={destacar} aoResponder={aoResponder} aoVoltarPasso={aoVoltarPasso} />
       ) : (
-        <TelaInterna banco={banco} passo={passo} destacar={destacar} aoResponder={aoResponder} />
+        <TelaInterna banco={banco} passo={passo} destacar={destacar} aoResponder={aoResponder} aoVoltarPasso={aoVoltarPasso} />
       )}
     </div>
   )
 }
 
-function TelaInterna({ passo, destacar, aoResponder }: Omit<Props, 'nome'>) {
+function TelaInterna({ passo, destacar, aoResponder, aoVoltarPasso }: Omit<Props, 'nome'>) {
   const tela = passo.tela
   const senha = passo.tipo === 'digitar' && passo.teclado === 'senha'
   return (
     <>
-      <div className="banco__topo">Banco simulado</div>
+      <div className="banco__topo">
+        <button type="button" className="banco__voltar" onClick={aoVoltarPasso} aria-label="Voltar">
+          <span aria-hidden="true">←</span>
+        </button>
+        <span>Banco simulado</span>
+      </div>
 
       {tela?.saldo && (
         <div className="banco__saldo">

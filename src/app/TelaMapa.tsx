@@ -39,6 +39,11 @@ export function TelaMapa({ posicao, definirPosicao, aoAbrirFase, aoAbrirBackup }
   const bloqueados = mundos.filter((m) => !mundoLiberado(m.numero, mundos, dados.fases)).map((m) => `mundo-${m.numero}`)
   const concluidos = mundos.filter((m) => mundoConcluido(m, dados.fases)).map((m) => `mundo-${m.numero}`)
 
+  const proxima = mundos
+    .filter((m) => mundoLiberado(m.numero, mundos, dados.fases))
+    .flatMap((m) => m.fases)
+    .find((f) => dados.fases[f.id]?.status !== 'concluida')
+
   return (
     <main className="pagina">
       <BarraAjustes />
@@ -46,6 +51,15 @@ export function TelaMapa({ posicao, definirPosicao, aoAbrirFase, aoAbrirBackup }
         Olá, {dados.perfil.avatar} {dados.perfil.nome}!
       </h1>
       <p>Escolha um mundo para treinar. Não há pressa nem cronômetro.</p>
+
+      {proxima && (
+        <div className="proxima-missao">
+          <p className="proxima-missao__rotulo">Continue de onde parou</p>
+          <button className="botao botao--grande proxima-missao__botao" onClick={() => aoAbrirFase(proxima.id, false)}>
+            Seguir para a próxima missão →
+          </button>
+        </div>
+      )}
 
       {!salvouNoAparelho && (
         <div className="mensagem mensagem--erro" role="alert">
