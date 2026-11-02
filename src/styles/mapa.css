@@ -1576,3 +1576,9 @@
 :root[data-contraste='alto'] .vitoria__estrelas {
   color: #ffd400;
 }
+
+/* Ficha ativa em app escuro (Uber): texto escuro sobre fundo claro */
+.app--escuro .app__ficha--ativa {
+  color: #111111;
+  background: #ffffff;
+}

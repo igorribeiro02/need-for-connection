@@ -82,7 +82,7 @@ export function TelaApp({ tema, seloTopo = 'Banco simulado', passo, nome, destac
                   key="voltar"
                   type="button"
                   className={`app__redondo${typeof b.voltar === 'object' ? marca(b.voltar) : ''}`}
-                  aria-label="Voltar"
+                  aria-label={typeof b.voltar === 'object' ? b.voltar.rotulo : 'Voltar'}
                   onClick={() => {
                     // a seta é a resposta certa só quando o passo pede esse botão (ex.: cancelar); nos outros casos, volta um passo
                     if (typeof b.voltar === 'object' && toque && idDoItem(b.voltar) === passo.alvo) tocou(b.voltar)

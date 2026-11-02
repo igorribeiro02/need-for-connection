@@ -4,26 +4,34 @@ Para cada tela, mande **um print por tela, na ordem em que aparece**. Em cada pr
 
 Como o ← funciona no jogo: dentro do aplicativo simulado, a seta ← volta **uma tela** (sem perder estrela). Se a seta for o próprio alvo do passo (ex.: "Cancelar"), ela responde ao passo. Fora do app, o botão "← Voltar um passo" e o botão Voltar do celular fazem o mesmo; "← Voltar ao mapa" sai da fase.
 
-## Bancos (Pix)
-Prioridade 1 (sequência completa, do início ao comprovante): **Bradesco, Banco do Brasil, Caixa, Nubank, Santander**.
-Em cada um: tela inicial → menu Pix → escolher "Pix pela chave" → digitar a chave → valor → revisão (nome do destinatário) → senha/biometria → comprovante → compartilhar comprovante.
+## Já mapeado com capturas reais (nov/2026)
+- **Santander**: início, Pix e pagar, valor, forma de pagamento, revisão.
+- **Uber**: início, planejar viagem, escolha do carro, "Pague com", confirmar local de partida.
+- **99**: início, "Para onde vamos?", escolha da categoria, local de embarque.
 
-Prioridade 2 (só o que falta):
-- **Itaú**: tela depois de escolher a conta, valor, revisão, senha, comprovante.
-- **Inter**: tela depois de CONFIRMAR e o comprovante.
-- **PicPay**: valor, revisão, confirmação, comprovante.
-- **Mercado Pago**: tela depois de digitar a chave, valor, confirmação, comprovante.
+## O que ainda falta (prints)
+**Santander**: o que aparece depois de "Confirmar e transferir" (senha, digital ou token), o comprovante e "Compartilhar comprovante".
 
-## Uber e 99 (Mundo 7)
-1. Tela inicial do app (mapa + "Para onde?")
-2. "Para onde?" com o endereço sendo digitado e a lista de sugestões
-3. Escolha da categoria/preço (todas as opções visíveis)
-4. Tela de confirmar o pedido (ponto de partida, destino, forma de pagamento)
-5. "Procurando motorista"
-6. "Motorista a caminho": foto, nome, modelo do carro, placa, código/PIN
-7. Corrida em andamento (botão compartilhar viagem, botão de segurança)
-8. Cancelar corrida (pergunta de confirmação)
-9. Pagamento e avaliação ao final
+**Bradesco** (nada conferido no app atual além da tela do Pix): início, caminho até o Pix, campo da chave, valor, conta de origem, revisão com nome, senha, comprovante.
 
-## Como mandar
-Pode mandar tudo numa mesma mensagem, na ordem. Diga o nome do app no começo de cada grupo (ex.: "Bradesco, 1 a 5").
+**Uber** (depois de "Confirmar partida"):
+1. Procurando motorista.
+2. Motorista a caminho (foto, placa, modelo, código da viagem).
+3. Compartilhar viagem e botão de segurança.
+4. Cancelar (pergunta de confirmação).
+5. Viagem em andamento e fim (pagamento, avaliação).
+6. "Mais tarde" (agendar), se quiser incluir.
+
+**99** (depois de "Solicitar"):
+1. Procurando motorista.
+2. Motorista a caminho (foto, placa, modelo).
+3. Cancelar (pergunta de confirmação).
+4. Viagem em andamento e fim (pagamento, avaliação).
+5. Tela que abre ao tocar em "Pix (pré-pago) · Clique para descontos".
+6. Tela da categoria "Negocia" depois de mexer no preço (+/−).
+7. Dizer se o "Local de embarque anterior" aparece depois de "Solicitar Pop" ou antes.
+
+Dicas: seta ← visível em cada print; cubra nome, CPF e saldo; nunca mande senha.
+
+## Outros bancos (quando for a vez deles)
+Sequência padrão: início → Pix → chave → valor → revisão (nome) → senha → comprovante → compartilhar.

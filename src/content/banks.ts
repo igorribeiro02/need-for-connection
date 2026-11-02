@@ -3,6 +3,7 @@ import { telasInter } from './banco/telas/inter'
 import { telasItau } from './banco/telas/itau'
 import { telasMercadoPago } from './banco/telas/mercadopago'
 import { telasPicPay } from './banco/telas/picpay'
+import { telasSantander } from './banco/telas/santander'
 
 // Fluxos montados a partir de tutoriais publicados (2020 a 2024), NÃO dos aplicativos de hoje.
 // Cada banco tem o campo `fonte`. Antes de testar com idosos, o grupo deve abrir o app de verdade e
@@ -150,14 +151,18 @@ export const bancos: BancoConfig[] = [
     nomeNaLista: 'Santander',
     fluxo: {
       ...PADRAO,
-      caminho: [
-        { rotulo: 'Pagar com chave', dica: 'Escolha a opção de chaves, e não a de QR Code.' },
-        { rotulo: 'Pagar para novo contato' },
-      ],
+      entradaPix: 'Pix e pagar',
+      caminho: [],
+      rotuloAvancar: 'Continuar',
+      extras: ['conta'],
+      contaDepoisDoValor: true,
+      rotuloConfirmar: 'Confirmar e transferir',
     },
-    inicio: inicioGenerico('Pix'),
+    inicio: inicioGenerico('Pix e pagar'),
+    telas: telasSantander,
     tema: { corPrincipal: '#cc0000', corDestaque: '#1b4b8f' },
-    fonte: 'Canaltech, 2020/2022. Nomes exatos dos botões não confirmados.',
+    fonte:
+      'Capturas reais do app (nov/2026): início, Pix e pagar, Definir transferência, Forma de pagamento e Revisão. Falta o que vem depois de "Confirmar e transferir" (senha ou biometria) e o comprovante: usam a tela genérica; tipo de senha não confirmado.',
   },
   {
     id: 'mercado-pago',

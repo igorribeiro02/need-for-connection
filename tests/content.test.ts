@@ -283,15 +283,15 @@ describe('transporte por aplicativo (Uber e 99)', () => {
     }
   })
 
-  it('o pedido no Uber segue a ordem: Para onde? > destino > carro > Confirmar > partida', () => {
-    expect(fase('w7-uber-pedir').passos.map((p) => p.id)).toEqual(['inicio', 'destino', 'categoria', 'confirmar-uber', 'partida'])
+  it('o pedido no Uber segue a ordem: Para onde? > destino > lugar > carro > pagamento > Escolher > partida', () => {
+    expect(fase('w7-uber-pedir').passos.map((p) => p.id)).toEqual(['inicio', 'destino', 'lugar', 'categoria', 'pagamento', 'fechar-pagamento', 'confirmar-uber', 'partida'])
     expect(fase('w7-uber-pedir').passos[0].alvo).toBe('para-onde')
   })
 
-  it('o pedido na 99 usa os nomes dos botões da central de ajuda', () => {
+  it('o pedido na 99 usa os nomes dos botões das capturas reais', () => {
     const f = fase('w7-99-pedir')
-    expect(f.passos.map((p) => p.alvo)).toEqual(['para-onde', 'campo', 'pop', 'confirmar', 'tudo-certo'])
-    expect(f.passos[f.passos.length - 1].dicas.join(' ')).toContain('Tudo certo, pode chamar!')
+    expect(f.passos.map((p) => p.alvo)).toEqual(['para-onde', 'campo', 'lugar-certo', 'solicitar-pop', 'solicitar'])
+    expect(f.passos[3].dicas.join(' ')).toContain('Solicitar Pop')
   })
 
   it('na conferência, a placa do primeiro carro é diferente da do app e a resposta certa é "não"', () => {
