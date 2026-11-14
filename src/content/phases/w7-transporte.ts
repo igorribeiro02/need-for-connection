@@ -25,6 +25,14 @@ export const w7UberPedir: Fase = {
   titulo: 'Pedir um Uber',
   simulador: 'transporte',
   aplicativo: APP_UBER,
+  historia: {
+    abertura: [
+      { quem: 'neuza', texto: 'Hoje é o grande dia! A festa da Ana é no Mercado Central.' },
+      { quem: 'neuza', texto: 'Peça um carro pelo aplicativo para sair da sua casa, na Rua das Flores.' },
+    ],
+    fechamento: [{ quem: 'neuza', texto: 'Pedido feito. Agora é esperar o carro chegar.' }],
+    premio: { emoji: '🚗', titulo: 'A carona até a festa' },
+  },
   cenario: `Você precisa ir até o ${VIAGEM.destino}. Vamos pedir um carro no aplicativo, passo a passo. É só treino: nenhum carro vem de verdade.`,
   passos: [
     toque(
@@ -108,6 +116,14 @@ export const w799Pedir: Fase = {
   titulo: 'Pedir um carro na 99',
   simulador: 'transporte',
   aplicativo: APP_99,
+  historia: {
+    abertura: [
+      { quem: 'neuza', texto: 'O Uber não achou carro perto de você agora. Sem problema: a 99 faz a mesma coisa.' },
+      { quem: 'neuza', texto: 'Só muda a cara do aplicativo. Peça o carro por ela.' },
+    ],
+    fechamento: [{ quem: 'neuza', texto: 'Viu? Aprendendo um, você já sabe o outro.' }],
+    premio: { emoji: '📲', titulo: 'Dois aplicativos no bolso' },
+  },
   cenario: `Você precisa ir até o ${VIAGEM.destino}. Vamos pedir um carro no aplicativo da 99, passo a passo. É só treino: nenhum carro vem de verdade.`,
   passos: [
     toque(
@@ -169,6 +185,18 @@ export const w7ConferirMotorista: Fase = {
   titulo: 'Conferir o motorista antes de entrar',
   simulador: 'transporte',
   aplicativo: APP_UBER,
+  historia: {
+    abertura: [
+      { quem: 'neuza', texto: 'Parou um carro na sua frente. Antes de abrir a porta, confira.' },
+      { quem: 'sorrateiro', texto: 'Aqui é o motorista! Entre logo e me diga o seu nome.' },
+      { quem: 'neuza', texto: 'Desconfie dele. Confira tudo no aplicativo.' },
+    ],
+    fechamento: [
+      { quem: 'carlos', texto: 'Bom dia, {nome}? Vai para o Mercado Central, certo?' },
+      { quem: 'neuza', texto: 'Ele perguntou o seu nome primeiro. É assim que se reconhece o motorista de verdade.' },
+    ],
+    premio: { emoji: '✅', titulo: 'O carro certo' },
+  },
   cenario: 'Você pediu o carro e está esperando na calçada. Antes de entrar, confira se é o carro certo. Isso protege você de golpes e de erros.',
   passos: [
     pergunta(

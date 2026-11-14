@@ -15,6 +15,7 @@ type Props = {
   definirPosicao: (p: Posicao) => void
   aoAbrirFase: (faseId: string, revisao: boolean) => void
   aoAbrirBackup: () => void
+  aoAbrirAlbum: () => void
 }
 
 /** Quem ainda não terminou o Mundo 0 começa de pé na entrada dele; os outros, na praça. */
@@ -25,7 +26,7 @@ function posicaoDePartida(dados: DadosPerfil): Posicao {
   return posicaoInicial(mapaDosMundos)
 }
 
-export function TelaMapa({ posicao, definirPosicao, aoAbrirFase, aoAbrirBackup }: Props) {
+export function TelaMapa({ posicao, definirPosicao, aoAbrirFase, aoAbrirBackup, aoAbrirAlbum }: Props) {
   const { dados, sair, salvouNoAparelho, atualizarPreferencias } = useJogo()
   const pos = posicao ?? (dados ? posicaoDePartida(dados) : { x: 0, y: 0 })
   const { mover, irPara } = useMovimento(mapaDosMundos, pos, definirPosicao)
@@ -112,6 +113,9 @@ export function TelaMapa({ posicao, definirPosicao, aoAbrirFase, aoAbrirBackup }
       )}
 
       <div className="linha">
+        <button className="botao botao--secundario" onClick={aoAbrirAlbum}>
+          📖 Álbum da Ana
+        </button>
         <button className="botao botao--secundario" onClick={aoAbrirBackup}>
           Guardar meu progresso
         </button>

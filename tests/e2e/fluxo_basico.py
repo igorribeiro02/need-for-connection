@@ -29,6 +29,8 @@ with sync_playwright() as p:
 
     # fase: errar, pedir dica, acertar 1 passo, recarregar
     page.get_by_role("button", name="Tocar na tela").click()
+    check("abre com a cena de história da Dona Neuza", page.get_by_text("Bem-vindo à Vila Conexão").is_visible())
+    page.get_by_role("button", name="Pular história").click()
     check("passo 1 de 3", page.get_by_text("Passo 1 de 3").is_visible())
     page.get_by_role("button", name="Começar").click()
     check("avançou para passo 2", page.get_by_text("Passo 2 de 3").is_visible())
@@ -47,6 +49,8 @@ with sync_playwright() as p:
 
     page.get_by_role("button", name="Verde").click()
     page.get_by_role("button", name="Confirmar", exact=True).click()
+    check("cena de fechamento mostra o prêmio", page.get_by_text("O celular acordou").is_visible())
+    page.get_by_role("button", name="Continuar", exact=True).click()
     check("fase concluída", page.get_by_role("heading", name="Você conseguiu!").is_visible())
     check("2 estrelas (usou 1 dica)", page.get_by_label("2 estrelas").is_visible())
     page.screenshot(path=f"{OUT}/3-concluida.png", full_page=True)

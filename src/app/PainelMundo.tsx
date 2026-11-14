@@ -19,6 +19,7 @@ export function PainelMundo({ mundo, dados, aoAbrirFase }: Props) {
       <h2>
         Mundo {mundo.numero}: {mundo.titulo}
       </h2>
+      {mundo.dia && <p className="ajuda-campo">{mundo.dia}</p>}
       <p>{mundo.descricao}</p>
       {pendentes.length > 0 ? (
         <p className="mensagem mensagem--dica">

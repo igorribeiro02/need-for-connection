@@ -1,0 +1,316 @@
+/* História: cenas com balão de fala, faixa durante o exercício e álbum.
+   Segue os tokens de acessibilidade (letra grande, contraste, alvos de 56px). */
+
+.cena {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco);
+  min-height: 80vh;
+}
+
+.cena__lugar {
+  margin: 0;
+  color: var(--cor-texto-suave);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.cena__palco {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco);
+  flex: 1;
+  justify-content: center;
+}
+
+.cena__personagem {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.cena__rosto {
+  width: 5rem;
+  height: 5rem;
+  flex: none;
+  display: grid;
+  place-items: center;
+  font-size: 3rem;
+  line-height: 1;
+  border-radius: 50%;
+  border: 3px solid var(--borda-personagem, var(--cor-borda));
+  background: var(--fundo-personagem, var(--cor-superficie));
+}
+
+.cena__nome {
+  font-weight: 700;
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+.cena__papel {
+  margin: 0;
+  color: var(--cor-texto-suave);
+  font-size: 0.9rem;
+}
+
+.balao {
+  position: relative;
+  margin: 0;
+  padding: 1.1rem 1.25rem;
+  font-size: 1.15rem;
+  line-height: 1.5;
+  border-radius: 20px;
+  border: 3px solid var(--borda-personagem, var(--cor-borda));
+  background: var(--fundo-personagem, var(--cor-superficie));
+  color: #1d2430;
+}
+
+.balao::before {
+  content: '';
+  position: absolute;
+  top: -12px;
+  left: 2rem;
+  width: 20px;
+  height: 20px;
+  background: inherit;
+  border-top: 3px solid var(--borda-personagem, var(--cor-borda));
+  border-left: 3px solid var(--borda-personagem, var(--cor-borda));
+  transform: rotate(45deg);
+}
+
+:root[data-contraste='alto'] .balao {
+  --fundo-personagem: #000;
+  color: #fff;
+}
+
+.cena__pontos {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.cena__ponto {
+  width: 0.8rem;
+  height: 0.8rem;
+  border-radius: 50%;
+  border: 2px solid var(--cor-primaria);
+}
+
+.cena__ponto--atual {
+  background: var(--cor-primaria);
+}
+
+.cena__acoes {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.cena__acoes .botao {
+  min-height: 3.5rem;
+  font-size: 1.1rem;
+}
+
+.cena__rodape {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco);
+  justify-content: space-between;
+}
+
+.premio {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  border-radius: var(--raio);
+  border: 3px dashed var(--cor-acerto);
+  background: var(--cor-superficie);
+}
+
+.premio__emoji {
+  font-size: 2.6rem;
+  line-height: 1;
+}
+
+.premio__rotulo {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--cor-texto-suave);
+}
+
+.premio__titulo {
+  margin: 0;
+  font-weight: 700;
+  font-size: 1.15rem;
+}
+
+/* faixa fixa no exercício: no lugar da frase de situação */
+.faixa-historia {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  margin-bottom: var(--espaco);
+  border-radius: var(--raio);
+  border: 2px solid var(--borda-personagem, var(--cor-borda));
+  background: var(--fundo-personagem, var(--cor-superficie));
+  color: #1d2430;
+}
+
+:root[data-contraste='alto'] .faixa-historia {
+  --fundo-personagem: #000;
+  color: #fff;
+}
+
+.faixa-historia__rosto {
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.faixa-historia__texto {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.faixa-historia__fala {
+  margin: 0;
+}
+
+.faixa-historia__quem {
+  display: block;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+/* álbum */
+.album__pagina {
+  margin-bottom: calc(var(--espaco) * 1.5);
+}
+
+.album__titulo {
+  margin: 0 0 0.25rem;
+}
+
+.album__dia {
+  margin: 0 0 var(--espaco);
+  color: var(--cor-texto-suave);
+}
+
+.album__grade {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(8.5rem, 1fr));
+  gap: 0.75rem;
+}
+
+.album__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.75rem 0.5rem;
+  min-height: 7rem;
+  text-align: center;
+  font: inherit;
+  color: inherit;
+  border-radius: var(--raio);
+  border: 2px solid var(--cor-acerto);
+  background: var(--cor-superficie);
+}
+
+.album__item--falta {
+  border-style: dashed;
+  border-color: var(--cor-borda);
+  color: var(--cor-texto-suave);
+}
+
+.album__item--falta .album__emoji {
+  filter: grayscale(1) opacity(0.35);
+}
+
+.album__emoji {
+  font-size: 2.2rem;
+  line-height: 1;
+}
+
+.album__nome {
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+/* painel do celular simples (ajustes, pop-up, mensagem) */
+.painel-celular {
+  margin-bottom: var(--espaco);
+  padding: 1rem;
+  border-radius: var(--raio);
+  border: 2px solid var(--cor-borda);
+  background: var(--cor-superficie);
+}
+
+.painel-celular__titulo {
+  margin: 0 0 0.5rem;
+  font-weight: 700;
+  font-size: 1.15rem;
+}
+
+.painel-celular__linha {
+  margin: 0 0 0.5rem;
+}
+
+.painel-celular--escuro {
+  background: #2b2f38;
+  color: #565c68;
+  border-color: #3a3f4a;
+}
+
+.painel-celular--popup {
+  border: 3px solid #a32020;
+  background: #fff4d6;
+  color: #1d2430;
+  text-align: center;
+}
+
+.painel-celular--mensagem {
+  border-radius: 20px 20px 20px 4px;
+  background: #e8f1fb;
+  color: #1d2430;
+}
+
+.painel-celular__medidor {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.painel-celular__medidor-rotulo {
+  font-weight: 700;
+}
+
+.painel-celular__barras {
+  display: flex;
+  gap: 0.3rem;
+  flex: 1;
+}
+
+.painel-celular__barras span {
+  flex: 1;
+  height: 1.4rem;
+  border-radius: 6px;
+  border: 2px solid var(--cor-primaria);
+}
+
+.painel-celular__barras span.cheia {
+  background: var(--cor-primaria);
+}
+
+.painel-celular--escuro .painel-celular__barras span {
+  border-color: #565c68;
+}
+
+.painel-celular--escuro .painel-celular__barras span.cheia {
+  background: #565c68;
+}

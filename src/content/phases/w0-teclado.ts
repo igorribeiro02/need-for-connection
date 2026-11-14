@@ -5,6 +5,15 @@ export const w0Teclado: Fase = {
   mundo: 0,
   titulo: 'Digitar no teclado',
   simulador: 'celular',
+  historia: {
+    abertura: [
+      { quem: 'neuza', texto: 'Para falar com a Ana, você vai precisar escrever. Vamos treinar o teclado.' },
+      { quem: 'osvaldo', texto: 'Eu digito com um dedo só e sempre erro uma letra!' },
+      { quem: 'neuza', texto: 'Sem problema, Seu Osvaldo. O teclado também apaga. Escreva o que o celular pedir, {nome}.' },
+    ],
+    fechamento: [{ quem: 'neuza', texto: 'Você escreveu até o e-mail da Ana. Guarde esse e-mail: ele vai servir daqui a pouco.' }],
+    premio: { emoji: '⌨️', titulo: 'O e-mail da Ana' },
+  },
   passos: [
     {
       id: 'teclado-palavra',

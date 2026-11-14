@@ -35,6 +35,8 @@ export type DadosPerfil = {
   perfil: Perfil
   preferencias: Preferencias
   fases: Record<string, ProgressoFase>
+  /** Cenas da história já vistas: 'abertura:<faseId>', 'fechamento:<faseId>', 'final:<mundo>'. */
+  cenasVistas: string[]
 }
 
 export const PREFERENCIAS_PADRAO: Preferencias = {
@@ -51,6 +53,7 @@ export function novosDados(perfil: Perfil): DadosPerfil {
     perfil,
     preferencias: { ...PREFERENCIAS_PADRAO },
     fases: {},
+    cenasVistas: [],
   }
 }
 
@@ -72,5 +75,7 @@ export function migrar(bruto: unknown): DadosPerfil | null {
     },
     preferencias: { ...PREFERENCIAS_PADRAO, ...(d.preferencias ?? {}) },
     fases: d.fases && typeof d.fases === 'object' ? d.fases : {},
+    // backups feitos antes da história não têm este campo: tudo bem, começa vazio
+    cenasVistas: Array.isArray(d.cenasVistas) ? d.cenasVistas.filter((c): c is string => typeof c === 'string') : [],
   }
 }

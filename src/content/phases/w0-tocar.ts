@@ -5,6 +5,14 @@ export const w0Tocar: Fase = {
   mundo: 0,
   titulo: 'Tocar na tela',
   simulador: 'celular',
+  historia: {
+    abertura: [
+      { quem: 'neuza', texto: 'Bem-vindo à Vila Conexão, {nome}! Eu sou a Dona Neuza, sua vizinha.' },
+      { quem: 'neuza', texto: 'A Ana deixou este celular para você. Ele está dormindo. Vamos acordá-lo? Toque no botão Começar.' },
+    ],
+    fechamento: [{ quem: 'neuza', texto: 'Pronto, ele acordou! Quem mandou nele foi você.' }],
+    premio: { emoji: '📱', titulo: 'O celular acordou' },
+  },
   passos: [
     {
       id: 'tocar-comecar',

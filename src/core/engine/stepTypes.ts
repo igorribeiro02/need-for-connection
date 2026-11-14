@@ -25,7 +25,10 @@ export type Passo = {
     /** Tela inicial do banco: onde o botão aparece (pílula de saldo, grade de atalhos ou lista de serviços). */
     grupo?: 'saldo' | 'atalho' | 'servico'
     detalhe?: string // segunda linha, nos itens da lista de serviços
+    discreto?: boolean // botão pequeno e sem destaque (ex.: o "X" de um pop-up)
   }[]
+  /** Celular simples: cartão desenhado acima dos botões (ajustes, pop-up, mensagem). */
+  painel?: PainelCelular
   esperado?: string | string[] // resposta certa (digitar, escolher, julgar)
   dicas: string[] // 1ª discreta, 2ª mostra onde tocar
   erroGentil: string // ex.: "Quase! Procure o botão verde"
@@ -56,6 +59,35 @@ export type Passo = {
   acao?: string
 }
 
+/** Cartão que o celular simples mostra no passo: título, linhas de texto e um medidor (volume, brilho). */
+export type PainelCelular = {
+  titulo?: string
+  linhas?: string[]
+  medidor?: { rotulo: string; nivel: number; max: number }
+  /** 'escuro' = tela difícil de ler; 'popup' = janela que aparece sozinha; 'mensagem' = balão de conversa. */
+  estilo?: 'normal' | 'escuro' | 'popup' | 'mensagem'
+}
+
+// ---------- História (camada de narrativa por cima das fases) ----------
+
+export type PersonagemId = 'neuza' | 'ana' | 'osvaldo' | 'sorrateiro' | 'carlos'
+
+/** Um balão de fala. O texto aceita {nome} (primeiro nome de quem joga). */
+export type Fala = { quem: PersonagemId; texto: string }
+
+/** O que se ganha ao terminar uma fase (ou um mundo): vira uma página do álbum. */
+export type Premio = { emoji: string; titulo: string }
+
+/** Mini-história de uma fase: cena antes do exercício e cena depois. O exercício em si não muda. */
+export type Historia = {
+  abertura: Fala[] // 1 a 3 balões; o último pede a ação do exercício
+  fechamento: Fala[] // reação ao que a pessoa fez
+  premio: Premio
+}
+
+/** Cena que fecha um mundo (aparece depois de terminar a última fase dele). */
+export type HistoriaMundo = { falas: Fala[]; premio: Premio }
+
 export type Simulador = 'banco' | 'mensagens' | 'arquivos' | 'celular' | 'transporte'
 
 export type Fase = {
@@ -68,8 +100,9 @@ export type Fase = {
   aplicativo?: AppTransporte
   /** Mapa usado pelos passos 'andar' desta fase. */
   mapa?: MapaDef
-  /** Situação em uma frase, mostrada acima do exercício. */
+  /** Situação em uma frase, mostrada acima do exercício. Fases com `historia` mostram a fala da abertura no lugar. */
   cenario?: string
+  historia?: Historia
   /** Fases de banco: os passos mudam conforme o banco escolhido (menus e nomes diferentes). */
   gerarPassos?: (banco: BancoConfig) => Passo[]
   passos: Passo[]
@@ -81,6 +114,9 @@ export type Mundo = {
   descricao: string
   fases: Fase[]
   obrigatorio?: boolean
+  /** Dia da semana da história, mostrado no mapa. */
+  dia?: string
+  historiaFinal?: HistoriaMundo
 }
 
 /** Como o Pix por chave funciona em um banco. Cada banco tem o seu fluxo (ordem das telas e nomes dos botões). */

@@ -14,11 +14,15 @@ def check(nome, cond):
     return cond
 
 W0 = ["w0-tocar", "w0-deslizar", "w0-teclado", "w0-andar"]
+# estes testes não são sobre a história: marcamos as cenas dos mundos 4 e 7 como já vistas
+FASES_HIST = ["w4-pix-chave", "w4-pix-nome", "w7-uber-pedir", "w7-99-pedir", "w7-conferir-motorista"]
+VISTAS = [f"{t}:{x}" for x in FASES_HIST for t in ("abertura", "fechamento")] + ["final:4", "final:7"]
 perfil = {
     "versao": 1,
     "perfil": {"id": "p1", "nome": "Seu João", "avatar": "👴"},
     "preferencias": {"escalaFonte": 1, "altoContraste": False, "narracao": False, "modoMapa": "mapa", "guiado": False},
     "fases": {f: {"status": "concluida", "estrelas": 3, "passosConcluidos": []} for f in W0},
+    "cenasVistas": VISTAS,
 }
 
 with sync_playwright() as p:
@@ -45,7 +49,7 @@ with sync_playwright() as p:
     check("pede o banco antes de começar", page.get_by_role("heading", name="Qual é o seu banco?").is_visible())
     page.screenshot(path=f"{OUT}/p1-seletor.png", full_page=True)
     page.get_by_role("button", name="Caixa / Caixa Tem", exact=True).click()
-    check("mostra a situação (cenário)", page.get_by_text("você vai pagar R$ 25,00 para a Ana").is_visible())
+    check("mostra a fala-chave da história no lugar do cenário", page.get_by_text("É a chave Pix dela").is_visible())
     check("Caixa tem 11 passos", passo(1, 11))
     page.screenshot(path=f"{OUT}/p2-entrar.png", full_page=True)
 

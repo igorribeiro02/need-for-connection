@@ -7,6 +7,14 @@ export const w0Andar: Fase = {
   mundo: 0,
   titulo: 'Andar com o personagem',
   simulador: 'celular',
+  historia: {
+    abertura: [
+      { quem: 'neuza', texto: 'Esta é a sua casa nova. A porta está trancada, e a chave ficou na horta, perto de uma maçã que a Ana deixou para você.' },
+      { quem: 'neuza', texto: 'Ande até lá, pegue as duas coisas e abra a porta.' },
+    ],
+    fechamento: [{ quem: 'neuza', texto: 'Bem-vindo à sua casa, {nome}!' }],
+    premio: { emoji: '🔑', titulo: 'A chave de casa' },
+  },
   mapa: {
     linhas: ['...T..p', '.T.T.T.', '.......', 'm.T.T.k', '...@...'],
     legenda: {

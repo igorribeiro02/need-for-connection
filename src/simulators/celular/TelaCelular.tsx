@@ -3,6 +3,7 @@ import type { Fase, Passo } from '../../core/engine/stepTypes'
 import { posicaoInicial, type Posicao } from '../../core/world/grid'
 import { CampoDigitar } from './CampoDigitar'
 import { ListaDeslizante } from './ListaDeslizante'
+import { PainelDoCelular } from './PainelDoCelular'
 import { PassoAndar } from './PassoAndar'
 
 type Props = {
@@ -38,13 +39,15 @@ export function TelaCelular({ fase, passo, destacar, avatar, aoResponder }: Prop
         />
       )}
 
+      {passo.painel && <PainelDoCelular painel={passo.painel} />}
+
       {(passo.tipo === 'tocar' || passo.tipo === 'escolher' || passo.tipo === 'julgar' || passo.tipo === 'arrastar') && (
         <div className="linha">
           {(passo.elementos ?? []).map((el) => (
             <button
               key={el.id}
               type="button"
-              className={`botao${destacar && el.id === passo.alvo ? ' destacado' : ''}`}
+              className={`botao${el.discreto ? ' botao--secundario botao--pilula' : ''}${destacar && el.id === passo.alvo ? ' destacado' : ''}`}
               onClick={() => aoResponder(el.id)}
             >
               {el.rotulo}

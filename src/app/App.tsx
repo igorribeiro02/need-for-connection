@@ -3,10 +3,11 @@ import { JogoProvider, useJogo } from './JogoContext'
 import { TelaEntrada } from '../features/auth/TelaEntrada'
 import { TelaBackup } from '../features/backup/TelaBackup'
 import { TelaMapa } from './TelaMapa'
+import { TelaAlbum } from '../features/historia/TelaAlbum'
 import { TelaFase, type VoltarInterno } from './TelaFase'
 import type { Posicao } from '../core/world/grid'
 
-type Tela = { nome: 'mapa' } | { nome: 'fase'; id: string; revisao: boolean } | { nome: 'backup' }
+type Tela = { nome: 'mapa' } | { nome: 'fase'; id: string; revisao: boolean } | { nome: 'backup' } | { nome: 'album' }
 
 function Rotas() {
   const { dados } = useJogo()
@@ -56,6 +57,7 @@ function Rotas() {
   }, [])
 
   if (tela.nome === 'backup') return <TelaBackup aoVoltar={irParaMapa} />
+  if (tela.nome === 'album' && dados) return <TelaAlbum aoVoltar={irParaMapa} />
   if (!dados) return <TelaEntrada aoImportar={() => abrir({ nome: 'backup' })} />
   if (tela.nome === 'fase') {
     return (
@@ -76,6 +78,7 @@ function Rotas() {
       definirPosicao={setPosicaoMapa}
       aoAbrirFase={(id, revisao) => abrir({ nome: 'fase', id, revisao })}
       aoAbrirBackup={() => abrir({ nome: 'backup' })}
+      aoAbrirAlbum={() => abrir({ nome: 'album' })}
     />
   )
 }

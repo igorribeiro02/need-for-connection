@@ -13,6 +13,14 @@ export const w0Deslizar: Fase = {
   mundo: 0,
   titulo: 'Deslizar a tela',
   simulador: 'celular',
+  historia: {
+    abertura: [
+      { quem: 'neuza', texto: 'A Ana salvou os contatos da vila no celular. Tem tanta gente que a lista não cabe na tela.' },
+      { quem: 'neuza', texto: 'Deslize o dedo para ver todos, até o fim. Depois volte ao começo.' },
+    ],
+    fechamento: [{ quem: 'neuza', texto: 'Viu quanta gente? Agora você tem a vila inteira no bolso.' }],
+    premio: { emoji: '📒', titulo: 'Os contatos da vila' },
+  },
   passos: [
     {
       id: 'deslizar-fim',

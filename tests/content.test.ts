@@ -322,3 +322,35 @@ describe('transporte por aplicativo (Uber e 99)', () => {
     expect(mundoLiberado(7, mundos, m0)).toBe(true)
   })
 })
+
+describe('contrato da história (vale para toda fase com mini-história)', () => {
+  const cenas = () =>
+    mundos.flatMap((m) => [
+      ...m.fases.flatMap((f) =>
+        f.historia ? [{ id: `${f.id}:abertura`, falas: f.historia.abertura }, { id: `${f.id}:fechamento`, falas: f.historia.fechamento }] : [],
+      ),
+      ...(m.historiaFinal ? [{ id: `mundo-${m.numero}:final`, falas: m.historiaFinal.falas }] : []),
+    ])
+
+  it('cada cena tem de 1 a 3 balões e frases curtas (até 20 palavras)', () => {
+    for (const c of cenas()) {
+      expect(c.falas.length, c.id).toBeGreaterThanOrEqual(1)
+      expect(c.falas.length, c.id).toBeLessThanOrEqual(3)
+      for (const f of c.falas) {
+        for (const frase of f.texto.split(/(?<=[.!?])\s+/)) {
+          expect(frase.split(/\s+/).length, `${c.id}: "${frase}"`).toBeLessThanOrEqual(20)
+        }
+      }
+    }
+  })
+
+  it('todo mundo que já tem fases tem história em cada fase, cena final e dia da semana; os prêmios são únicos', () => {
+    for (const m of mundos.filter((m) => m.fases.length > 0)) {
+      for (const f of m.fases) expect(f.historia, f.id).toBeTruthy()
+      expect(m.historiaFinal, `mundo ${m.numero}`).toBeTruthy()
+      expect(m.dia, `mundo ${m.numero}`).toBeTruthy()
+    }
+    const premios = mundos.flatMap((m) => [...m.fases.map((f) => f.historia?.premio.titulo), m.historiaFinal?.premio.titulo]).filter(Boolean)
+    expect(new Set(premios).size).toBe(premios.length)
+  })
+})

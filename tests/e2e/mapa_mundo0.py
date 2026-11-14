@@ -57,11 +57,17 @@ with sync_playwright() as p:
     # --- Mundo 0 ---
     def abrir_fase(nome):
         page.get_by_role("button", name=nome).first.click()
+        pular = page.get_by_role("button", name="Pular história")
+        if pular.count(): pular.click()
+
+    def fechar_cena():
+        page.get_by_role("button", name="Continuar", exact=True).click()
 
     abrir_fase("Tocar na tela")
     page.get_by_role("button", name="Começar").click()
     page.get_by_role("button", name="Verde").click()
     page.get_by_role("button", name="Confirmar", exact=True).click()
+    fechar_cena()
     check("fase tocar concluída", page.get_by_role("heading", name="Você conseguiu!").is_visible())
     page.get_by_role("button", name="Voltar ao mapa").click()
 
@@ -73,8 +79,9 @@ with sync_playwright() as p:
         page.get_by_role("button", name="▼ Descer").click(); page.wait_for_timeout(250)
     check("chegar ao fim da lista avança", page.get_by_text("Passo 2 de 2").is_visible())
     for _ in range(12):
-        if page.get_by_role("heading", name="Você conseguiu!").count(): break
+        if page.get_by_role("button", name="Continuar", exact=True).count(): break
         page.get_by_role("button", name="▲ Subir").click(); page.wait_for_timeout(250)
+    fechar_cena()
     check("voltar ao início conclui", page.get_by_role("heading", name="Você conseguiu!").is_visible())
     page.get_by_role("button", name="Voltar ao mapa").click()
 
@@ -100,6 +107,7 @@ with sync_playwright() as p:
     campo.press("End"); campo.press("Backspace"); page.get_by_role("button", name="Pronto").click()
     campo = page.get_by_label("Escreva aqui")
     campo.fill("ANA@exemplo.com "); page.get_by_role("button", name="Pronto").click()
+    fechar_cena()
     check("fase teclado concluída (ignora maiúsculas e espaço final)", page.get_by_role("heading", name="Você conseguiu!").is_visible())
     page.get_by_role("button", name="Voltar ao mapa").click()
 
@@ -124,7 +132,17 @@ with sync_playwright() as p:
     page.get_by_role("button", name="Porta").click()
     page.get_by_role("button", name="Abrir: Porta").wait_for(timeout=6000)
     page.get_by_role("button", name="Abrir: Porta").click()
+    fechar_cena()
     check("fase andar concluída", page.get_by_role("heading", name="Você conseguiu!").is_visible())
+    page.get_by_role("button", name="Continuar a história").click()
+    check("cena final do mundo 0: convite da Ana", page.get_by_text("Oi,").is_visible())
+    page.screenshot(path=f"{OUT}/m6-final-mundo0.png", full_page=True)
+    fechar_cena(); fechar_cena()
+    check("cena final entrega o prêmio do convite", page.get_by_text("O convite da Ana").is_visible())
+    page.get_by_role("button", name="Voltar ao mapa").click()
+    page.get_by_role("button", name="Álbum da Ana").click()
+    check("álbum mostra as páginas ganhas", page.get_by_text("5 de 17 páginas").is_visible())
+    page.screenshot(path=f"{OUT}/m7-album.png", full_page=True)
     page.get_by_role("button", name="Voltar ao mapa").click()
 
     # liberação

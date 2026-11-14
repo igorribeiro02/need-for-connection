@@ -1,12 +1,14 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useJogo } from './JogoContext'
 import { buscarBanco } from '../content/banks'
-import { buscarFase, resolverFase } from '../content/worlds'
+import { buscarFase, mundos, resolverFase } from '../content/worlds'
 import { estrelas, iniciar, mostrarOnde, passoAtual, pedirDica, responder, voltarPasso } from '../core/engine/phaseRunner'
 import type { EstadoFase } from '../core/engine/phaseRunner'
 import type { Fase } from '../core/engine/stepTypes'
 import { falar, narracaoDisponivel } from '../features/settings/narracao'
 import { BarraAjustes } from '../features/settings/BarraAjustes'
+import { CenaHistoria, FaixaHistoria } from '../features/historia/CenaHistoria'
+import { cenaVista, finalPendente, idAbertura, idFechamento, idFinal, marcarCena } from '../core/story/historia'
 import { SeletorBanco } from '../simulators/banco/SeletorBanco'
 import { TelaBanco } from '../simulators/banco/TelaBanco'
 import { TelaTransporte } from '../simulators/transporte/TelaTransporte'
@@ -86,7 +88,7 @@ type PropsExercicio = {
 }
 
 function Exercicio({ base, bancoId, revisao, aoVoltar, registrarVoltar, aoTrocarBanco }: PropsExercicio) {
-  const { dados, atualizarFase, atualizarPreferencias } = useJogo()
+  const { dados, atualizar, atualizarFase, atualizarPreferencias } = useJogo()
   const banco = buscarBanco(bancoId)
   const fase = useMemo(() => resolverFase(base, banco), [base, banco])
   const salvo = dados?.fases[fase.id]
@@ -99,6 +101,17 @@ function Exercicio({ base, bancoId, revisao, aoVoltar, registrarVoltar, aoTrocar
   })
 
   const passo = passoAtual(fase, estado)
+
+  // história: cena antes do exercício, cena depois e (se o mundo acabou) a cena final do mundo
+  const historia = base.historia
+  const nome = dados?.perfil.nome ?? ''
+  const mundo = mundos.find((m) => m.numero === fase.mundo)
+  const lugar = mundo ? `Mundo ${mundo.numero} · ${mundo.dia ? `${mundo.dia} · ` : ''}${mundo.titulo}` : undefined
+  const [cena, setCena] = useState<'abertura' | 'exercicio'>(() =>
+    historia && dados && !revisao && !cenaVista(dados, idAbertura(fase.id)) ? 'abertura' : 'exercicio',
+  )
+  const [mostrarFinal, setMostrarFinal] = useState(false)
+  const vistar = (id: string) => atualizar((d) => ({ ...d, cenasVistas: marcarCena(d.cenasVistas, id) }))
 
   function aplicar(novo: EstadoFase) {
     setEstado(novo)
@@ -137,8 +150,44 @@ function Exercicio({ base, bancoId, revisao, aoVoltar, registrarVoltar, aoTrocar
     return () => registrarVoltar(null)
   })
 
+  if (historia && cena === 'abertura' && !estado.concluida) {
+    const comecar = () => {
+      vistar(idAbertura(fase.id))
+      setCena('exercicio')
+    }
+    return <CenaHistoria falas={historia.abertura} nome={nome} lugar={lugar} rotuloFim="Vamos lá!" aoFim={comecar} aoPular={comecar} />
+  }
+
   if (estado.concluida) {
     const n = estrelasFinais(estado)
+    if (historia && dados && !cenaVista(dados, idFechamento(fase.id))) {
+      return (
+        <CenaHistoria
+          falas={historia.fechamento}
+          nome={nome}
+          lugar={lugar}
+          premio={historia.premio}
+          rotuloFim="Continuar"
+          aoFim={() => vistar(idFechamento(fase.id))}
+        />
+      )
+    }
+    const final = dados && mundo && finalPendente(mundo, dados)
+    if (final && mundo?.historiaFinal && mostrarFinal) {
+      return (
+        <CenaHistoria
+          falas={mundo.historiaFinal.falas}
+          nome={nome}
+          lugar={lugar}
+          premio={mundo.historiaFinal.premio}
+          rotuloFim="Voltar ao mapa"
+          aoFim={() => {
+            vistar(idFinal(mundo.numero))
+            aoVoltar()
+          }}
+        />
+      )
+    }
     return (
       <main className="pagina pagina--fase">
         <div className="vitoria">
@@ -160,8 +209,19 @@ function Exercicio({ base, bancoId, revisao, aoVoltar, registrarVoltar, aoTrocar
             <li key={p.id}>{p.lembrete}</li>
           ))}
         </ol>
-        <button className="botao botao--grande" onClick={aoVoltar}>
-          Voltar ao mapa
+        {historia && (
+          <div className="premio" role="status">
+            <span className="premio__emoji" aria-hidden="true">
+              {historia.premio.emoji}
+            </span>
+            <div>
+              <p className="premio__rotulo">Página do álbum</p>
+              <p className="premio__titulo">{historia.premio.titulo}</p>
+            </div>
+          </div>
+        )}
+        <button className="botao botao--grande" onClick={final ? () => setMostrarFinal(true) : aoVoltar}>
+          {final ? 'Continuar a história' : 'Voltar ao mapa'}
         </button>
       </main>
     )
@@ -191,7 +251,11 @@ function Exercicio({ base, bancoId, revisao, aoVoltar, registrarVoltar, aoTrocar
           </button>
         </p>
       )}
-      {fase.cenario && <p className="cartao">{fase.cenario}</p>}
+      {historia ? (
+        <FaixaHistoria fala={historia.abertura[historia.abertura.length - 1]} nome={nome} aoReler={() => setCena('abertura')} />
+      ) : (
+        fase.cenario && <p className="cartao">{fase.cenario}</p>
+      )}
 
       <p className="passo-rotulo" aria-live="polite">
         Passo {estado.indice + 1} de {fase.passos.length}

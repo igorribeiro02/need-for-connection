@@ -13,11 +13,15 @@ def check(nome, cond):
     return cond
 
 W0 = ["w0-tocar", "w0-deslizar", "w0-teclado", "w0-andar"]
+# estes testes não são sobre a história: marcamos as cenas dos mundos 4 e 7 como já vistas
+FASES_HIST = ["w4-pix-chave", "w4-pix-nome", "w7-uber-pedir", "w7-99-pedir", "w7-conferir-motorista"]
+VISTAS = [f"{t}:{x}" for x in FASES_HIST for t in ("abertura", "fechamento")] + ["final:4", "final:7"]
 perfil = {
     "versao": 1,
     "perfil": {"id": "p1", "nome": "Seu João", "avatar": "👴"},
     "preferencias": {"escalaFonte": 1, "altoContraste": False, "narracao": False, "modoMapa": "mapa", "guiado": False},
     "fases": {f: {"status": "concluida", "estrelas": 3, "passosConcluidos": []} for f in W0},
+    "cenasVistas": VISTAS,
 }
 
 with sync_playwright() as p:
