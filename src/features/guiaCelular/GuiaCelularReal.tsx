@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { AVISO_VARIA, guias, marcas, type Marca, type Tema } from '../../content/guias/celularReal'
 import { DesenhoCelular } from './DesenhoCelular'
 
@@ -16,21 +16,28 @@ export function marcaSalva(): Marca {
   return 'samsung'
 }
 
+/** Guarda a marca escolhida e avisa quem estiver na tela (guia e simulador de brilho). */
+export function escolherMarca(m: Marca) {
+  try {
+    localStorage.setItem(CHAVE, m)
+  } catch {
+    // sem armazenamento: tudo bem
+  }
+  window.dispatchEvent(new Event(EVENTO_MARCA))
+}
+
 /** Mostra, num desenho de celular, como fazer a tarefa com as mãos em cada marca. */
 export function GuiaCelularReal({ tema }: { tema: Tema }) {
   const [marca, setMarca] = useState<Marca>(marcaSalva)
   const [aberto, setAberto] = useState(tema !== 'brilho')
   const guia = guias[tema][marca]
 
-  const escolher = (m: Marca) => {
-    setMarca(m)
-    try {
-      localStorage.setItem(CHAVE, m)
-      window.dispatchEvent(new Event(EVENTO_MARCA))
-    } catch {
-      // ignora
-    }
-  }
+  useEffect(() => {
+    const atualizar = () => setMarca(marcaSalva())
+    window.addEventListener(EVENTO_MARCA, atualizar)
+    return () => window.removeEventListener(EVENTO_MARCA, atualizar)
+  }, [])
+  const escolher = escolherMarca
 
   return (
     <section className="guia-real" aria-label="Como fazer no celular de verdade">

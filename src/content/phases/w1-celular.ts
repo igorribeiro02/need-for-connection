@@ -130,12 +130,12 @@ export const w1Brilho: Fase = {
     ),
     toqueApp(
       'ajustar',
-      'O painel abriu! Arraste a bolinha do sol até o fim, para deixar a tela bem clara, e solte o dedo.',
+      'O painel abriu! Arraste a barra do sol até o fim, para deixar a tela bem clara, e solte o dedo.',
       celularBrilho('ajustar', 20, { rotulo: 'Brilho', id: 'brilho-alto' }, { minimo: 80 }),
       'brilho-alto',
       'Brilho',
       'Quanto mais cheia a barra laranja, mais clara fica a tela. Pode ir até o final.',
-      'É a barra com o sol, dentro do quadro azul-claro. Encoste o dedo no sol e arraste.',
+      'É a barra com o desenho de um sol, dentro do painel. Encoste o dedo nela e arraste.',
     ),
     toqueApp(
       'ler',
@@ -148,7 +148,7 @@ export const w1Brilho: Fase = {
     ),
     toqueApp(
       'economizar',
-      'Saiu do sol? Arraste a bolinha do sol um pouco para trás, até a metade, para economizar a bateria.',
+      'Saiu do sol? Arraste a barra do sol um pouco para trás, até a metade, para economizar a bateria.',
       celularBrilho('ajustar', 100, { rotulo: 'Brilho', id: 'brilho-medio' }, { maximo: 70 }),
       'brilho-medio',
       'Brilho',

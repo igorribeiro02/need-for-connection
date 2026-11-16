@@ -938,7 +938,10 @@
   flex-direction: column;
   gap: 0.3rem;
   min-height: 4rem;
+  max-height: max(11rem, 40dvh);
   padding: 0.6rem 0.6rem 0.8rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 .zap-dia {
   align-self: center;
@@ -1402,141 +1405,237 @@
   overflow-wrap: anywhere;
 }
 
-/* ---------- Celular de brilho (igual ao desenho do guia, mas interativo) ---------- */
+/* ---------- Celular de brilho: o painel de cada marca (tudo em unidades do tamanho do celular) ---------- */
 .cel-bril,
 .cel-bril * {
   -webkit-user-select: none;
   user-select: none;
+  -webkit-tap-highlight-color: transparent;
 }
 .cel-bril {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.6rem;
-  padding: 0.7rem 0.5rem 0.9rem;
+  gap: 0.45rem;
+  padding: 0.5rem 0.4rem 0.6rem;
   background: #eef2fa;
   border-radius: 1rem;
   color: #14213d;
 }
-.cel-bril__rotulos {
+.cb-marcas {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.5rem;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.35rem;
   width: 100%;
 }
-.cel-bril__rotulo {
-  margin: 0;
-  padding: 0.4rem 0.5rem;
-  font-size: 1rem;
+.cb-marcas button {
+  min-height: 2.75rem;
+  padding: 0.2rem 0;
+  font: inherit;
+  font-size: clamp(0.7rem, 3.3vw, 0.9rem);
   font-weight: 800;
-  line-height: 1.2;
-  text-align: center;
-  color: #4b5563;
-  background: #e1e7f2;
-  border: 3px solid transparent;
-  border-radius: 0.7rem;
+  color: #1b4b8f;
+  background: #fff;
+  border: 2px solid #1b4b8f;
+  border-radius: 0.8rem;
+  cursor: pointer;
+  touch-action: manipulation;
 }
-.cel-bril__rotulo.ativo {
+.cb-marcas button.ativo {
   color: #fff;
   background: #1b4b8f;
-  border-color: #14213d;
 }
-.cel-bril__celular {
+.cb-legenda {
+  width: 100%;
+  margin: 0;
+  padding: 0.3rem 0.55rem;
+  font-size: 0.98rem;
+  line-height: 1.25;
+  background: #fff;
+  border-left: 6px solid #ff7a00;
+  border-radius: 0.5rem;
+}
+.cb-celular {
   position: relative;
-  width: 9.4rem;
-  height: 14.5rem;
-  padding: 0.35rem;
-  background: #2b3445;
-  border-radius: 1.8rem;
+  container-type: inline-size;
+  width: min(11.8rem, 50vw);
+  aspect-ratio: 100 / 165;
+  background: #1d2433;
+  border-radius: 13cqw;
+  box-shadow: 0 6px 18px rgb(0 0 0 / 25%);
 }
-.cel-bril__ilha {
+.cel-bril--iphone .cb-celular {
+  border-radius: 15cqw;
+}
+.cb-lado {
   position: absolute;
-  top: 0.65rem;
-  left: 50%;
-  z-index: 5;
-  width: 3rem;
-  height: 0.85rem;
-  background: #111827;
-  border-radius: 1rem;
-  transform: translateX(-50%);
+  width: 1.6cqw;
+  background: #5a6278;
+  border-radius: 1cqw;
 }
-.cel-bril--samsung .cel-bril__ilha,
-.cel-bril--xiaomi .cel-bril__ilha,
-.cel-bril--motorola .cel-bril__ilha {
-  width: 0.85rem;
-  height: 0.85rem;
+.cb-lado--dir {
+  top: 24cqw;
+  right: -1.2cqw;
+  height: 18cqw;
 }
-.cel-bril__lado {
-  position: absolute;
-  width: 0.3rem;
-  background: #6b7488;
-  border-radius: 0.2rem;
-}
-.cel-bril__lado--dir {
-  top: 5rem;
-  right: -0.25rem;
-  height: 3rem;
-}
-.cel-bril__lado--esq {
+.cb-lado--esq {
   display: none;
 }
-.cel-bril--iphone .cel-bril__lado--esq {
-  top: 4rem;
-  left: -0.25rem;
+.cel-bril--iphone .cb-lado--esq {
+  top: 20cqw;
+  left: -1.2cqw;
   display: block;
-  height: 4rem;
+  height: 24cqw;
 }
-.cel-bril__tela {
-  position: relative;
-  width: 100%;
-  height: 100%;
+.cb-tela {
+  --u: 1cqw;
+  position: absolute;
+  inset: calc(var(--u) * 3);
   overflow: hidden;
-  background: #f4f7fd;
-  border-radius: 1.45rem;
+  background: #101826;
+  border-radius: calc(var(--u) * 10.5);
+  font-size: calc(var(--u) * 4.4);
+  line-height: 1.2;
+  color: #fff;
 }
-/* escurece só o fundo, para os botões continuarem fáceis de ver */
-.cel-bril__escuro {
+.cel-bril--iphone .cb-tela {
+  border-radius: calc(var(--u) * 12.5);
+}
+.cb-papel {
   position: absolute;
   inset: 0;
+}
+.cel-bril--iphone .cb-papel {
+  background: radial-gradient(circle at 30% 20%, #6b5bd6, #2a2f6e 55%, #121428);
+}
+.cel-bril--samsung .cb-papel {
+  background: radial-gradient(circle at 70% 25%, #2fa58a, #1b5d73 55%, #0e2230);
+}
+.cel-bril--motorola .cb-papel {
+  background: radial-gradient(circle at 25% 25%, #3b7be0, #213f86 55%, #0f1b3d);
+}
+.cel-bril--xiaomi .cb-papel {
+  background: radial-gradient(circle at 70% 20%, #e8864a, #8a3a52 55%, #2a1630);
+}
+.cb-status {
+  position: absolute;
+  top: calc(var(--u) * 3);
+  right: calc(var(--u) * 7);
+  left: calc(var(--u) * 7);
   z-index: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: calc(var(--u) * 4.2);
+  font-weight: 700;
+}
+.cb-status__icones {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--u) * 1.5);
+}
+.cb-status__icones svg {
+  height: calc(var(--u) * 3.2);
+  width: auto;
+}
+.cb-furo {
+  position: absolute;
+  top: calc(var(--u) * 3);
+  left: 50%;
+  z-index: 1;
+  width: calc(var(--u) * 4);
+  height: calc(var(--u) * 4);
+  background: #000;
+  border-radius: 50%;
+  transform: translateX(-50%);
+}
+.cel-bril--iphone .cb-furo {
+  top: calc(var(--u) * 2.5);
+  width: calc(var(--u) * 26);
+  height: calc(var(--u) * 7.5);
+  border-radius: calc(var(--u) * 4);
+}
+.cel-bril--iphone .cb-status {
+  top: calc(var(--u) * 3.5);
+}
+.cb-mensagem {
+  position: absolute;
+  top: calc(var(--u) * 66);
+  right: calc(var(--u) * 5);
+  left: calc(var(--u) * 5);
+}
+.cb-aviso-cartao {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--u) * 0.6);
+  width: 100%;
+  margin: 0;
+  padding: calc(var(--u) * 3) calc(var(--u) * 3.5);
+  font: inherit;
+  font-size: calc(var(--u) * 4.8);
+  line-height: 1.2;
+  text-align: left;
+  color: #14213d;
+  background: rgb(255 255 255 / 94%);
+  border: 0;
+  border-radius: calc(var(--u) * 4);
+}
+.cb-aviso-cartao--botao {
+  position: relative;
+  z-index: 4;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.cb-aviso-cartao.destacado {
+  outline: 4px solid #ff7a00;
+}
+.cb-escuro {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
   background: #000;
   pointer-events: none;
   transition: opacity 0.08s linear;
 }
-.cel-bril__bolinha {
+.cb-bolinha {
   position: absolute;
-  top: 1.9rem;
-  z-index: 3;
-  width: 2.9rem;
-  height: 2.9rem;
+  z-index: 4;
+  width: max(17cqw, 2.9rem);
+  height: max(17cqw, 2.9rem);
   margin: 0;
   padding: 0;
   background: #ff7a00;
   border: 3px solid #fff;
   border-radius: 50%;
-  box-shadow: 0 2px 6px rgb(0 0 0 / 40%);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 45%);
   touch-action: none;
   cursor: grab;
 }
-.cel-bril__bolinha--direita {
-  right: 0.55rem;
+.cb-bolinha--direita {
+  top: calc(var(--u) * 12);
+  right: calc(var(--u) * 5);
 }
-.cel-bril__bolinha--centro {
-  left: calc(50% - 1.45rem);
+.cb-bolinha--centro {
+  top: calc(var(--u) * 12);
+  left: calc(50% - max(8.5cqw, 1.45rem));
 }
-.cel-bril__bolinha.destacado {
-  outline: 4px solid #14213d;
+.cb-bolinha--baixo {
+  top: calc(var(--u) * 78);
+  left: calc(50% - max(8.5cqw, 1.45rem));
+}
+.cb-bolinha.destacado {
+  outline: 4px solid #fff;
   outline-offset: 3px;
 }
-.cel-bril__seta {
+.cb-seta {
   position: absolute;
-  top: 4.9rem;
+  top: calc(var(--u) * 34);
   z-index: 3;
   width: 0;
-  height: 4.5rem;
+  height: calc(var(--u) * 26);
   border-left: 4px solid #ff7a00;
 }
-.cel-bril__seta::after {
+.cb-seta::after {
   content: '';
   position: absolute;
   bottom: -2px;
@@ -1545,130 +1644,412 @@
   border-right: 8px solid transparent;
   border-left: 8px solid transparent;
 }
-.cel-bril__seta--direita {
-  right: 1.95rem;
+.cb-seta--direita {
+  right: calc(var(--u) * 13.5);
 }
-.cel-bril__seta--centro {
+.cb-seta--centro {
   left: calc(50% - 2px);
 }
-.cel-bril__painel {
+.cb-direcao {
   position: absolute;
-  top: 2.9rem;
-  right: 0.45rem;
-  left: 0.45rem;
-  z-index: 3;
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-  gap: 0.3rem;
-  height: 7.8rem;
-  padding: 0.5rem;
-  background: #dce6f5;
-  border: 2px solid #8fa4c8;
-  border-radius: 0.9rem;
-}
-.cel-bril__dica {
-  flex: 1;
-  font-size: 0.85rem;
+  bottom: calc(var(--u) * 4);
+  left: 50%;
+  z-index: 6;
+  margin: 0;
+  padding: calc(var(--u) * 1.8) calc(var(--u) * 4);
+  font-size: calc(var(--u) * 4.8);
   font-weight: 800;
-  line-height: 1.15;
+  white-space: nowrap;
+  color: #fff;
+  background: #c75b00;
+  border-radius: calc(var(--u) * 6);
+  transform: translateX(-50%);
 }
-.cel-bril__barra {
+
+/* ---- painéis ---- */
+.cb-painel {
+  position: absolute;
+  z-index: 3;
+  color: #fff;
+}
+.cb-tile {
+  display: grid;
+  place-items: center;
+  min-width: 0;
+  padding: calc(var(--u) * 1);
+  font-size: calc(var(--u) * 3.6);
+  font-weight: 700;
+  line-height: 1.1;
+  text-align: center;
+  color: #fff;
+  background: rgb(255 255 255 / 20%);
+  border-radius: calc(var(--u) * 5);
+}
+.cb-tile.ligado {
+  background: #2f80ff;
+}
+.cb-data {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+}
+.cb-data strong {
+  font-size: calc(var(--u) * 8);
+  line-height: 1;
+}
+.cb-data span {
+  font-size: calc(var(--u) * 4);
+}
+.cb-grade {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: calc(var(--u) * 2.5);
+}
+.cb-grade .cb-tile {
+  min-height: calc(var(--u) * 13);
+}
+.cb-grade--2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+.cb-linha-brilho {
+  display: flex;
+}
+.cb-barra {
   position: relative;
-  background: #aab8d0;
-  border-radius: 1.4rem;
   touch-action: none;
   cursor: pointer;
 }
-.cel-bril__barra--em-pe {
-  flex: none;
-  width: 3rem;
-  height: 6.6rem;
-  overflow: hidden;
+.cb-barra:focus-visible,
+.cb-barra.destacado {
+  outline: 4px solid #ff7a00;
+  outline-offset: 3px;
 }
-.cel-bril__barra--deitada {
-  flex: 1;
-  height: 1.3rem;
-  margin: 0 1.2rem 0 0.6rem;
-}
-.cel-bril__enchimento {
+.cb-barra__fill {
   position: absolute;
-  background: #ff7a00;
-  border-radius: 1.4rem;
+  background: #fff;
 }
-.cel-bril__barra--em-pe .cel-bril__enchimento {
-  right: 0;
-  bottom: 0;
-  left: 0;
+.cb-barra--deitada {
+  flex: 1;
+  height: calc(var(--u) * 15);
+  background: rgb(255 255 255 / 22%);
+  border-radius: calc(var(--u) * 8);
 }
-.cel-bril__barra--deitada .cel-bril__enchimento {
+.cb-barra--deitada .cb-barra__fill {
   top: 0;
   bottom: 0;
   left: 0;
+  border-radius: calc(var(--u) * 8);
 }
-.cel-bril__sol {
+.cb-barra--deitada .cb-barra__sol {
   position: absolute;
+  top: 0;
+  left: 0;
+  width: calc(var(--u) * 15);
+  height: calc(var(--u) * 15);
   display: grid;
   place-items: center;
-  width: 2.4rem;
-  height: 2.4rem;
   color: #ff7a00;
   background: #fff;
   border: 3px solid #ff7a00;
   border-radius: 50%;
+  box-shadow: 0 1px 4px rgb(0 0 0 / 40%);
   pointer-events: none;
 }
-.cel-bril__barra--em-pe .cel-bril__sol {
-  left: 0.15rem;
+.cb-barra--deitada .cb-barra__sol svg {
+  width: 62%;
+  height: 62%;
 }
-.cel-bril__barra--deitada .cel-bril__sol {
-  top: -0.55rem;
+.cb-barra--em-pe {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: rgb(255 255 255 / 22%);
+  border-radius: calc(var(--u) * 6);
 }
-.cel-bril__barra:focus-visible,
-.cel-bril__barra.destacado {
-  outline: 4px solid #14213d;
-  outline-offset: 3px;
+.cb-barra--em-pe .cb-barra__fill {
+  right: 0;
+  bottom: 0;
+  left: 0;
 }
-.cel-bril__seta-brilho {
-  flex: none;
-  font-size: 1.6rem;
-  font-weight: 800;
-  line-height: 1;
-  color: #b45300;
-}
-.cel-bril__mensagem {
+.cb-barra--em-pe .cb-barra__sol {
   position: absolute;
-  right: 0.45rem;
-  bottom: 0.5rem;
-  left: 0.45rem;
-  z-index: 0;
+  bottom: calc(var(--u) * 2.5);
+  left: 50%;
+  width: calc(var(--u) * 8);
+  height: calc(var(--u) * 8);
+  color: #ff7a00;
+  transform: translateX(-50%);
+  pointer-events: none;
 }
-.cel-bril__msg-botao,
-.cel-bril__msg-fixa {
+.cb-barra--em-pe .cb-barra__sol svg {
+  width: 100%;
+  height: 100%;
+}
+.cb-controle {
+  min-height: 0;
+}
+.cb-controle--falso {
+  pointer-events: none;
+}
+.cb-controle--falso .cb-barra {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.cb-controle--falso .cb-barra__fill {
+  background: #fff;
+}
+
+/* iPhone: Central de Controle (vidro escuro, barras brancas em pé) */
+.cb-painel--iphone {
+  inset: calc(var(--u) * 14) calc(var(--u) * 5) calc(var(--u) * 18);
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(5, 1fr);
+  gap: calc(var(--u) * 2.5);
+  padding: calc(var(--u) * 3);
+  background: rgb(28 30 42 / 88%);
+  border-radius: calc(var(--u) * 8);
+  backdrop-filter: blur(10px);
+}
+.cb-painel--iphone .cb-conectar {
+  grid-area: 1 / 1 / 3 / 3;
+}
+.cb-painel--iphone .cb-midia {
+  grid-area: 1 / 3 / 3 / 5;
+}
+.cb-painel--iphone .cb-pequenos {
+  grid-area: 3 / 1 / 6 / 3;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: repeat(3, 1fr);
+  gap: calc(var(--u) * 2.5);
+}
+.cb-painel--iphone .cb-pequenos .cb-tile--largo {
+  grid-column: 1 / 3;
+}
+.cb-painel--iphone .cb-controle:not(.cb-controle--falso) {
+  grid-area: 3 / 3 / 6 / 4;
+}
+.cb-painel--iphone .cb-controle--falso {
+  grid-area: 3 / 4 / 6 / 5;
+}
+.cb-bloco {
+  display: grid;
+  background: rgb(255 255 255 / 18%);
+  border-radius: calc(var(--u) * 7);
+}
+.cb-conectar {
+  grid-template-columns: 1fr 1fr;
+  gap: calc(var(--u) * 2);
+  padding: calc(var(--u) * 2);
+}
+.cb-conectar .cb-tile {
+  aspect-ratio: 1;
+  border-radius: 50%;
+}
+.cb-midia {
+  place-items: center;
+  font-size: calc(var(--u) * 3.4);
+  text-align: center;
+  color: rgb(255 255 255 / 70%);
+}
+
+/* Xiaomi (HyperOS): cartões à esquerda, barras em pé à direita, grade de atalhos embaixo */
+.cb-painel--xiaomi {
+  inset: calc(var(--u) * 14) calc(var(--u) * 5) calc(var(--u) * 14);
+  display: grid;
+  grid-template-columns: 1fr 1fr 0.85fr 0.85fr;
+  grid-template-rows: repeat(5, 1fr);
+  gap: calc(var(--u) * 2.5);
+  padding: calc(var(--u) * 3);
+  background: rgb(34 34 38 / 90%);
+  border-radius: calc(var(--u) * 8);
+}
+.cb-painel--xiaomi .cb-xcartoes {
+  grid-area: 1 / 1 / 4 / 3;
+  display: grid;
+  grid-template-rows: 1fr 1fr;
+  gap: calc(var(--u) * 2.5);
+}
+.cb-painel--xiaomi .cb-controle:not(.cb-controle--falso) {
+  grid-area: 1 / 3 / 4 / 4;
+}
+.cb-painel--xiaomi .cb-controle--falso {
+  grid-area: 1 / 4 / 4 / 5;
+}
+.cb-painel--xiaomi .cb-xgrade {
+  grid-area: 4 / 1 / 6 / 5;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: calc(var(--u) * 2.5);
+}
+.cb-painel--xiaomi .cb-xgrade .cb-tile {
+  aspect-ratio: 1;
+  border-radius: 50%;
+}
+.cb-painel--xiaomi .cb-barra--em-pe {
+  border-radius: calc(var(--u) * 7);
+}
+
+/* Samsung (One UI): painel escuro no alto, atalhos em pílulas e barra deitada com bolinha */
+.cb-painel--samsung,
+.cb-painel--motorola,
+.cb-painel--avisos {
+  top: 0;
+  right: 0;
+  left: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.1rem;
-  width: 100%;
-  margin: 0;
-  padding: 0.45rem 0.55rem;
-  font: inherit;
-  font-size: 0.9rem;
-  line-height: 1.2;
-  text-align: left;
-  color: #14213d;
-  background: #fff;
-  border: 2px solid #c9d3e6;
-  border-radius: 0.7rem;
+  gap: calc(var(--u) * 4);
+  padding: calc(var(--u) * 13) calc(var(--u) * 5) calc(var(--u) * 6);
+  border-radius: 0 0 calc(var(--u) * 9) calc(var(--u) * 9);
 }
-.cel-bril__msg-botao {
-  position: relative;
-  z-index: 3;
+.cb-painel--samsung {
+  background: rgb(28 28 30 / 95%);
+}
+.cb-painel--samsung .cb-tile {
+  border-radius: calc(var(--u) * 6);
+  background: #3a3a3c;
+}
+.cb-painel--samsung .cb-tile.ligado {
+  background: #3e91ff;
+}
+.cb-painel--samsung .cb-barra__fill {
+  background: #d9e8ff;
+}
+
+/* Motorola (Android quase puro): data, barra grossa com bolinha e atalhos grandes */
+.cb-painel--motorola,
+.cb-painel--avisos {
+  background: #1b1b1f;
+}
+.cb-painel--motorola .cb-tile,
+.cb-painel--avisos .cb-tile {
+  justify-content: start;
+  min-height: calc(var(--u) * 14);
+  padding: 0 calc(var(--u) * 4);
+  font-size: calc(var(--u) * 4);
+  text-align: left;
+  color: #e3e2e6;
+  background: #44474e;
+  border-radius: calc(var(--u) * 7);
+}
+.cb-painel--motorola .cb-tile.ligado,
+.cb-painel--avisos .cb-tile.ligado {
+  color: #062e6f;
+  background: #a8c7fa;
+}
+.cb-painel--motorola .cb-barra--deitada {
+  background: #44474e;
+}
+.cb-painel--motorola .cb-barra__fill {
+  background: #a8c7fa;
+}
+.cb-painel--avisos {
+  height: calc(var(--u) * 104);
+}
+.cb-grade--compacta {
+  margin-bottom: calc(var(--u) * 1);
+}
+.cb-painel--avisos .cb-aviso-cartao {
+  color: #e3e2e6;
+  background: #2f3033;
+}
+.cb-aviso-dica {
+  margin: 0;
+  font-size: calc(var(--u) * 4);
+  font-weight: 700;
+  text-align: center;
+  color: #ffb877;
+}
+@media (max-width: 380px) {
+  .cb-marcas button {
+    font-size: 0.82rem;
+  }
+}
+
+
+/* ===== Celular de verdade: toque, rolagem e tamanhos ===== */
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+button,
+[role='button'],
+input,
+select {
+  touch-action: manipulation;
+}
+body {
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior-y: none;
+}
+.atividade {
+  padding-left: max(0.6rem, env(safe-area-inset-left));
+  padding-right: max(0.6rem, env(safe-area-inset-right));
+}
+/* o 🔊 Ouvir fica embaixo do rosto, e não numa linha só dele */
+.guia__lado {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+}
+.guia__lado .guia__ouvir {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 3rem;
+  min-height: 2.4rem;
+  padding: 0.1rem 0.2rem;
+  font: inherit;
+  font-size: 0.72rem;
+  line-height: 1.1;
+  color: var(--cor-primaria);
+  background: transparent;
+  border: 0;
+  text-decoration: none;
   cursor: pointer;
 }
-.cel-bril__msg-botao.destacado {
-  outline: 4px solid #ff7a00;
+.guia__lado .guia__ouvir span:first-child {
+  font-size: 1.25rem;
 }
-.cel-bril__sol svg {
-  width: 1.6rem;
-  height: 1.6rem;
+/* a moldura do celular simulado gasta menos tela */
+.atividade .celular {
+  padding: 0.4rem 0.5rem 0.5rem;
+  border-width: 2px;
+  border-radius: 1.2rem;
+}
+.atividade .celular .app {
+  margin: 0 -0.5rem -0.5rem;
+}
+.atividade__palco > .guia-real {
+  margin-top: 0.25rem;
+}
+
+/* a fase do brilho usa a tela toda: sem moldura extra em volta do celular desenhado */
+.atividade__palco .celular:has(.cel-bril) {
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 1rem;
+}
+.atividade__palco .celular:has(.cel-bril) .app {
+  margin: 0;
+  padding-bottom: 0;
+}
+
+/* Início no celular: ajustes compactos (cabem numa linha com a letra normal; quebram se a letra crescer) */
+@media (max-width: 30rem) {
+  .barra-ajustes {
+    gap: 0.35rem;
+    margin-bottom: 0.6rem;
+  }
+  .barra-ajustes .botao {
+    min-height: 2.75rem;
+    padding: 0.2rem 0.65rem;
+    font-size: 0.85rem;
+    line-height: 1.1;
+  }
 }

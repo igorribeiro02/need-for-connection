@@ -102,10 +102,10 @@ export const guias: Record<Tema, Record<Marca, Guia>> = {
       titulo: 'Brilho no Xiaomi',
       passos: [
         'Coloque o dedo no canto de CIMA à DIREITA e deslize para baixo. É a Central de Controle.',
-        'Procure a barrinha com um sol ☀.',
-        'Arraste a bolinha para a DIREITA para clarear e para a ESQUERDA para escurecer.',
+        'Procure a barra comprida, em pé, com um sol ☀.',
+        'Arraste o dedo para CIMA para clarear e para BAIXO para escurecer.',
       ],
-      nota: 'Em versões mais antigas, deslize do meio do alto da tela.',
+      nota: 'Em versões mais antigas (MIUI), deslize do meio do alto da tela e a barra fica deitada: arraste para a DIREITA para clarear.',
     },
   },
   print: {

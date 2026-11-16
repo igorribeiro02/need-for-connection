@@ -115,7 +115,7 @@ export function DesenhoCelular({ marca, tema }: { marca: Marca; tema: Tema }) {
         </>
       )}
 
-      {tema === 'brilho' && <PainelBrilho painelDo={b.painelDo} vezes={b.vezesPainel} iphone={iphone} />}
+      {tema === 'brilho' && <PainelBrilho painelDo={b.painelDo} vezes={b.vezesPainel} iphone={iphone || marca === 'xiaomi'} />}
     </svg>
   )
 }

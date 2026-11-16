@@ -461,7 +461,14 @@ export function TelaApp({ tema, passo, nome, destacar, aoResponder, aoVoltarPass
                 )}
               </div>
             )}
-            <div className="zap-chat__mensagens" role="log" aria-label="Mensagens da conversa">
+            <div
+              className="zap-chat__mensagens"
+              role="log"
+              aria-label="Mensagens da conversa"
+              ref={(el) => {
+                if (el) el.scrollTop = el.scrollHeight // a conversa abre na mensagem mais nova, com a caixa de escrever à vista
+              }}
+            >
               {b.mensagens.map((m, k) => (
                 <Fragment key={k}>
                   {m.dia && <p className="zap-dia">{m.dia}</p>}
@@ -643,7 +650,7 @@ export function TelaApp({ tema, passo, nome, destacar, aoResponder, aoVoltarPass
       case 'celularBrilho':
         return (
           <CelularBrilho
-            key={i}
+            key={`${i}-${b.item.id}-${b.etapa}`}
             etapa={b.etapa}
             valor={b.valor}
             minimo={b.minimo}

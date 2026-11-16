@@ -153,6 +153,17 @@ function Exercicio({ base, bancoId, revisao, aoVoltar, registrarVoltar, aoTrocar
     return () => registrarVoltar(null)
   })
 
+  // no celular a tela rola: cada passo novo começa no alto, e um aviso novo volta a mostrar o guia
+  useEffect(() => {
+    window.scrollTo({ top: 0 })
+  }, [estado.indice, cena])
+  const avisoAtual = estado.aviso
+  useEffect(() => {
+    if (!avisoAtual) return
+    const guia = document.querySelector('.guia')
+    if (guia && guia.getBoundingClientRect().top < 0) window.scrollTo({ top: 0, behavior: 'smooth' })
+  }, [avisoAtual])
+
   if (historia && cena === 'abertura' && !estado.concluida) {
     const comecar = () => {
       vistar(idAbertura(fase.id))
@@ -298,16 +309,19 @@ function Exercicio({ base, bancoId, revisao, aoVoltar, registrarVoltar, aoTrocar
 
       <div className="atividade__palco">
         <div className="guia" role="region" aria-label="Guia do passo">
-          <span className="guia__rosto" aria-hidden="true">
-            {historia ? personagens[historia.abertura[historia.abertura.length - 1].quem].emoji : '👵'}
-          </span>
-          <div className="guia__corpo">
-            <p className="guia__texto">{passo.instrucao}</p>
+          <div className="guia__lado">
+            <span className="guia__rosto" aria-hidden="true">
+              {historia ? personagens[historia.abertura[historia.abertura.length - 1].quem].emoji : '👵'}
+            </span>
             {narracaoDisponivel() && (
               <button className="guia__ouvir" onClick={() => falar(passo.instrucao)} aria-label="Ouvir a instrução">
-                🔊 Ouvir
+                <span aria-hidden="true">🔊</span>
+                <span>Ouvir</span>
               </button>
             )}
+          </div>
+          <div className="guia__corpo">
+            <p className="guia__texto">{passo.instrucao}</p>
             {estado.aviso && (
               <p className={`guia__aviso guia__aviso--${estado.aviso.tipo}`} role="status">
                 {estado.aviso.texto}
@@ -321,8 +335,6 @@ function Exercicio({ base, bancoId, revisao, aoVoltar, registrarVoltar, aoTrocar
           </div>
         </div>
 
-        {fase.guiaReal && <GuiaCelularReal tema={fase.guiaReal} />}
-
         {fase.simulador === 'banco' && banco ? (
           <TelaBanco banco={banco} passo={passo} destacar={destacar} nome={nome} aoResponder={responderApp} aoVoltarPasso={voltarDoApp} />
         ) : fase.aplicativo ? (
@@ -330,6 +342,8 @@ function Exercicio({ base, bancoId, revisao, aoVoltar, registrarVoltar, aoTrocar
         ) : (
           <TelaCelular fase={fase} passo={passo} destacar={destacar} avatar={dados?.perfil.avatar ?? '🙂'} aoResponder={responderApp} />
         )}
+
+        {fase.guiaReal && <GuiaCelularReal tema={fase.guiaReal} />}
       </div>
 
       <div className="atividade__barra">
