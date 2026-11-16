@@ -25,3 +25,4 @@ dist-ssr
 
 # capturas dos testes de navegador
 /*.png
+dist-offline
