@@ -41,17 +41,23 @@ with sync_playwright() as p:
     page.get_by_role("button", name="Andar para baixo").click()
     check("botão direcional leva de volta ao Mundo 0", page.get_by_role("heading", name="Mundo 0: Primeiros toques").is_visible())
 
-    # toque num prédio bloqueado: personagem anda sozinho até lá
-    page.get_by_role("button", name="Mundo 4: Banco e Pix (ainda bloqueado)").click()
-    page.get_by_text("Ainda bloqueado.").wait_for(timeout=5000)
-    check("Mundo 4 bloqueado até terminar o Mundo 0", page.get_by_text("Termine primeiro: Mundo 0 (Primeiros toques)").is_visible())
-    page.screenshot(path=f"{OUT}/m2-bloqueado.png", full_page=True)
+    # qualquer mundo pode ser acessado antes de terminar o Mundo 0
+    check("nenhum mundo tem cadeado", page.get_by_role("button", name="ainda bloqueado").count() == 0)
+    page.get_by_role("button", name="Mundo 4: Banco e Pix", exact=True).click()
+    page.get_by_role("button", name="Fazer um Pix pela chave").wait_for(timeout=5000)
+    page.get_by_role("button", name="Fazer um Pix pela chave").click()
+    check("Pix abre antes de concluir o Mundo 0", page.get_by_role("heading", name="Fazer um Pix pela chave").is_visible())
+    page.get_by_role("button", name="Voltar ao mapa").click()
+    page.screenshot(path=f"{OUT}/m2-acesso-livre.png", full_page=True)
 
     # modo lista (e lembra a escolha depois de recarregar)
     page.get_by_role("button", name="📋 Lista").click()
     check("lista mostra os 8 mundos", page.get_by_role("heading", level=2).count() == 8)
     page.reload()
     check("modo lista foi lembrado", page.get_by_role("heading", level=2).count() == 8)
+    page.get_by_role("button", name="Pedir um Uber", exact=True).click()
+    check("transporte abre pela lista antes do Mundo 0", page.get_by_text("Passo 1 de").is_visible())
+    page.get_by_role("button", name="Voltar ao mapa").click()
     page.screenshot(path=f"{OUT}/m3-lista.png", full_page=True)
 
     # --- Mundo 0 ---
@@ -127,13 +133,13 @@ with sync_playwright() as p:
     check("fase andar concluída", page.get_by_role("heading", name="Você conseguiu!").is_visible())
     page.get_by_role("button", name="Voltar ao mapa").click()
 
-    # liberação
+    # concluir um mundo mantém os demais acessíveis
     page.get_by_role("button", name="🗺️ Mapa").click()
-    check("Mundo 0 concluído libera os outros", page.get_by_role("button", name="Mundo 4: Banco e Pix", exact=True).count() == 1)
+    check("Mundo 4 continua acessível após concluir o Mundo 0", page.get_by_role("button", name="Mundo 4: Banco e Pix", exact=True).count() == 1)
     page.get_by_role("button", name="Mundo 4: Banco e Pix").click()
     page.get_by_role("button", name="Fazer um Pix pela chave").wait_for(timeout=6000)
-    check("Mundo 4 agora está aberto e mostra as fases de Pix", True)
-    page.screenshot(path=f"{OUT}/m6-liberado.png", full_page=True)
+    check("Mundo 4 continua mostrando as fases de Pix", True)
+    page.screenshot(path=f"{OUT}/m6-acesso-livre.png", full_page=True)
 
     # movimento reduzido: o personagem não deve explodir nada, só chegar
     # (a opção é do sistema; aqui conferimos apenas que não houve erros de página)

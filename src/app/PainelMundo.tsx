@@ -1,7 +1,6 @@
-import { mundos } from '../content/worlds'
 import type { Mundo } from '../core/engine/stepTypes'
 import type { DadosPerfil } from '../core/progress/schema'
-import { pendenciasParaAbrir, resumoMundo } from '../core/world/unlock'
+import { resumoMundo } from '../core/world/unlock'
 
 type Props = {
   mundo: Mundo
@@ -9,9 +8,8 @@ type Props = {
   aoAbrirFase: (faseId: string, revisao: boolean) => void
 }
 
-/** Cartão de um mundo: mostra se está bloqueado, "em breve" ou a lista de fases. */
+/** Cartão de um mundo: mostra "em breve" ou a lista de fases de acesso livre. */
 export function PainelMundo({ mundo, dados, aoAbrirFase }: Props) {
-  const pendentes = pendenciasParaAbrir(mundo.numero, mundos, dados.fases)
   const { concluidas, total } = resumoMundo(mundo, dados.fases)
 
   return (
@@ -20,11 +18,7 @@ export function PainelMundo({ mundo, dados, aoAbrirFase }: Props) {
         Mundo {mundo.numero}: {mundo.titulo}
       </h2>
       <p>{mundo.descricao}</p>
-      {pendentes.length > 0 ? (
-        <p className="mensagem mensagem--dica">
-          <strong>🔒 Ainda bloqueado.</strong> Termine primeiro: {pendentes.map((m) => `Mundo ${m.numero} (${m.titulo})`).join(', ')}.
-        </p>
-      ) : mundo.fases.length === 0 ? (
+      {mundo.fases.length === 0 ? (
         <p>
           <strong>Em breve.</strong>
         </p>

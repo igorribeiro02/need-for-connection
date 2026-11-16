@@ -3,6 +3,9 @@
 Jogo web (React + TypeScript + Vite) para ensinar tarefas digitais do dia a dia a pessoas mais velhas.
 Sem servidor: perfil e progresso ficam salvos no navegador. A arquitetura completa está no documento do grupo.
 
+Os mundos de 0 a 7 podem ser acessados em qualquer ordem, sem precisar concluir outro mundo ou fase.
+Mundos que ainda não têm exercícios mostram "Em breve".
+
 ## Como rodar
 
 ```bash
@@ -17,7 +20,7 @@ npm run build      # checa os tipos e gera a pasta dist/
 | Pasta | O que tem |
 | --- | --- |
 | `src/core/engine/` | Contratos (`Passo`, `Fase`, `BancoConfig`) e o motor de fases. Sem React. |
-| `src/core/world/` | Grade do mapa (andar, caminho) e regra de quais mundos estão abertos. Sem React. |
+| `src/core/world/` | Grade do mapa (andar, caminho) e resumos de progresso dos mundos. Sem React. |
 | `src/core/progress/` | Formato salvo, armazenamento, código de backup, PIN. Sem React. |
 | `src/content/` | As fases, escritas em dados. |
 | `src/app/` | Telas e navegação. |

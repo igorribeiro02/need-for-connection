@@ -80,7 +80,6 @@ export type Mundo = {
   titulo: string
   descricao: string
   fases: Fase[]
-  obrigatorio?: boolean
 }
 
 /** Como o Pix por chave funciona em um banco. Cada banco tem o seu fluxo (ordem das telas e nomes dos botões). */

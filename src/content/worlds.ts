@@ -13,7 +13,6 @@ export const mundos: Mundo[] = [
     numero: 0,
     titulo: 'Primeiros toques',
     descricao: 'Aprenda os gestos da tela, um de cada vez.',
-    obrigatorio: true,
     fases: [w0Tocar, w0Deslizar, w0Teclado, w0Andar],
   },
   { numero: 1, titulo: 'Celular no dia a dia', descricao: 'Volume, brilho, pop-ups e print.', fases: [] },
