@@ -105,6 +105,8 @@ export type Fase = {
   historia?: Historia
   /** Fases de banco: os passos mudam conforme o banco escolhido (menus e nomes diferentes). */
   gerarPassos?: (banco: BancoConfig) => Passo[]
+  /** Mostra o desenho de como fazer a tarefa, com as mãos, em um celular de verdade (por marca). */
+  guiaReal?: 'volume' | 'brilho' | 'print'
   passos: Passo[]
 }
 
@@ -149,7 +151,21 @@ export type ItemApp = {
   etiqueta?: string // selinho: "Novo", "Até 24x"
   principal?: boolean // botão cheio, na cor do banco
   inerte?: boolean
+  segurar?: boolean // só vale se a pessoa SEGURAR o dedo (ex.: microfone para gravar áudio) e soltar depois
 }
+
+export type ZapMensagem = {
+  de: 'eu' | 'outro'
+  autor?: string // nome de quem falou, em conversa de grupo
+  texto?: string
+  hora: string
+  audio?: string // duração, ex.: '0:04'
+  foto?: string // emoji da foto enviada
+  estado?: 'enviada' | 'entregue' | 'lida'
+  dia?: string // separador de dia antes da mensagem
+}
+
+export type ZapConversa = { id: string; nome: string; avatar: string; previa: string; hora: string; naoLidas?: number; ticks?: 'entregue' | 'lida'; fixa?: boolean }
 
 export type BlocoApp =
   | { tipo: 'barra'; titulo?: string; voltar?: boolean | ItemApp; acoes?: ItemApp[]; grande?: 'linha' | 'abaixo'; sobretitulo?: string } // seta, título (centro, ou grande à esquerda/abaixo), linha pequena acima do título e botões redondos
@@ -171,12 +187,17 @@ export type BlocoApp =
   | { tipo: 'folha'; texto: string; botao: ItemApp }
   | { tipo: 'navegacao'; itens: ItemApp[]; ativo: number; central?: number; ativoCheio?: boolean }
   | { tipo: 'janela'; titulo: string; texto?: string; fechar?: ItemApp; lado?: 'direita' | 'esquerda'; botoes: ItemApp[]; perigo?: boolean } // janela que aparece sozinha (pop-up): X pequeno no canto e botões grandes de enganar
+  | { tipo: 'zapTopo'; titulo?: string; voltar?: ItemApp; avatar?: string; subtitulo?: string; acoes?: ItemApp[] } // barra verde do WhatsApp (lista ou conversa)
+  | { tipo: 'zapConversas'; filtros?: string[]; itens: ZapConversa[]; novo?: ItemApp } // lista de conversas
+  | { tipo: 'zapChat'; mensagens: ZapMensagem[]; campo?: ItemApp; anexar?: ItemApp; camera?: ItemApp; microfone?: ItemApp; enviar?: ItemApp; escrevendo?: boolean; texto?: string } // conversa com balões e barra de mensagem
+  | { tipo: 'zapAnexos'; itens: ItemApp[] } // folha de anexos: documento, câmera, galeria...
   | { tipo: 'espaco' } // empurra o que vem depois para baixo (botão no pé da tela)
   | { tipo: 'texto'; texto: string; centro?: boolean; link?: boolean }
 
 export type TelaApp = {
   escuro?: boolean
   escurecida?: boolean // fundo apagado atrás de uma folha (confirmação)
+  zap?: boolean // tela do WhatsApp: sem margens, de ponta a ponta
   blocos: BlocoApp[]
 }
 

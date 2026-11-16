@@ -1,12 +1,13 @@
-import type { AppTransporte, BlocoApp, Fase, TelaApp } from '../../core/engine/stepTypes'
+import type { AppTransporte, BlocoApp, Fase, ItemApp, TelaApp, ZapConversa, ZapMensagem } from '../../core/engine/stepTypes'
 import { digitar, pergunta, toque } from '../transporte/passos'
 
+// Interface copiada do WhatsApp (barra verde, balões, barra de mensagem redonda, microfone que se segura).
 const APP_ZAP: AppTransporte = {
   id: 'zap',
   nome: 'WhatsApp',
-  tema: { corPrincipal: '#0b6b57', corDestaque: '#0b6b57', link: '#0b6b57' },
+  tema: { corPrincipal: '#008069', corDestaque: '#00a884', link: '#008069' },
   fonte:
-    'Estrutura de tutoriais do WhatsApp (conversas, anexar, áudio). Ainda NÃO conferida em captura de tela real do grupo: conferir no app.',
+    'Layout do WhatsApp (lista de conversas, balões, anexos e microfone de segurar) reproduzido de capturas e tutoriais oficiais. Conferir no app do grupo.',
 }
 
 const nav: BlocoApp = {
@@ -15,52 +16,78 @@ const nav: BlocoApp = {
   itens: [
     { rotulo: 'Conversas', icone: '💬', inerte: true },
     { rotulo: 'Atualizações', icone: '⭕', inerte: true },
+    { rotulo: 'Comunidades', icone: '👥', inerte: true },
     { rotulo: 'Chamadas', icone: '📞', inerte: true },
   ],
 }
 
+const CONVERSAS: ZapConversa[] = [
+  { id: 'conv-ana', nome: 'Ana', avatar: '👩', previa: 'Vó, você vem no meu aniversário? 🎂', hora: '09:12', naoLidas: 1 },
+  { id: 'conv-grupo', nome: 'Família Silva', avatar: '👪', previa: 'Tia Rosa: gente, olhem o convite!', hora: '08:50', naoLidas: 3 },
+  { id: 'conv-osvaldo', nome: 'Seu Osvaldo', avatar: '👴', previa: 'Bom dia, vizinha! 🌞', hora: 'Ontem', ticks: 'lida' },
+  { id: 'conv-desconhecido', nome: '+55 21 9xxxx-0000', avatar: '👤', previa: 'Você ganhou um prêmio! Clique aqui', hora: 'Ontem' },
+]
+
 const lista = (): TelaApp => ({
+  zap: true,
   blocos: [
     {
-      tipo: 'barra',
+      tipo: 'zapTopo',
       titulo: 'WhatsApp',
       acoes: [
         { rotulo: 'Câmera', icone: '📷', inerte: true },
         { rotulo: 'Buscar', icone: '🔍', inerte: true },
+        { rotulo: 'Mais opções', icone: '⋮', inerte: true },
       ],
     },
     {
-      tipo: 'lista',
-      itens: [
-        { rotulo: 'Ana', id: 'conv-ana', icone: '👩', detalhe: 'Vó, você vem no meu aniversário? 🎂', etiqueta: '1' },
-        { rotulo: 'Família Silva', id: 'conv-grupo', icone: '👪', detalhe: 'Tia Rosa: gente, olhem o convite!', etiqueta: '3' },
-        { rotulo: 'Seu Osvaldo', id: 'conv-osvaldo', icone: '👴', detalhe: 'Bom dia, vizinha! 🌞' },
-        { rotulo: '+55 21 9xxxx-0000', id: 'conv-desconhecido', icone: '👤', detalhe: 'Você ganhou um prêmio! Clique aqui' },
-      ],
+      tipo: 'zapConversas',
+      filtros: ['Todas', 'Não lidas', 'Favoritas', 'Grupos'],
+      itens: CONVERSAS,
+      novo: { rotulo: 'Nova conversa', icone: '➕', inerte: true },
     },
     nav,
   ],
 })
 
-const conversa = (msgs: string[], extra: BlocoApp[] = [], voltarId = 'voltar-lista', titulo = 'Ana'): TelaApp => ({
+const VOLTAR: ItemApp = { rotulo: 'Voltar', icone: '←', id: 'voltar-lista' }
+
+type Barra = {
+  campo?: ItemApp
+  anexar?: ItemApp
+  camera?: ItemApp
+  microfone?: ItemApp
+  enviar?: ItemApp
+  escrevendo?: boolean
+  texto?: string
+}
+
+const conversa = (mensagens: ZapMensagem[], barra: Barra = {}, nome = 'Ana', avatar = '👩', subtitulo = 'online'): TelaApp => ({
+  zap: true,
   blocos: [
     {
-      tipo: 'barra',
-      voltar: { rotulo: 'Voltar', icone: '←', id: voltarId },
-      titulo,
-      acoes: [{ rotulo: 'Chamada de vídeo', icone: '🎥', inerte: true }],
+      tipo: 'zapTopo',
+      voltar: VOLTAR,
+      titulo: nome,
+      avatar,
+      subtitulo,
+      acoes: [{ rotulo: 'Ligar', icone: '📞', inerte: true }],
     },
-    ...msgs.map((texto): BlocoApp => ({ tipo: 'cartao', titulo: texto })),
-    { tipo: 'espaco' },
-    ...extra,
+    { tipo: 'zapChat', mensagens, ...barra },
   ],
 })
 
-const caixaDeMensagem = (): BlocoApp => ({ tipo: 'pesquisa', item: { rotulo: 'Mensagem', icone: '✏️', id: 'campo-msg' } })
+const CAMPO: ItemApp = { rotulo: 'Mensagem', id: 'campo-msg' }
+const ANEXAR: ItemApp = { rotulo: 'Anexar', id: 'clipe' }
+const CAMERA: ItemApp = { rotulo: 'Câmera', id: 'camera-chat', inerte: true }
+const MICROFONE: ItemApp = { rotulo: 'Gravar áudio', id: 'microfone', segurar: true }
+const ENVIAR: ItemApp = { rotulo: 'Enviar', id: 'enviar', principal: true }
 
-const MSG_ANA = ['Ana: Vó, o almoço é domingo, às 12h30, no Mercado Central.', 'Ana: Você vem? Responda quando puder 💛']
+const MSG_ANA: ZapMensagem[] = [
+  { de: 'outro', texto: 'Vó, o almoço é domingo, às 12h30, no Mercado Central.', hora: '09:10', dia: 'Hoje' },
+  { de: 'outro', texto: 'Você vem? Responda quando puder 💛', hora: '09:12' },
+]
 
-// ---------------------------------------------------------------- Fase 2.1
 export const w2Responder: Fase = {
   id: 'w2-responder',
   mundo: 2,
@@ -83,81 +110,88 @@ export const w2Responder: Fase = {
       'conv-ana',
       'Ana',
       'Cuidado com o número desconhecido: conversa de quem você não conhece pode ser golpe.',
-      'É a primeira da lista, com a foto de uma moça e o número 1 ao lado.',
+      'É a primeira da lista, com a foto de uma moça e o número 1 em verde ao lado.',
     ),
     pergunta(
       'ler',
       'Leia as mensagens da Ana. A que horas é o almoço?',
-      conversa(MSG_ANA),
+      conversa(MSG_ANA, { campo: CAMPO, anexar: ANEXAR, camera: CAMERA, microfone: { ...MICROFONE, inerte: true, segurar: false } }),
       [
         { id: '12h', rotulo: 'Às 12h' },
         { id: '12h30', rotulo: 'Às 12h30' },
         { id: '13h30', rotulo: 'Às 13h30' },
       ],
       '12h30',
-      ['Leia a primeira mensagem da Ana.', 'O horário está escrito logo depois de "domingo, às".'],
+      ['Leia a primeira mensagem da Ana, no balão branco.', 'O horário está escrito logo depois de "domingo, às".'],
       'Quase! Releia a primeira mensagem: o horário está nela.',
       'Leia a mensagem inteira antes de responder.',
     ),
     toque(
       'campo',
       'Toque na caixa "Mensagem", no pé da tela, para escrever.',
-      conversa(MSG_ANA, [caixaDeMensagem()]),
+      conversa(MSG_ANA, { campo: CAMPO, anexar: ANEXAR, camera: CAMERA, microfone: { ...MICROFONE, inerte: true, segurar: false } }),
       'campo-msg',
       'Mensagem',
-      'Para escrever, toque na caixa embaixo, onde está escrito "Mensagem".',
-      'É a barra branca no pé da tela, com um lápis.',
+      'Para escrever, toque na caixa branca embaixo, onde está escrito "Mensagem".',
+      'É a barra branca redonda no pé da tela.',
     ),
     digitar(
       'escrever',
       'Escreva a resposta: Eu vou, Ana!',
-      conversa(MSG_ANA, [{ tipo: 'campo', icone: '✏️' }]),
+      conversa(MSG_ANA, { escrevendo: true }),
       'Eu vou, Ana!',
       'Mensagem',
       'Enviar',
-      'Escreva a resposta e depois toque em Enviar.',
+      'Escreva a resposta e depois toque na setinha verde para enviar.',
     ),
     toque(
       'enviar',
-      'Sua mensagem está escrita. Toque em "Enviar" para mandar.',
-      conversa(
-        [...MSG_ANA, 'Você: Eu vou, Ana!'],
-        [{ tipo: 'botao', item: { rotulo: 'Enviar', icone: '➤', id: 'enviar', principal: true } }],
-      ),
+      'Sua mensagem está escrita. Toque na setinha verde ➤ para mandar.',
+      conversa(MSG_ANA, { campo: CAMPO, texto: 'Eu vou, Ana!', anexar: { ...ANEXAR, inerte: true }, enviar: ENVIAR }),
       'enviar',
       'Enviar',
-      'A mensagem só vai depois que você toca em Enviar.',
-      'É o botão verde no pé da tela, com uma seta.',
+      'A mensagem só vai depois que você toca na seta verde.',
+      'É o botão redondo verde, no canto de baixo, à direita.',
     ),
     toque(
       'voltar',
-      'Mensagem enviada! Toque na seta no alto para voltar à lista de conversas.',
-      conversa([...MSG_ANA, 'Você: Eu vou, Ana! ✓✓']),
+      'Mensagem enviada! Toque na seta ← no alto para voltar à lista de conversas.',
+      conversa([...MSG_ANA, { de: 'eu', texto: 'Eu vou, Ana!', hora: '09:14', estado: 'lida' }], {
+        campo: CAMPO,
+        anexar: { ...ANEXAR, inerte: true },
+        camera: CAMERA,
+        microfone: { ...MICROFONE, inerte: true, segurar: false },
+      }),
       'voltar-lista',
       'Voltar',
       'A seta no canto de cima, à esquerda, volta para a tela anterior.',
-      'É a seta ← bem no alto, à esquerda do nome da Ana.',
+      'É a seta ← bem no alto, à esquerda do nome da Ana. Os dois tracinhos azuis ✓✓ mostram que ela leu.',
     ),
   ],
 }
 
 // ---------------------------------------------------------------- Fase 2.2
 const anexos = (): TelaApp => ({
-  escurecida: true,
+  zap: true,
   blocos: [
-    { tipo: 'barra', voltar: { rotulo: 'Voltar', icone: '←', id: 'voltar-lista' }, titulo: 'Ana' },
-    { tipo: 'espaco' },
     {
-      tipo: 'atalhos',
-      titulo: 'Enviar',
-      estilo: 'quadrados',
+      tipo: 'zapTopo',
+      voltar: VOLTAR,
+      titulo: 'Ana',
+      avatar: '👩',
+      subtitulo: 'online',
+      acoes: [{ rotulo: 'Ligar', icone: '📞', inerte: true }],
+    },
+    { tipo: 'zapChat', mensagens: [MSG_ANA[1]] },
+    {
+      tipo: 'zapAnexos',
       itens: [
         { rotulo: 'Documento', icone: '📄', id: 'documento' },
         { rotulo: 'Câmera', icone: '📷', id: 'camera' },
         { rotulo: 'Galeria', icone: '🖼️', id: 'galeria' },
+        { rotulo: 'Áudio', icone: '🎧', id: 'audio' },
         { rotulo: 'Localização', icone: '📍', id: 'localizacao' },
         { rotulo: 'Contato', icone: '👤', id: 'contato' },
-        { rotulo: 'Áudio', icone: '🎧', id: 'audio' },
       ],
     },
   ],
@@ -198,20 +232,12 @@ export const w2Foto: Fase = {
     toque('abrir', 'Abra a conversa da Ana.', lista(), 'conv-ana', 'Ana', 'Procure o nome da Ana na lista.', 'É a primeira da lista.'),
     toque(
       'clipe',
-      'Para mandar uma foto, toque no clipe 📎 ao lado da caixa de mensagem.',
-      conversa(MSG_ANA, [
-        {
-          tipo: 'lista',
-          itens: [
-            { rotulo: 'Anexar', icone: '📎', id: 'clipe' },
-            { rotulo: 'Mensagem', icone: '✏️', id: 'campo-msg' },
-          ],
-        },
-      ]),
+      'Para mandar uma foto, toque no clipe 📎 dentro da caixa de mensagem.',
+      conversa(MSG_ANA, { campo: CAMPO, anexar: ANEXAR, camera: CAMERA, microfone: { ...MICROFONE, inerte: true, segurar: false } }),
       'clipe',
       'Anexar',
-      'Não é a caixa de escrever: é o botão do clipe, usado para anexar coisas.',
-      'É o botão "Anexar", com um clipe, logo acima da caixa de mensagem.',
+      'Não é a caixa de escrever: é o clipe, usado para anexar coisas.',
+      'É o clipe 📎, no lado direito da caixa de mensagem, ao lado da câmera.',
     ),
     toque(
       'galeria',
@@ -220,7 +246,7 @@ export const w2Foto: Fase = {
       'galeria',
       'Galeria',
       'A "Câmera" tira uma foto nova. Como a foto já existe, use a Galeria.',
-      'É o terceiro botão, com uma moldura de quadro.',
+      'É o botão roxo com uma moldura de quadro, na primeira fileira.',
     ),
     toque(
       'qual-foto',
@@ -234,7 +260,7 @@ export const w2Foto: Fase = {
     digitar(
       'legenda',
       'Escreva uma legenda: Olha o bolo!',
-      conversa(['Foto: 🎂 Bolo de chocolate'], [{ tipo: 'campo', icone: '✏️' }]),
+      conversa([...MSG_ANA, { de: 'eu', foto: '🎂', hora: '09:20', estado: 'enviada' }], { escrevendo: true }),
       'Olha o bolo!',
       'Legenda',
       'Enviar',
@@ -242,31 +268,29 @@ export const w2Foto: Fase = {
     ),
     toque(
       'enviar',
-      'Confira se é mesmo a foto do bolo e toque em "Enviar".',
-      conversa(
-        ['Foto: 🎂 Bolo de chocolate', 'Legenda: Olha o bolo!'],
-        [{ tipo: 'botao', item: { rotulo: 'Enviar', icone: '➤', id: 'enviar', principal: true } }],
-      ),
+      'Confira se é mesmo a foto do bolo e toque na setinha verde ➤ para enviar.',
+      conversa([...MSG_ANA, { de: 'eu', foto: '🎂', texto: 'Olha o bolo!', hora: '09:20', estado: 'enviada' }], {
+        campo: CAMPO,
+        texto: 'Olha o bolo!',
+        enviar: ENVIAR,
+      }),
       'enviar',
       'Enviar',
       'Depois de enviada, a foto não volta. Confira antes.',
-      'É o botão verde no pé da tela.',
+      'É o botão redondo verde, no canto de baixo, à direita.',
     ),
   ],
 }
 
 // ---------------------------------------------------------------- Fase 2.3
-const grupo = (extra: BlocoApp[] = []): TelaApp =>
-  conversa(
-    [
-      'Tia Rosa: Gente, o almoço da Ana é domingo, às 12h30!',
-      'Tio Beto: Eu levo os refrigerantes.',
-      'Tia Rosa: Quem precisa de carona, avise aqui.',
-    ],
-    extra,
-    'voltar-lista',
-    'Família Silva',
-  )
+const GRUPO: ZapMensagem[] = [
+  { de: 'outro', autor: 'Tia Rosa', texto: 'Gente, o almoço da Ana é domingo, às 12h30!', hora: '08:44', dia: 'Hoje' },
+  { de: 'outro', autor: 'Tio Beto', texto: 'Eu levo os refrigerantes.', hora: '08:47' },
+  { de: 'outro', autor: 'Tia Rosa', texto: 'Quem precisa de carona, avise aqui.', hora: '08:50' },
+]
+
+const grupo = (mensagens: ZapMensagem[] = GRUPO, barra: Barra = {}): TelaApp =>
+  conversa(mensagens, barra, 'Família Silva', '👪', 'toque para ver os membros')
 
 export const w2Audio: Fase = {
   id: 'w2-audio',
@@ -290,12 +314,17 @@ export const w2Audio: Fase = {
       'conv-grupo',
       'Família Silva',
       'Um grupo tem vários nomes de pessoas. O nome do grupo aparece na lista.',
-      'É a segunda da lista, com três mensagens novas.',
+      'É a segunda da lista, com o número 3 em verde.',
     ),
     pergunta(
       'ler',
       'Leia o grupo. Quem vai levar os refrigerantes?',
-      grupo(),
+      grupo(GRUPO, {
+        campo: CAMPO,
+        anexar: { ...ANEXAR, inerte: true },
+        camera: CAMERA,
+        microfone: { ...MICROFONE, inerte: true, segurar: false },
+      }),
       [
         { id: 'rosa', rotulo: 'Tia Rosa' },
         { id: 'beto', rotulo: 'Tio Beto' },
@@ -304,51 +333,30 @@ export const w2Audio: Fase = {
       'beto',
       ['Leia as três mensagens do grupo.', 'A segunda mensagem fala dos refrigerantes.'],
       'Quase! Procure a mensagem que fala dos refrigerantes.',
-      'Em grupo há muitas pessoas: confira quem escreveu cada mensagem.',
+      'Em grupo há muitas pessoas: o nome de quem escreveu aparece em laranja em cima de cada balão.',
     ),
     toque(
       'gravar',
-      'Para falar em vez de escrever, toque no microfone 🎤.',
-      grupo([
-        {
-          tipo: 'lista',
-          itens: [
-            { rotulo: 'Mensagem', icone: '✏️', id: 'campo-msg' },
-            { rotulo: 'Gravar áudio', icone: '🎤', id: 'microfone' },
-          ],
-        },
-      ]),
+      'Para falar em vez de escrever, SEGURE o dedo no microfone 🎤 (o botão verde redondo), fale "Eu preciso de carona" e depois SOLTE.',
+      grupo(GRUPO, { campo: CAMPO, anexar: { ...ANEXAR, inerte: true }, camera: CAMERA, microfone: MICROFONE }),
       'microfone',
       'Gravar áudio',
-      'O microfone grava a sua voz. A caixa de mensagem serve para escrever.',
-      'É o botão "Gravar áudio", com um microfone.',
-    ),
-    toque(
-      'enviar-audio',
-      'Está gravando! Fale: "Eu preciso de carona". Depois toque em "Enviar áudio".',
-      grupo([
-        { tipo: 'cartao', titulo: '🔴 Gravando… 0:04', texto: 'Fale perto do celular.' },
-        {
-          tipo: 'lista',
-          itens: [
-            { rotulo: 'Apagar o áudio', icone: '🗑️', id: 'apagar' },
-            { rotulo: 'Enviar áudio', icone: '➤', id: 'enviar-audio' },
-          ],
-        },
-      ]),
-      'enviar-audio',
-      'Enviar áudio',
-      'A lixeira apaga o que você gravou. Para mandar, use a seta.',
-      'É o botão com a seta ➤, embaixo.',
+      'No WhatsApp o áudio só grava enquanto o dedo está apertando o microfone. Ao soltar, ele é enviado sozinho. Se tiver dificuldade, use "Me mostre onde tocar": nesse modo basta um toque.',
+      'É o botão redondo verde no canto de baixo, à direita, com um microfone. Mantenha o dedo apertado por uns 2 segundos.',
     ),
     toque(
       'voltar',
-      'Áudio enviado! Volte para a lista de conversas.',
-      grupo([{ tipo: 'cartao', titulo: 'Você: 🎧 Áudio 0:04 ✓✓' }]),
+      'Áudio enviado! Ele aparece como um balão verde com uma onda. Toque na seta ← para voltar à lista.',
+      grupo([...GRUPO, { de: 'eu', audio: '0:04', hora: '08:53', estado: 'lida' }], {
+        campo: CAMPO,
+        anexar: { ...ANEXAR, inerte: true },
+        camera: CAMERA,
+        microfone: { ...MICROFONE, inerte: true, segurar: false },
+      }),
       'voltar-lista',
       'Voltar',
       'A seta no alto, à esquerda, volta para a lista.',
-      'É a seta ← no alto da tela.',
+      'É a seta ← no alto da tela, à esquerda do nome do grupo.',
     ),
   ],
 }

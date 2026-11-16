@@ -1,5 +1,5 @@
 import type { AppTransporte, BlocoApp, Fase, Passo, PainelCelular, TelaApp } from '../../core/engine/stepTypes'
-import { pergunta as perguntaApp, toque as toqueApp } from '../transporte/passos'
+import { toque as toqueApp } from '../transporte/passos'
 
 // Mundo 1: o celular no dia a dia. Tudo é simulado em um painel simples (ver PainelCelular).
 
@@ -32,6 +32,7 @@ const maisMenos = [
 
 export const w1Volume: Fase = {
   id: 'w1-volume',
+  guiaReal: 'volume',
   mundo: 1,
   titulo: 'Aumentar o volume',
   simulador: 'celular',
@@ -92,6 +93,7 @@ export const w1Volume: Fase = {
 
 export const w1Brilho: Fase = {
   id: 'w1-brilho',
+  guiaReal: 'brilho',
   mundo: 1,
   titulo: 'Aumentar o brilho da tela',
   simulador: 'celular',
@@ -253,25 +255,39 @@ export const w1Popup: Fase = {
       'Anúncio de empréstimo fácil que aparece sozinho pode ser golpe. Feche sem tocar no botão grande.',
       'É o X pequeno no canto de cima, à direita do anúncio.',
     ),
-    perguntaApp(
+    toqueApp(
       'telefone',
-      'Uma janela diz "Seu celular tem vírus! Ligue agora para 0800 123 456". O que você faz?',
-      siteComJanela({ tipo: 'janela', perigo: true, titulo: '☎️ VÍRUS! Ligue agora: 0800 123 456', texto: 'Um técnico vai ajudar.', botoes: [{ rotulo: 'LIGAR', id: 'ligar-x' }] }),
-      [
-        { id: 'ligar', rotulo: 'Ligo para o número' },
-        { id: 'fechar', rotulo: 'Fecho a janela e não ligo' },
-        { id: 'instalar', rotulo: 'Instalo o que ele pedir' },
-      ],
+      'A janela diz que há vírus e manda ligar. Toque no que você faz: "Fecho a janela e não ligo".',
+      {
+        blocos: [
+          {
+            tipo: 'janela',
+            perigo: true,
+            titulo: '☎️ VÍRUS! Ligue agora: 0800 123 456',
+            botoes: [],
+          },
+          {
+            tipo: 'lista',
+            titulo: 'O que você faz?',
+            itens: [
+              { rotulo: 'Ligo para o número', id: 'ligar', icone: '📞' },
+              { rotulo: 'Fecho a janela e não ligo', id: 'fechar', icone: '✅' },
+              { rotulo: 'Instalo o que ele pedir', id: 'instalar', icone: '⬇️' },
+            ],
+          },
+        ],
+      },
       'fechar',
-      ['Quem aparece sozinho na tela pedindo para ligar é golpista.', 'Feche a janela e não ligue.'],
-      'Quase! Nunca ligue nem instale nada por causa de um aviso que apareceu sozinho.',
-      'Aviso na tela pedindo para ligar é golpe. Feche e ignore.',
+      'Fecho a janela e não ligo',
+      'Quem aparece sozinho na tela pedindo para ligar é golpista.',
+      'É a opção do meio, com um ✅: "Fecho a janela e não ligo".',
     ),
   ],
 }
 
 export const w1Print: Fase = {
   id: 'w1-print',
+  guiaReal: 'print',
   mundo: 1,
   titulo: 'Tirar um print da tela',
   simulador: 'celular',

@@ -6,6 +6,7 @@ import { buscarFase, mundos, resolverFase } from '../content/worlds'
 import { estrelas, iniciar, mostrarOnde, passoAtual, pedirDica, responder, voltarPasso } from '../core/engine/phaseRunner'
 import type { EstadoFase } from '../core/engine/phaseRunner'
 import type { Fase } from '../core/engine/stepTypes'
+import { GuiaCelularReal } from '../features/guiaCelular/GuiaCelularReal'
 import { falar, narracaoDisponivel } from '../features/settings/narracao'
 import { BarraAjustes } from '../features/settings/BarraAjustes'
 import { CenaHistoria } from '../features/historia/CenaHistoria'
@@ -319,6 +320,8 @@ function Exercicio({ base, bancoId, revisao, aoVoltar, registrarVoltar, aoTrocar
             )}
           </div>
         </div>
+
+        {fase.guiaReal && <GuiaCelularReal tema={fase.guiaReal} />}
 
         {fase.simulador === 'banco' && banco ? (
           <TelaBanco banco={banco} passo={passo} destacar={destacar} nome={nome} aoResponder={responderApp} aoVoltarPasso={voltarDoApp} />

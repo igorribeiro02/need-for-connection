@@ -46,6 +46,14 @@ export function itensDoBloco(b: BlocoApp): ItemApp[] {
       return [...(b.fechar ? [b.fechar] : []), ...b.botoes]
     case 'navegacao':
       return b.itens
+    case 'zapTopo':
+      return [...(b.voltar ? [b.voltar] : []), ...(b.acoes ?? [])]
+    case 'zapConversas':
+      return [...b.itens.map((c) => ({ rotulo: c.nome, id: c.id })), ...(b.novo ? [b.novo] : [])]
+    case 'zapChat':
+      return [b.campo, b.anexar, b.camera, b.microfone, b.enviar].filter((x): x is ItemApp => !!x)
+    case 'zapAnexos':
+      return b.itens
     default:
       return []
   }

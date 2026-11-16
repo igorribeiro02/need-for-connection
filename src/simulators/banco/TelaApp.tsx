@@ -1,4 +1,4 @@
-import { useState, type CSSProperties, type ReactNode } from 'react'
+import { Fragment, useRef, useState, type CSSProperties, type ReactNode } from 'react'
 import type { BancoConfig, BlocoApp, ItemApp, Passo } from '../../core/engine/stepTypes'
 import { idDoItem } from '../../core/engine/telaApp'
 import { CampoDigitar } from '../celular/CampoDigitar'
@@ -21,6 +21,11 @@ type Props = {
 export function TelaApp({ tema, passo, nome, destacar, aoResponder, aoVoltarPasso }: Props) {
   const tela = passo.tela!.app!
   const [aviso, setAviso] = useState('')
+  // microfone de segurar: segundos gravados enquanto o dedo está na tela (null = dedo solto)
+  const [gravado, setGravado] = useState<number | null>(null)
+  const inicioToque = useRef(0)
+  const relogio = useRef<number | undefined>(undefined)
+  const soltou = useRef(false)
   const toque = passo.tipo === 'tocar'
 
   const primeiroNome = nome.trim().split(/\s+/)[0] || 'Você'
@@ -48,6 +53,31 @@ export function TelaApp({ tema, passo, nome, destacar, aoResponder, aoVoltarPass
     }
     setAviso('')
     aoResponder(idDoItem(item))
+  }
+
+  function comecarSegurar(item: ItemApp) {
+    if (!toque || item.inerte) {
+      tocou(item)
+      return
+    }
+    soltou.current = false
+    setAviso('')
+    inicioToque.current = Date.now()
+    setGravado(0)
+    window.clearInterval(relogio.current)
+    relogio.current = window.setInterval(() => setGravado(Math.floor((Date.now() - inicioToque.current) / 1000)), 200)
+  }
+
+  function soltarSegurar(item: ItemApp, cancelado = false) {
+    if (gravado === null) return
+    window.clearInterval(relogio.current)
+    const duracao = Date.now() - inicioToque.current
+    setGravado(null)
+    soltou.current = true
+    if (cancelado) return
+    // no modo guiado ('Me mostre onde tocar') um toque curto basta, para quem não consegue segurar
+    if (duracao >= 1200 || destacar) tocou(item)
+    else setAviso('Segure o dedo no microfone enquanto fala, e só solte quando terminar.')
   }
 
   const marca = (item: ItemApp) => (destacar && toque && idDoItem(item) === passo.alvo ? ' destacado' : '')
@@ -337,6 +367,196 @@ export function TelaApp({ tema, passo, nome, destacar, aoResponder, aoVoltarPass
             )}
           </nav>
         )
+      case 'zapTopo':
+        return (
+          <div key={i} className="zap-topo">
+            {b.voltar && (
+              <button
+                type="button"
+                className={`zap-topo__voltar${marca(b.voltar)}`}
+                aria-label={b.voltar.rotulo}
+                onClick={() => {
+                  if (toque && idDoItem(b.voltar!) === passo.alvo) tocou(b.voltar!)
+                  else aoVoltarPasso()
+                }}
+              >
+                <span aria-hidden="true">{b.voltar.icone ?? '←'}</span>
+              </button>
+            )}
+            {b.avatar && (
+              <span className="zap-avatar" aria-hidden="true">
+                {b.avatar}
+              </span>
+            )}
+            <div className="zap-topo__texto">
+              {b.titulo && <strong>{t(b.titulo)}</strong>}
+              {b.subtitulo && <small>{b.subtitulo}</small>}
+            </div>
+            <div className="zap-topo__acoes">
+              {b.acoes?.map((a, k) =>
+                botao(a, 'zap-icone zap-icone--topo', <><span aria-hidden="true">{a.icone ?? '•'}</span><span className="sr-only">{a.rotulo}</span></>, `za${k}`),
+              )}
+            </div>
+          </div>
+        )
+      case 'zapConversas':
+        return (
+          <div key={i} className="zap-conversas">
+            {b.filtros && (
+              <div className="zap-filtros" aria-hidden="true">
+                {b.filtros.map((f, k) => (
+                  <span key={f} className={k === 0 ? 'ativo' : ''}>
+                    {f}
+                  </span>
+                ))}
+              </div>
+            )}
+            <ul>
+              {b.itens.map((c) => (
+                <li key={c.id}>
+                  {botao(
+                    { rotulo: c.nome, id: c.id },
+                    'zap-conversa',
+                    <>
+                      <span className="zap-avatar" aria-hidden="true">
+                        {c.avatar}
+                      </span>
+                      <span className="zap-conversa__meio">
+                        <strong>{c.nome}</strong>
+                        <small>
+                          {c.ticks && <span className={`zap-ticks zap-ticks--${c.ticks}`}>✓✓ </span>}
+                          {c.previa}
+                        </small>
+                      </span>
+                      <span className="zap-conversa__lado">
+                        <small className={c.naoLidas ? 'novo' : ''}>{c.hora}</small>
+                        {c.naoLidas ? (
+                          <b className="zap-badge" aria-label={`${c.naoLidas} mensagens novas`}>
+                            {c.naoLidas}
+                          </b>
+                        ) : null}
+                      </span>
+                    </>,
+                    c.id,
+                  )}
+                </li>
+              ))}
+            </ul>
+            {b.novo && botao(b.novo, 'zap-fab', <><span aria-hidden="true">{b.novo.icone ?? '💬'}</span><span className="sr-only">{b.novo.rotulo}</span></>, 'fab')}
+          </div>
+        )
+      case 'zapChat': {
+        const gravando = gravado !== null && !!b.microfone
+        return (
+          <div key={i} className="zap-chat">
+            <div className="zap-chat__mensagens" role="log" aria-label="Mensagens da conversa">
+              {b.mensagens.map((m, k) => (
+                <Fragment key={k}>
+                  {m.dia && <p className="zap-dia">{m.dia}</p>}
+                  <div className={`zap-balao zap-balao--${m.de}`}>
+                    {m.autor && <strong className="zap-autor">{m.autor}</strong>}
+                    {m.foto && (
+                      <span className="zap-foto" role="img" aria-label="Foto enviada">
+                        {m.foto}
+                      </span>
+                    )}
+                    {m.audio && (
+                      <span className="zap-audio" role="img" aria-label={`Áudio de ${m.audio}`}>
+                        <span className="zap-audio__play">▶</span>
+                        <span className="zap-onda">
+                          {Array.from({ length: 18 }, (_, j) => (
+                            <i key={j} style={{ height: `${30 + ((j * 37) % 60)}%` }} />
+                          ))}
+                        </span>
+                        <small>{m.audio}</small>
+                      </span>
+                    )}
+                    {m.texto && <span className="zap-texto">{t(m.texto)}</span>}
+                    <small className="zap-hora">
+                      {m.hora}
+                      {m.de === 'eu' && <span className={`zap-ticks zap-ticks--${m.estado ?? 'lida'}`}> {m.estado === 'enviada' ? '✓' : '✓✓'}</span>}
+                    </small>
+                  </div>
+                </Fragment>
+              ))}
+            </div>
+            <div className={`zap-compositor${gravando ? ' zap-compositor--gravando' : ''}`}>
+              {b.escrevendo && passo.tipo === 'digitar' ? (
+                <div className="zap-escrevendo">
+                  <CampoDigitar key={passo.id} passo={passo} destacar={destacar} aoResponder={aoResponder} />
+                </div>
+              ) : (
+                <>
+                  {gravando ? (
+                    <div className="zap-gravando" role="status">
+                      <span className="zap-ponto" aria-hidden="true" />
+                      <strong>0:0{Math.min(gravado ?? 0, 9)}</strong>
+                      <span>Fale agora…</span>
+                    </div>
+                  ) : (
+                    <div className="zap-pilula">
+                      <span aria-hidden="true">😊</span>
+                      {b.campo ? botao(b.campo, 'zap-campo', b.texto ?? b.campo.rotulo, 'zc') : <span className="zap-campo zap-campo--vazio">{b.texto ?? 'Mensagem'}</span>}
+                      {b.anexar && botao(b.anexar, 'zap-icone', <><span aria-hidden="true">📎</span><span className="sr-only">{b.anexar.rotulo}</span></>, 'zan')}
+                      {b.camera && botao(b.camera, 'zap-icone', <><span aria-hidden="true">📷</span><span className="sr-only">{b.camera.rotulo}</span></>, 'zca')}
+                    </div>
+                  )}
+                  {b.enviar ? (
+                    botao(b.enviar, 'zap-redondo', <><span aria-hidden="true">➤</span><span className="sr-only">{b.enviar.rotulo}</span></>, 'zen')
+                  ) : b.microfone ? (
+                    <button
+                      type="button"
+                      className={`zap-redondo zap-redondo--mic${gravando ? ' zap-redondo--gravando' : ''}${marca(b.microfone)}`}
+                      aria-label={`${b.microfone.rotulo} (segure o dedo)`}
+                      onPointerDown={(e) => {
+                        e.currentTarget.setPointerCapture?.(e.pointerId)
+                        comecarSegurar(b.microfone!)
+                      }}
+                      onPointerUp={() => soltarSegurar(b.microfone!)}
+                      onPointerCancel={() => soltarSegurar(b.microfone!, true)}
+                      onContextMenu={(e) => e.preventDefault()}
+                      onKeyDown={(e) => {
+                        if ((e.key === ' ' || e.key === 'Enter') && !e.repeat) {
+                          e.preventDefault()
+                          comecarSegurar(b.microfone!)
+                        }
+                      }}
+                      onKeyUp={(e) => {
+                        if (e.key === ' ' || e.key === 'Enter') soltarSegurar(b.microfone!)
+                      }}
+                      onClick={() => {
+                        // o clique que vem logo depois de soltar já foi tratado
+                        if (soltou.current) soltou.current = false
+                        else if (destacar && toque) tocou(b.microfone!)
+                      }}
+                    >
+                      <span aria-hidden="true">🎤</span>
+                    </button>
+                  ) : null}
+                </>
+              )}
+            </div>
+          </div>
+        )
+      }
+      case 'zapAnexos':
+        return (
+          <div key={i} className="zap-anexos" role="group" aria-label="Anexar">
+            {b.itens.map((x, k) =>
+              botao(
+                x,
+                'zap-anexo',
+                <>
+                  <span className={`zap-anexo__circulo zap-anexo__circulo--${k % 6}`} aria-hidden="true">
+                    {x.icone}
+                  </span>
+                  <span>{x.rotulo}</span>
+                </>,
+                `zx${k}`,
+              ),
+            )}
+          </div>
+        )
       case 'espaco':
         return <div key={i} className="app__espaco-bloco" aria-hidden="true" />
       case 'texto':
@@ -356,7 +576,7 @@ export function TelaApp({ tema, passo, nome, destacar, aoResponder, aoVoltarPass
   } as CSSProperties
 
   return (
-    <div className={`app${tela.escuro ? ' app--escuro' : ''}${tela.escurecida ? ' app--escurecida' : ''}`} style={estilo}>
+    <div className={`app${tela.escuro ? ' app--escuro' : ''}${tela.escurecida ? ' app--escurecida' : ''}${tela.zap ? ' app--zap' : ''}`} style={estilo}>
       {tela.blocos.map(bloco)}
 
       {passo.painelExercicio && passo.elementos && (

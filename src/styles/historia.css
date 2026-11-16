@@ -662,3 +662,525 @@
 .atividade__progresso .passo-rotulo {
   white-space: normal;
 }
+
+/* Guia do celular de verdade (desenho + passos por marca) */
+.guia-real {
+  background: var(--cor-fundo-cartao, #fff);
+  border: 2px solid var(--cor-borda, #1b4b8f);
+  border-radius: 1rem;
+  overflow: hidden;
+}
+.guia-real__titulo {
+  width: 100%;
+  min-height: 3rem;
+  padding: 0.4rem 0.8rem;
+  font: inherit;
+  font-weight: 700;
+  text-align: left;
+  color: #fff;
+  background: #1b4b8f;
+  border: 0;
+}
+.guia-real__corpo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: 0.7rem;
+}
+.guia-real__marcas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+.guia-real__marcas button {
+  flex: 1 1 auto;
+  min-height: 2.75rem;
+  padding: 0.2rem 0.7rem;
+  font: inherit;
+  font-weight: 600;
+  color: #1b4b8f;
+  background: #fff;
+  border: 2px solid #1b4b8f;
+  border-radius: 0.7rem;
+}
+.guia-real__marcas button.ativo {
+  color: #fff;
+  background: #1b4b8f;
+}
+.desenho-celular {
+  width: 100%;
+  max-width: 24rem;
+  align-self: center;
+  background: #eef3fa;
+  border-radius: 0.8rem;
+}
+.guia-real h3 {
+  margin: 0;
+  font-size: 1.05rem;
+}
+.guia-real ol {
+  margin: 0;
+  padding-left: 1.3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+.guia-real__nota {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+/* ---------- WhatsApp (interface copiada do app, para treinar mensagens e áudio) ---------- */
+.app--zap {
+  --zap-verde: #008069;
+  --zap-verde-claro: #00a884;
+  --zap-fundo: #efeae2;
+  --zap-saida: #d9fdd3;
+  --zap-tique: #53bdeb;
+  --zap-cinza: #54656f;
+  gap: 0;
+  padding-bottom: 0;
+  background: #fff;
+  color: #111b21;
+}
+.app--zap .app__aviso {
+  margin: 0;
+  padding: 0.3rem 0.8rem;
+  background: #fff;
+}
+.app--zap .app__aviso:empty {
+  display: none;
+}
+.zap-avatar {
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  width: 2.6rem;
+  height: 2.6rem;
+  font-size: 1.5rem;
+  background: #dfe5e7;
+  border-radius: 50%;
+}
+.zap-topo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 3.6rem;
+  padding: 0.35rem 0.5rem;
+  color: #fff;
+  background: var(--zap-verde);
+}
+.zap-topo__texto {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.2;
+}
+.zap-topo__texto strong {
+  overflow: hidden;
+  font-size: 1.1rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.zap-topo__texto small {
+  overflow: hidden;
+  font-size: 0.8rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  opacity: 0.9;
+}
+.zap-topo__acoes {
+  display: flex;
+  gap: 0.1rem;
+}
+.zap-topo__voltar,
+.zap-icone {
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  min-width: 2.25rem;
+  min-height: 2.75rem;
+  padding: 0;
+  font-size: 1.25rem;
+  color: inherit;
+  background: none;
+  border: 0;
+  border-radius: 50%;
+}
+.zap-icone {
+  color: var(--zap-cinza);
+}
+.zap-icone--topo {
+  color: #fff;
+}
+.zap-topo__voltar.destacado,
+.zap-icone.destacado,
+.zap-campo.destacado,
+.zap-anexo.destacado,
+.zap-conversa.destacado,
+.zap-redondo.destacado,
+.zap-fab.destacado {
+  outline: 4px solid #ff7a00;
+  outline-offset: -2px;
+}
+.zap-conversas {
+  position: relative;
+  background: #fff;
+}
+.zap-conversas ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.zap-filtros {
+  display: flex;
+  gap: 0.4rem;
+  padding: 0.5rem 0.7rem;
+  overflow: hidden;
+}
+.zap-filtros span {
+  padding: 0.2rem 0.7rem;
+  font-size: 0.85rem;
+  color: var(--zap-cinza);
+  background: #f0f2f5;
+  border-radius: 1rem;
+  white-space: nowrap;
+}
+.zap-filtros span.ativo {
+  color: #0a6b57;
+  background: #d9fdd3;
+  font-weight: 700;
+}
+.zap-conversa {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  width: 100%;
+  padding: 0.5rem 0.8rem;
+  font: inherit;
+  text-align: left;
+  color: inherit;
+  background: none;
+  border: 0;
+  border-bottom: 1px solid #eef0f2;
+}
+.zap-conversa__meio {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-width: 0;
+}
+.zap-conversa__meio strong {
+  font-size: 1.05rem;
+}
+.zap-conversa__meio small {
+  overflow: hidden;
+  font-size: 0.9rem;
+  color: var(--zap-cinza);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.zap-conversa__lado {
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.2rem;
+}
+.zap-conversa__lado small {
+  font-size: 0.78rem;
+  color: var(--zap-cinza);
+}
+.zap-conversa__lado small.novo {
+  color: #0a6b57;
+  font-weight: 700;
+}
+.zap-badge {
+  display: grid;
+  place-items: center;
+  min-width: 1.3rem;
+  height: 1.3rem;
+  padding: 0 0.3rem;
+  font-size: 0.78rem;
+  color: #fff;
+  background: var(--zap-verde-claro);
+  border-radius: 1rem;
+}
+.zap-fab {
+  position: absolute;
+  right: 0.9rem;
+  bottom: 0.7rem;
+  display: grid;
+  place-items: center;
+  width: 3.4rem;
+  height: 3.4rem;
+  font-size: 1.4rem;
+  background: var(--zap-verde-claro);
+  border: 0;
+  border-radius: 1rem;
+  box-shadow: 0 2px 6px rgb(0 0 0 / 30%);
+}
+.zap-ticks {
+  color: var(--zap-cinza);
+  font-size: 0.8em;
+}
+.zap-ticks--lida {
+  color: var(--zap-tique);
+}
+.zap-chat {
+  display: flex;
+  flex-direction: column;
+  background: var(--zap-fundo);
+}
+.zap-chat__mensagens {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  min-height: 4rem;
+  padding: 0.6rem 0.6rem 0.8rem;
+}
+.zap-dia {
+  align-self: center;
+  margin: 0.2rem 0;
+  padding: 0.15rem 0.7rem;
+  font-size: 0.78rem;
+  color: var(--zap-cinza);
+  background: #fff;
+  border-radius: 0.5rem;
+}
+.zap-balao {
+  display: flex;
+  flex-direction: column;
+  max-width: 82%;
+  padding: 0.35rem 0.55rem 0.2rem;
+  font-size: 1rem;
+  line-height: 1.3;
+  background: #fff;
+  border-radius: 0.2rem 0.7rem 0.7rem 0.7rem;
+  box-shadow: 0 1px 1px rgb(0 0 0 / 15%);
+}
+.zap-balao--eu {
+  align-self: flex-end;
+  background: var(--zap-saida);
+  border-radius: 0.7rem 0.2rem 0.7rem 0.7rem;
+}
+.zap-balao--outro {
+  align-self: flex-start;
+}
+.zap-autor {
+  font-size: 0.85rem;
+  color: #a35a00;
+}
+.zap-hora {
+  align-self: flex-end;
+  font-size: 0.7rem;
+  color: var(--zap-cinza);
+}
+.zap-foto {
+  display: grid;
+  place-items: center;
+  width: 9rem;
+  height: 7rem;
+  margin-bottom: 0.15rem;
+  font-size: 3.2rem;
+  background: #f6d6a8;
+  border-radius: 0.5rem;
+}
+.zap-audio {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 11rem;
+  padding: 0.2rem 0;
+}
+.zap-audio__play {
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  color: var(--zap-cinza);
+  font-size: 1.1rem;
+}
+.zap-onda {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  gap: 2px;
+  height: 1.6rem;
+}
+.zap-onda i {
+  flex: 1 1 0;
+  min-width: 2px;
+  background: #8696a0;
+  border-radius: 2px;
+}
+.zap-audio small {
+  font-size: 0.75rem;
+  color: var(--zap-cinza);
+}
+.zap-compositor {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.4rem;
+  padding: 0.4rem 0.5rem 0.5rem;
+  background: var(--zap-fundo);
+}
+.zap-pilula,
+.zap-gravando,
+.zap-escrevendo {
+  display: flex;
+  flex: 1 1 0;
+  min-width: 0;
+  align-items: center;
+  gap: 0.2rem;
+  min-height: 3rem;
+  padding: 0 0.4rem 0 0.7rem;
+  background: #fff;
+  border-radius: 1.6rem;
+}
+.zap-campo {
+  flex: 1 1 0;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-height: 2.75rem;
+  padding: 0 0.4rem;
+  font: inherit;
+  font-size: 1.05rem;
+  text-align: left;
+  color: #667781;
+  background: none;
+  border: 0;
+}
+.zap-redondo {
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  width: 3.2rem;
+  height: 3.2rem;
+  font-size: 1.3rem;
+  color: #fff;
+  background: var(--zap-verde-claro);
+  border: 0;
+  border-radius: 50%;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+.zap-redondo--gravando {
+  transform: scale(1.35);
+  background: #d92d20;
+  box-shadow: 0 0 0 0.5rem rgb(217 45 32 / 25%);
+}
+.zap-gravando {
+  gap: 0.6rem;
+  font-size: 0.95rem;
+  color: #111b21;
+}
+.zap-ponto {
+  width: 0.8rem;
+  height: 0.8rem;
+  background: #d92d20;
+  border-radius: 50%;
+  animation: zap-pisca 1s infinite;
+}
+@keyframes zap-pisca {
+  50% {
+    opacity: 0.2;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .zap-ponto {
+    animation: none;
+  }
+}
+/* o campo de escrever do app (CampoDigitar) vira a barra de mensagem */
+.zap-escrevendo {
+  padding: 0;
+  background: none;
+}
+.zap-escrevendo form {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  gap: 0.4rem;
+}
+.zap-escrevendo .campo {
+  flex: 1 1 auto;
+  margin: 0;
+  padding: 0;
+}
+.zap-escrevendo .campo label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+.zap-escrevendo .campo input {
+  width: 100%;
+  min-height: 3rem;
+  padding: 0 1rem;
+  font-size: 1.05rem;
+  background: #fff;
+  border: 2px solid transparent;
+  border-radius: 1.6rem;
+}
+.zap-escrevendo .campo input.destacado {
+  border-color: #ff7a00;
+}
+.zap-escrevendo .ajuda-campo {
+  margin: 0.2rem 0.6rem 0;
+  font-size: 0.85rem;
+}
+.zap-escrevendo .botao {
+  width: 3.2rem;
+  height: 3.2rem;
+  min-height: 0;
+  padding: 0;
+  font-size: 0;
+  background: var(--zap-verde-claro);
+  border: 0;
+  border-radius: 50%;
+}
+.zap-escrevendo .botao::before {
+  content: '➤';
+  font-size: 1.3rem;
+  color: #fff;
+}
+.zap-anexos {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.9rem 0.4rem;
+  padding: 1rem 0.8rem;
+  background: #fff;
+}
+.zap-anexo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  font: inherit;
+  font-size: 0.9rem;
+  color: #111b21;
+  background: none;
+  border: 0;
+  border-radius: 0.6rem;
+}
+.zap-anexo__circulo {
+  display: grid;
+  place-items: center;
+  width: 3.4rem;
+  height: 3.4rem;
+  font-size: 1.5rem;
+  border-radius: 50%;
+}
+.zap-anexo__circulo--0 { background: #d4c9ff; }
+.zap-anexo__circulo--1 { background: #ffc7d6; }
+.zap-anexo__circulo--2 { background: #e2c8ff; }
+.zap-anexo__circulo--3 { background: #ffd9a8; }
+.zap-anexo__circulo--4 { background: #c8f0d2; }
+.zap-anexo__circulo--5 { background: #bfe3ff; }
