@@ -20,8 +20,7 @@ export function TelaCelular({ fase, passo, destacar, avatar, aoResponder }: Prop
   const [posicao, definirPosicao] = useState<Posicao>(() => (fase.mapa ? posicaoInicial(fase.mapa) : { x: 0, y: 0 }))
 
   return (
-    <div className="celular" role="group" aria-label="Tela do exercício (simulação)">
-      <p className="faixa-simulacao">Simulação para treinar: nada aqui é de verdade.</p>
+    <div className="celular" role="group" aria-label="Tela do celular">
 
       {passo.tipo === 'digitar' && <CampoDigitar key={passo.id} passo={passo} destacar={destacar} aoResponder={aoResponder} />}
 

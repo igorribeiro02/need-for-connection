@@ -51,7 +51,7 @@ export function TelaMapa({ posicao, definirPosicao, aoAbrirFase, aoAbrirBackup, 
       <h1>
         Olá, {dados.perfil.avatar} {dados.perfil.nome}!
       </h1>
-      <p>Escolha um mundo para treinar. Não há pressa nem cronômetro.</p>
+      <p>Escolha uma fase para treinar. Não há pressa nem cronômetro.</p>
 
       {proxima && (
         <div className="proxima-missao">
@@ -68,7 +68,7 @@ export function TelaMapa({ posicao, definirPosicao, aoAbrirFase, aoAbrirBackup, 
         </div>
       )}
 
-      <div className="linha" role="group" aria-label="Como ver os mundos" style={{ marginBottom: 'var(--espaco)' }}>
+      <div className="linha" role="group" aria-label="Como ver as fases" style={{ marginBottom: 'var(--espaco)' }}>
         <button
           className={`botao${modo === 'mapa' ? '' : ' botao--secundario'}`}
           aria-pressed={modo === 'mapa'}
@@ -94,7 +94,7 @@ export function TelaMapa({ posicao, definirPosicao, aoAbrirFase, aoAbrirBackup, 
             mapa={mapaDosMundos}
             posicao={pos}
             avatar={dados.perfil.avatar}
-            descricao="Mapa dos mundos. Use as setas do teclado para andar até a entrada de um mundo."
+            descricao="Mapa das fases. Use as setas do teclado para andar até a entrada de uma fase."
             anuncio={aqui ? `Você chegou na entrada de: ${aqui.rotulo}` : ''}
             aoMover={mover}
             aoIrPara={irPara}

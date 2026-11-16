@@ -44,7 +44,7 @@ export function digitar(
     rotuloCampo,
     rotuloBotao,
     tela: { titulo: '', layout: 'app', app },
-    dicas: [`Toque na caixa "${rotuloCampo}" e escreva o nome do lugar.`, `Escreva: ${esperado}`],
+    dicas: [`Toque na caixa "${rotuloCampo}" e escreva o que o guia pede.`, `Escreva: ${esperado}`],
     erroGentil: `Quase! Confira se está escrito ${esperado}.`,
     lembrete,
   }

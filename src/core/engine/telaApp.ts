@@ -42,6 +42,8 @@ export function itensDoBloco(b: BlocoApp): ItemApp[] {
       return [b.item]
     case 'folha':
       return [b.botao]
+    case 'janela':
+      return [...(b.fechar ? [b.fechar] : []), ...b.botoes]
     case 'navegacao':
       return b.itens
     default:

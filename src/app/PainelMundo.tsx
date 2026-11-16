@@ -15,15 +15,15 @@ export function PainelMundo({ mundo, dados, aoAbrirFase }: Props) {
   const { concluidas, total } = resumoMundo(mundo, dados.fases)
 
   return (
-    <section className="cartao" aria-label={`Mundo ${mundo.numero}: ${mundo.titulo}`}>
+    <section className="cartao" aria-label={`Fase ${mundo.numero}: ${mundo.titulo}`}>
       <h2>
-        Mundo {mundo.numero}: {mundo.titulo}
+        Fase {mundo.numero}: {mundo.titulo}
       </h2>
       {mundo.dia && <p className="ajuda-campo">{mundo.dia}</p>}
       <p>{mundo.descricao}</p>
       {pendentes.length > 0 ? (
         <p className="mensagem mensagem--dica">
-          <strong>🔒 Ainda bloqueado.</strong> Termine primeiro: {pendentes.map((m) => `Mundo ${m.numero} (${m.titulo})`).join(', ')}.
+          <strong>🔒 Ainda bloqueado.</strong> Termine primeiro: {pendentes.map((m) => `Fase ${m.numero} (${m.titulo})`).join(', ')}.
         </p>
       ) : mundo.fases.length === 0 ? (
         <p>
@@ -32,7 +32,7 @@ export function PainelMundo({ mundo, dados, aoAbrirFase }: Props) {
       ) : (
         <>
           <p className="ajuda-campo">
-            {concluidas} de {total} fases concluídas
+            {concluidas} de {total} atividades concluídas
           </p>
           <div className="linha">
             {mundo.fases.map((f) => {

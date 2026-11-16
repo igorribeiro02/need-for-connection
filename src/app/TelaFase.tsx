@@ -1,13 +1,14 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useJogo } from './JogoContext'
 import { buscarBanco } from '../content/banks'
+import { personagens } from '../content/story/personagens'
 import { buscarFase, mundos, resolverFase } from '../content/worlds'
 import { estrelas, iniciar, mostrarOnde, passoAtual, pedirDica, responder, voltarPasso } from '../core/engine/phaseRunner'
 import type { EstadoFase } from '../core/engine/phaseRunner'
 import type { Fase } from '../core/engine/stepTypes'
 import { falar, narracaoDisponivel } from '../features/settings/narracao'
 import { BarraAjustes } from '../features/settings/BarraAjustes'
-import { CenaHistoria, FaixaHistoria } from '../features/historia/CenaHistoria'
+import { CenaHistoria } from '../features/historia/CenaHistoria'
 import { cenaVista, finalPendente, idAbertura, idFechamento, idFinal, marcarCena } from '../core/story/historia'
 import { SeletorBanco } from '../simulators/banco/SeletorBanco'
 import { TelaBanco } from '../simulators/banco/TelaBanco'
@@ -106,11 +107,12 @@ function Exercicio({ base, bancoId, revisao, aoVoltar, registrarVoltar, aoTrocar
   const historia = base.historia
   const nome = dados?.perfil.nome ?? ''
   const mundo = mundos.find((m) => m.numero === fase.mundo)
-  const lugar = mundo ? `Mundo ${mundo.numero} · ${mundo.dia ? `${mundo.dia} · ` : ''}${mundo.titulo}` : undefined
+  const lugar = mundo ? `Fase ${mundo.numero} · ${mundo.dia ? `${mundo.dia} · ` : ''}${mundo.titulo}` : undefined
   const [cena, setCena] = useState<'abertura' | 'exercicio'>(() =>
     historia && dados && !revisao && !cenaVista(dados, idAbertura(fase.id)) ? 'abertura' : 'exercicio',
   )
   const [mostrarFinal, setMostrarFinal] = useState(false)
+  const [ajustesAbertos, setAjustesAbertos] = useState(false)
   const vistar = (id: string) => atualizar((d) => ({ ...d, cenasVistas: marcarCena(d.cenasVistas, id) }))
 
   function aplicar(novo: EstadoFase) {
@@ -234,86 +236,108 @@ function Exercicio({ base, bancoId, revisao, aoVoltar, registrarVoltar, aoTrocar
   const destacar = guiado || ultimaDica || estado.errosNoPasso >= 3
   const oferecerAjuda = estado.errosNoPasso >= 2 && !ultimaDica
 
+  const responderApp = (r: string) => aplicar(responder(fase, estado, r))
+
   return (
-    <main className="pagina pagina--fase">
-      <div className="topo-fase">
+    <main className="pagina pagina--fase atividade">
+      <header className="atividade__topo">
         <button className="botao botao--secundario botao--pilula" onClick={aoVoltar}>
-          ← Voltar ao mapa
+          ← Mapa
         </button>
-        <BarraAjustes />
-      </div>
-      <h1 className="titulo-fase">{fase.titulo}</h1>
-      {banco && (
-        <p className="ajuda-campo">
-          Banco escolhido: {banco.nomeNaLista}.{' '}
-          <button className="botao botao--secundario botao--pilula" onClick={aoTrocarBanco}>
-            Trocar de banco
+        <div className="atividade__titulo">
+          <strong>{fase.titulo}</strong>
+        </div>
+        <button
+          className="botao botao--secundario botao--pilula"
+          aria-expanded={ajustesAbertos}
+          aria-controls="ajustes-atividade"
+          aria-label="Ajustes"
+          onClick={() => setAjustesAbertos(!ajustesAbertos)}
+        >
+          ⚙
+        </button>
+      </header>
+
+      {ajustesAbertos && (
+        <div id="ajustes-atividade" className="atividade__ajustes">
+          <BarraAjustes />
+          <button className="botao botao--secundario botao--pilula" aria-pressed={guiado} onClick={() => atualizarPreferencias({ guiado: !guiado })}>
+            Modo guiado: {guiado ? 'ligado' : 'desligado'}
           </button>
-        </p>
-      )}
-      {historia ? (
-        <FaixaHistoria fala={historia.abertura[historia.abertura.length - 1]} nome={nome} aoReler={() => setCena('abertura')} />
-      ) : (
-        fase.cenario && <p className="cartao">{fase.cenario}</p>
+          <p className="ajuda-campo">O modo guiado mostra sempre onde tocar. Quem termina uma atividade assim ganha 1 estrela.</p>
+          {historia && (
+            <button
+              className="botao botao--secundario botao--pilula"
+              onClick={() => {
+                setAjustesAbertos(false)
+                setCena('abertura')
+              }}
+            >
+              Reler a história
+            </button>
+          )}
+          {banco && (
+            <button className="botao botao--secundario botao--pilula" onClick={aoTrocarBanco}>
+              Trocar de banco ({banco.nomeNaLista})
+            </button>
+          )}
+        </div>
       )}
 
-      <p className="passo-rotulo" aria-live="polite">
-        Passo {estado.indice + 1} de {fase.passos.length}
-      </p>
-      <div className="progresso-passos" aria-hidden="true">
-        {fase.passos.map((p, k) => (
-          <span key={p.id} className={k < estado.indice ? 'feito' : k === estado.indice ? 'atual' : ''} />
-        ))}
+      <div className="atividade__progresso" aria-live="polite">
+        <span className="passo-rotulo">
+          {mundo ? `Fase ${mundo.numero} · ` : ''}Passo {estado.indice + 1} de {fase.passos.length}
+        </span>
+        <div className="progresso-passos" aria-hidden="true">
+          {fase.passos.map((p, k) => (
+            <span key={p.id} className={k < estado.indice ? 'feito' : k === estado.indice ? 'atual' : ''} />
+          ))}
+        </div>
       </div>
 
-      <div className="instrucao">
-        <p className="instrucao__texto">{passo.instrucao}</p>
-        {narracaoDisponivel() && (
-          <button className="instrucao__ouvir" onClick={() => falar(passo.instrucao)} aria-label="Ouvir a instrução">
-            🔊 <span>Ouvir</span>
-          </button>
+      <div className="atividade__palco">
+        <div className="guia" role="region" aria-label="Guia do passo">
+          <span className="guia__rosto" aria-hidden="true">
+            {historia ? personagens[historia.abertura[historia.abertura.length - 1].quem].emoji : '👵'}
+          </span>
+          <div className="guia__corpo">
+            <p className="guia__texto">{passo.instrucao}</p>
+            {narracaoDisponivel() && (
+              <button className="guia__ouvir" onClick={() => falar(passo.instrucao)} aria-label="Ouvir a instrução">
+                🔊 Ouvir
+              </button>
+            )}
+            {estado.aviso && (
+              <p className={`guia__aviso guia__aviso--${estado.aviso.tipo}`} role="status">
+                {estado.aviso.texto}
+              </p>
+            )}
+            {oferecerAjuda && (
+              <button className="botao botao--pilula" onClick={() => aplicar(mostrarOnde(fase, estado))}>
+                Me mostre onde tocar
+              </button>
+            )}
+          </div>
+        </div>
+
+        {fase.simulador === 'banco' && banco ? (
+          <TelaBanco banco={banco} passo={passo} destacar={destacar} nome={nome} aoResponder={responderApp} aoVoltarPasso={voltarDoApp} />
+        ) : fase.aplicativo ? (
+          <TelaTransporte app={fase.aplicativo} passo={passo} destacar={destacar} nome={nome} aoResponder={responderApp} aoVoltarPasso={voltarDoApp} />
+        ) : (
+          <TelaCelular fase={fase} passo={passo} destacar={destacar} avatar={dados?.perfil.avatar ?? '🙂'} aoResponder={responderApp} />
         )}
       </div>
 
-      {fase.simulador === 'banco' && banco ? (
-        <TelaBanco banco={banco} passo={passo} destacar={destacar} nome={dados?.perfil.nome ?? ''} aoResponder={(r) => aplicar(responder(fase, estado, r))} aoVoltarPasso={voltarDoApp} />
-      ) : fase.simulador === 'transporte' && fase.aplicativo ? (
-        <TelaTransporte app={fase.aplicativo} passo={passo} destacar={destacar} nome={dados?.perfil.nome ?? ''} aoResponder={(r) => aplicar(responder(fase, estado, r))} aoVoltarPasso={voltarDoApp} />
-      ) : (
-        <TelaCelular fase={fase} passo={passo} destacar={destacar} avatar={dados?.perfil.avatar ?? '🙂'} aoResponder={(r) => aplicar(responder(fase, estado, r))} />
-      )}
-
-      {estado.aviso && (
-        <div className={`mensagem mensagem--${estado.aviso.tipo}`} role="status">
-          {estado.aviso.texto}
-        </div>
-      )}
-
-      {oferecerAjuda && (
-        <div className="mensagem mensagem--dica" role="status">
-          <p>Está difícil? Sem problema. Quer que eu mostre onde tocar?</p>
-          <button className="botao" onClick={() => aplicar(mostrarOnde(fase, estado))}>
-            Me mostre onde tocar
-          </button>
-        </div>
-      )}
-
-      <div className="controles-fase">
-        <button className="botao botao--grande" onClick={() => aplicar(pedirDica(fase, estado))}>
-          Preciso de uma dica
+      <div className="atividade__barra">
+        <button className="botao" onClick={() => aplicar(pedirDica(fase, estado))}>
+          💡 Preciso de uma dica
         </button>
         {temPassoAnterior && (
-          <button className="botao botao--secundario botao--grande" onClick={voltarUm}>
+          <button className="botao botao--secundario" onClick={voltarUm}>
             ← Voltar um passo
           </button>
         )}
-      </div>
-
-      <div className="guiado">
-        <button className="botao botao--secundario botao--pilula" aria-pressed={guiado} onClick={() => atualizarPreferencias({ guiado: !guiado })}>
-          Modo guiado: {guiado ? 'ligado' : 'desligado'}
-        </button>
-        <p className="ajuda-campo">O modo guiado mostra sempre onde tocar. Quem termina uma fase assim ganha 1 estrela.</p>
       </div>
     </main>
   )

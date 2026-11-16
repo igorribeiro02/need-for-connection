@@ -10,7 +10,7 @@ export const mapaDosMundos: MapaDef = {
   legenda: Object.fromEntries(
     mundos.map((m) => [
       String(m.numero),
-      { id: `mundo-${m.numero}`, rotulo: `Mundo ${m.numero}: ${m.titulo}`, emoji: EMOJI[m.numero] ?? '⭐' },
+      { id: `mundo-${m.numero}`, rotulo: `Fase ${m.numero}: ${m.titulo}`, emoji: EMOJI[m.numero] ?? '⭐' },
     ]),
   ),
 }

@@ -5,8 +5,6 @@ import { CampoDigitar } from '../celular/CampoDigitar'
 
 type Props = {
   tema: BancoConfig['tema']
-  /** Texto pequeno no alto da tela (ex.: "Banco simulado"). */
-  seloTopo?: string
   passo: Passo
   nome: string
   destacar: boolean
@@ -20,7 +18,7 @@ type Props = {
  * cores, fontes e ícones são nossos. Em passos de tocar, cada botão responde com o seu id (o certo avança, os outros
  * mostram a dica gentil). Botões "inertes" e botões em passos de digitar só avisam que não fazem parte do exercício.
  */
-export function TelaApp({ tema, seloTopo = 'Banco simulado', passo, nome, destacar, aoResponder, aoVoltarPasso }: Props) {
+export function TelaApp({ tema, passo, nome, destacar, aoResponder, aoVoltarPasso }: Props) {
   const tela = passo.tela!.app!
   const [aviso, setAviso] = useState('')
   const toque = passo.tipo === 'tocar'
@@ -41,10 +39,10 @@ export function TelaApp({ tema, seloTopo = 'Banco simulado', passo, nome, destac
     if (item.inerte || !toque) {
       setAviso(
         passo.tipo === 'digitar'
-          ? `"${item.rotulo}" não funciona neste exercício. Use a caixa onde se escreve.`
+          ? `Agora, escreva na caixa. "${item.rotulo}" fica para depois.`
           : passo.painelExercicio
-            ? 'Primeiro responda à pergunta do exercício, logo abaixo da tela.'
-            : `"${item.rotulo}" não funciona neste exercício.`,
+            ? 'Primeiro responda à pergunta, logo abaixo da tela.'
+            : `"${item.rotulo}" não é o que precisamos agora. Siga o guia no alto da tela.`,
       )
       return
     }
@@ -295,6 +293,30 @@ export function TelaApp({ tema, seloTopo = 'Banco simulado', passo, nome, destac
             {botao({ principal: true, ...b.item }, 'app__botao-largo', b.item.rotulo, 'bb')}
           </div>
         )
+      case 'janela': {
+        const lado = b.lado ?? 'direita'
+        return (
+          <div key={i} className={`app__janela${b.perigo ? ' app__janela--perigo' : ''}`} role="dialog" aria-label="Janela que apareceu sozinha">
+            {b.fechar && (
+              <button
+                type="button"
+                className={`app__janela-x app__janela-x--${lado}${marca(b.fechar)}`}
+                aria-label={b.fechar.rotulo}
+                onClick={() => tocou(b.fechar!)}
+              >
+                <span aria-hidden="true">{b.fechar.icone ?? '✕'}</span>
+              </button>
+            )}
+            <strong className="app__janela-titulo">{t(b.titulo)}</strong>
+            {b.texto && <p>{t(b.texto)}</p>}
+            {b.botoes.map((x, k) =>
+              x.principal === false
+                ? botao(x, 'app__link-pequeno', x.rotulo, `jb${k}`)
+                : botao({ principal: true, ...x }, 'app__botao-largo', x.rotulo, `jb${k}`),
+            )}
+          </div>
+        )
+      }
       case 'folha':
         return (
           <div key={i} className="app__folha">
@@ -304,7 +326,7 @@ export function TelaApp({ tema, seloTopo = 'Banco simulado', passo, nome, destac
         )
       case 'navegacao':
         return (
-          <nav key={i} className={`app__nav${b.ativoCheio ? ' app__nav--cheio' : ''}`} aria-label="Menu do aplicativo (simulação)">
+          <nav key={i} className={`app__nav${b.ativoCheio ? ' app__nav--cheio' : ''}`} aria-label="Menu do aplicativo">
             {b.itens.map((n, k) =>
               botao(
                 n,
@@ -335,12 +357,11 @@ export function TelaApp({ tema, seloTopo = 'Banco simulado', passo, nome, destac
 
   return (
     <div className={`app${tela.escuro ? ' app--escuro' : ''}${tela.escurecida ? ' app--escurecida' : ''}`} style={estilo}>
-      <p className="app__selo">{seloTopo}</p>
       {tela.blocos.map(bloco)}
 
       {passo.painelExercicio && passo.elementos && (
-        <div className="app__painel" role="group" aria-label="Pergunta do exercício">
-          <p>Pergunta do exercício (não faz parte do app)</p>
+        <div className="app__painel" role="group" aria-label="Pergunta">
+          <p>Responda aqui:</p>
           {passo.elementos.map((el) => (
             <button
               key={el.id}

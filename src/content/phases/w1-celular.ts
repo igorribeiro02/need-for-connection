@@ -1,4 +1,5 @@
-import type { Fase, Passo, PainelCelular } from '../../core/engine/stepTypes'
+import type { AppTransporte, BlocoApp, Fase, Passo, PainelCelular, TelaApp } from '../../core/engine/stepTypes'
+import { pergunta as perguntaApp, toque as toqueApp } from '../transporte/passos'
 
 // Mundo 1: o celular no dia a dia. Tudo é simulado em um painel simples (ver PainelCelular).
 
@@ -159,60 +160,113 @@ export const w1Brilho: Fase = {
   ],
 }
 
+const APP_NAVEGADOR: AppTransporte = {
+  id: 'navegador',
+  nome: 'Navegador',
+  tema: { corPrincipal: '#1b4b8f', corDestaque: '#1b4b8f', link: '#1b4b8f' },
+  fonte: 'Site e janelas inventados, copiando o jeito dos anúncios que aparecem sozinhos. Nenhum endereço é real.',
+}
+
+/** Um site de receitas com uma janela de propaganda por cima. */
+const siteComJanela = (janela: BlocoApp, depois: BlocoApp[] = []): TelaApp => ({
+  escurecida: true,
+  blocos: [
+    { tipo: 'barra', voltar: { rotulo: 'Voltar', icone: '←', id: 'voltar' }, titulo: 'receitas.com.br' },
+    janela,
+    { tipo: 'titulo', texto: 'Bolo de cenoura fofinho', apoio: 'Receita da Vovó · 12 comentários' },
+    { tipo: 'texto', texto: 'Misture a cenoura, os ovos e o óleo no liquidificador. Depois junte a farinha e o fermento.' },
+    ...depois,
+  ],
+})
+
 export const w1Popup: Fase = {
   id: 'w1-popup',
   mundo: 1,
-  titulo: 'Fechar um pop-up',
+  titulo: 'Fechar pop-ups sem cair em armadilha',
   simulador: 'celular',
+  aplicativo: APP_NAVEGADOR,
   historia: {
     abertura: [
       { quem: 'osvaldo', texto: 'Apareceu uma janela dizendo que eu ganhei um prêmio e ela não sai da tela!' },
-      { quem: 'neuza', texto: 'Calma, Seu Osvaldo. O botão de fechar costuma ser pequeno. Os grandes, não toque.' },
-      { quem: 'neuza', texto: 'Vamos treinar, {nome}: feche o que aparecer, sem tocar no botão grande.' },
+      { quem: 'neuza', texto: 'Calma, Seu Osvaldo. O botão de fechar costuma ser pequeno. Os grandes e chamativos são armadilha.' },
+      { quem: 'neuza', texto: 'Vamos treinar, {nome}: feche cada janela sem tocar no botão grande.' },
     ],
     fechamento: [{ quem: 'osvaldo', texto: 'Era só propaganda! Ainda bem que você estava aqui.' }],
     premio: { emoji: '🚫', titulo: 'O X escondido' },
   },
   passos: [
-    toque({
-      id: 'premio',
-      instrucao: 'Apareceu uma janela sozinha. Feche com o X, sem tocar no botão grande.',
-      alvo: 'fechar',
-      elementos: [
-        { id: 'resgatar', rotulo: 'RESGATAR MEU PRÊMIO AGORA' },
-        { id: 'fechar', rotulo: '✕ Fechar', discreto: true },
+    toqueApp(
+      'premio',
+      'Apareceu uma janela. Feche no X pequeno. Não toque nos botões grandes.',
+      siteComJanela({
+        tipo: 'janela',
+        titulo: '🎁 Parabéns! Você ganhou um prêmio!',
+        texto: 'Só hoje. Toque rápido!',
+        fechar: { rotulo: 'Fechar a janela', icone: '✕', id: 'x' },
+        botoes: [{ rotulo: 'RESGATAR MEU PRÊMIO', id: 'resgatar' }, { rotulo: 'CONTINUAR', id: 'continuar' }],
+      }),
+      'x',
+      'X (fechar)',
+      'Prêmio que aparece sozinho é propaganda. O X que fecha é pequeno e fica no canto de cima da janela.',
+      'É o X pequeno e cinza, no canto de cima, à direita da janela.',
+    ),
+    toqueApp(
+      'notificacao',
+      'Você não quer avisos. Toque no texto pequeno "Agora não".',
+      siteComJanela({
+        tipo: 'janela',
+        titulo: '🔔 Receber as melhores receitas todo dia?',
+        texto: 'É só tocar em Permitir!',
+        botoes: [{ rotulo: 'PERMITIR AVISOS', id: 'permitir' }, { rotulo: 'Agora não', id: 'agora-nao', principal: false }],
+      }),
+      'agora-nao',
+      'Agora não',
+      'Quando uma janela só pergunta, a saída costuma ser um texto pequeno, abaixo do botão grande.',
+      'É o texto pequeno e sublinhado, no pé da janela. Não é o botão grande.',
+    ),
+    toqueApp(
+      'infectado',
+      'O botão "FECHAR" é falso. Toque no X pequeno, no canto de cima à esquerda.',
+      siteComJanela({
+        tipo: 'janela',
+        perigo: true,
+        lado: 'esquerda',
+        titulo: '⚠️ SEU CELULAR ESTÁ INFECTADO!',
+        texto: '3 vírus encontrados. Limpe agora!',
+        fechar: { rotulo: 'Fechar a janela', icone: '✕', id: 'x-esq' },
+        botoes: [{ rotulo: 'LIMPAR AGORA', id: 'limpar' }, { rotulo: 'FECHAR', id: 'fechar-falso' }],
+      }),
+      'x-esq',
+      'X (fechar)',
+      'Aviso assustador que aparece sozinho é falso. Um botão escrito "Fechar" bem grande também pode ser armadilha.',
+      'Olhe o canto de cima da janela, do lado esquerdo: há um X pequeno.',
+    ),
+    toqueApp(
+      'faixa',
+      'Feche este anúncio no X pequeno, sem tocar em "Pedir agora".',
+      siteComJanela(
+        { tipo: 'janela', titulo: 'Anúncio · Empréstimo fácil!', texto: 'Dinheiro na hora, sem consulta!', fechar: { rotulo: 'Fechar o anúncio', icone: '✕', id: 'x-faixa' }, botoes: [{ rotulo: 'PEDIR AGORA', id: 'pedir' }] },
+        [{ tipo: 'texto', texto: 'Continue a receita: asse por 40 minutos.' }],
+      ),
+      'x-faixa',
+      'X (fechar)',
+      'Anúncio de empréstimo fácil que aparece sozinho pode ser golpe. Feche sem tocar no botão grande.',
+      'É o X pequeno no canto de cima, à direita do anúncio.',
+    ),
+    perguntaApp(
+      'telefone',
+      'Uma janela diz "Seu celular tem vírus! Ligue agora para 0800 123 456". O que você faz?',
+      siteComJanela({ tipo: 'janela', perigo: true, titulo: '☎️ VÍRUS! Ligue agora: 0800 123 456', texto: 'Um técnico vai ajudar.', botoes: [{ rotulo: 'LIGAR', id: 'ligar-x' }] }),
+      [
+        { id: 'ligar', rotulo: 'Ligo para o número' },
+        { id: 'fechar', rotulo: 'Fecho a janela e não ligo' },
+        { id: 'instalar', rotulo: 'Instalo o que ele pedir' },
       ],
-      painel: { titulo: '🎁 Parabéns! Você ganhou um prêmio!', linhas: ['Só hoje. Toque rápido!'], estilo: 'popup' },
-      dicas: ['Prêmio que aparece sozinho costuma ser propaganda.', 'O botão pequeno, escrito Fechar, é o certo.'],
-      erroGentil: 'Cuidado! Botão grande e chamativo costuma ser armadilha. Procure o ✕ Fechar.',
-      lembrete: 'Janela que aparece sozinha com prêmio é propaganda. Feche pelo X, sem tocar no botão grande.',
-    }),
-    toque({
-      id: 'instalar',
-      instrucao: 'Agora a janela pede para instalar um aplicativo. Você não quer. O que tocar?',
-      alvo: 'agora-nao',
-      elementos: [
-        { id: 'instalar', rotulo: 'INSTALAR AGORA' },
-        { id: 'agora-nao', rotulo: 'Agora não', discreto: true },
-      ],
-      painel: { titulo: '📲 Instale o nosso aplicativo!', linhas: ['É grátis e muito rápido.'], estilo: 'popup' },
-      dicas: ['Só instale aplicativos que você mesmo foi procurar.', 'Toque em Agora não.'],
-      erroGentil: 'Quase! Você não pediu esse aplicativo. Toque em Agora não.',
-      lembrete: 'Se você não pediu, não instale. Toque em Agora não ou no X.',
-    }),
-    toque({
-      id: 'limpar',
-      instrucao: 'Esta janela diz que o seu celular está lento. Feche sem tocar no botão grande.',
-      alvo: 'x',
-      elementos: [
-        { id: 'limpar', rotulo: 'LIMPAR O CELULAR AGORA' },
-        { id: 'x', rotulo: '✕', discreto: true },
-      ],
-      painel: { titulo: '⚠️ Seu celular está lento e infectado!', linhas: ['Toque para limpar agora.'], estilo: 'popup' },
-      dicas: ['Aviso de “infectado” que aparece sozinho é falso.', 'O ✕ pequeno fecha a janela.'],
-      erroGentil: 'Cuidado! Esse aviso é falso. Toque no ✕ pequeno para fechar.',
-      lembrete: 'Aviso assustador que aparece sozinho é falso. Feche pelo ✕.',
-    }),
+      'fechar',
+      ['Quem aparece sozinho na tela pedindo para ligar é golpista.', 'Feche a janela e não ligue.'],
+      'Quase! Nunca ligue nem instale nada por causa de um aviso que apareceu sozinho.',
+      'Aviso na tela pedindo para ligar é golpe. Feche e ignore.',
+    ),
   ],
 }
 

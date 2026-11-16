@@ -297,7 +297,7 @@ export function montarPix(banco: BancoConfig, variante: VariantePix): Passo[] {
     rotuloBotao: f.rotuloAvancar,
     tela: T?.valor ? { titulo: 'Valor', layout: 'app', app: T.valor(ctx) } : { titulo: 'Quanto você quer enviar?' },
     dicas: ['Digite só os números. Pode escrever 25 ou 25,00.', 'Escreva: 25'],
-    erroGentil: 'Quase! O valor deste exercício é 25 reais. Escreva 25.',
+    erroGentil: 'Quase! O valor é 25 reais. Escreva 25.',
     lembrete: 'Confira o valor e as vírgulas: 25,00 é vinte e cinco reais; 250,00 é dez vezes mais.',
   }
 
@@ -310,7 +310,7 @@ export function montarPix(banco: BancoConfig, variante: VariantePix): Passo[] {
       : [{ id: 'poupanca', rotulo: 'Poupança' }, { id: 'corrente', rotulo: 'Conta corrente' }],
     'corrente',
     ['Escolha a conta que você usa no dia a dia para pagar.', 'Toque em "Conta corrente".'],
-    'Quase! Neste exercício, escolha Conta corrente.',
+    'Quase! Escolha Conta corrente.',
     'Confira de qual conta o dinheiro vai sair antes de continuar.',
   )
 
@@ -336,7 +336,7 @@ export function montarPix(banco: BancoConfig, variante: VariantePix): Passo[] {
     ],
     'hoje',
     ['O Pix chega na hora quando é enviado hoje.', 'Toque em "Hoje".'],
-    'Quase! Neste exercício, escolha Hoje.',
+    'Quase! Escolha Hoje.',
     'Pix enviado "hoje" chega na hora. "Agendar" só envia no dia marcado.',
   )
 
@@ -460,7 +460,7 @@ export function montarPix(banco: BancoConfig, variante: VariantePix): Passo[] {
   const nomeSenha = f.confirmacao.nome === 'senha' ? `a sua senha de ${digitos} números` : 'a sua assinatura eletrônica'
   const passoSenha: Passo = {
     id: 'senha',
-    instrucao: `Digite ${nomeSenha} do exercício: ${senha}.`,
+    instrucao: `Digite ${nomeSenha}: ${senha}.`,
     tipo: 'digitar',
     alvo: 'campo',
     esperado: senha,
@@ -468,10 +468,10 @@ export function montarPix(banco: BancoConfig, variante: VariantePix): Passo[] {
     rotuloBotao: 'Confirmar',
     tela: {
       titulo: f.confirmacao.nome === 'senha' ? `Digite a sua senha de ${digitos} números` : 'Digite a sua assinatura eletrônica',
-      linhas: [`Senha só do exercício: ${senha}.`, 'No banco de verdade, ninguém pede a sua senha por telefone, mensagem ou e-mail.'],
+      linhas: [`Use esta senha agora: ${senha}.`, 'No banco de verdade, ninguém pede a sua senha por telefone, mensagem ou e-mail.'],
     },
     dicas: [`Toque nos números ${senha.split('').join(', ')}, nesta ordem.`, 'Depois toque em Confirmar.'],
-    erroGentil: `Quase! A senha do exercício é ${senha}. Use ⌫ para apagar e tente de novo.`,
+    erroGentil: `Quase! A senha é ${senha}. Use ⌫ para apagar e tente de novo.`,
     lembrete: 'A senha é só sua. Nunca diga a senha nem o código recebido por mensagem a ninguém, nem a quem diz ser do banco.',
   }
 

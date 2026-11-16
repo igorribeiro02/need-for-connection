@@ -132,7 +132,7 @@ export const uber = {
     escuro: true,
     blocos: [
       { tipo: 'barra', voltar: true },
-      { tipo: 'cartao', titulo: '🗺️ Mapa de mentira', texto: 'Partida aqui', link: 'No app de verdade, você pode mover o marcador' },
+      { tipo: 'cartao', titulo: '🗺️ Mapa', texto: 'Partida aqui', link: 'Você pode mover o marcador' },
       { tipo: 'titulo', texto: 'Confirme o local de partida', apoio: VIAGEM.partida },
       {
         tipo: 'lista',
@@ -226,7 +226,7 @@ export const app99 = {
   embarque: (): TelaApp => ({
     blocos: [
       { tipo: 'barra', voltar: true },
-      { tipo: 'cartao', titulo: '🗺️ Mapa de mentira', texto: `Embarque em ${VIAGEM.partida}`, link: 'No app de verdade, você pode mover o marcador' },
+      { tipo: 'cartao', titulo: '🗺️ Mapa', texto: `Embarque em ${VIAGEM.partida}`, link: 'Você pode mover o marcador' },
       { tipo: 'dados', titulo: 'Local de embarque anterior', linhas: [{ rotulo: 'Local', valor: VIAGEM.partida }] },
       { tipo: 'botao', item: { rotulo: 'Editar', inerte: true } },
       { tipo: 'botao', item: { rotulo: 'Solicitar', id: 'solicitar' } },

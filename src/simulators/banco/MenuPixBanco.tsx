@@ -17,7 +17,7 @@ type Props = {
 export function MenuPixBanco({ banco, passo, destacar, aoResponder, aoVoltarPasso }: Props) {
   const menu = banco.fluxo.menuPix!
   const [aviso, setAviso] = useState('')
-  const inerte = (rotulo: string) => setAviso(`"${rotulo}" não funciona neste exercício. Use a caixa de cima, onde se escreve a chave.`)
+  const inerte = (rotulo: string) => setAviso(`Agora, escreva a chave na caixa de cima. "${rotulo}" fica para depois.`)
 
   const botao = (b: { rotulo: string; icone: string }, classe: string) => (
     <button key={b.rotulo} type="button" className={classe} onClick={() => inerte(b.rotulo)}>
@@ -35,7 +35,7 @@ export function MenuPixBanco({ banco, passo, destacar, aoResponder, aoVoltarPass
           <span aria-hidden="true">←</span>
         </button>
         <span>Pix</span>
-        <small>Banco simulado</small>
+        <small>{banco.nomeNaLista === 'Outro banco / não sei' ? 'Seu banco' : banco.nomeNaLista}</small>
       </div>
 
       <div className="menupix__corpo">

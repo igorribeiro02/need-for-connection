@@ -314,3 +314,320 @@
 .painel-celular--escuro .painel-celular__barras span.cheia {
   background: #565c68;
 }
+
+/* ===== Tela de atividade compacta: cabe no celular sem muita rolagem ===== */
+.atividade {
+  padding: 0.5rem 0.6rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-height: 100dvh;
+}
+
+.atividade__topo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  justify-content: space-between;
+}
+
+.atividade__topo .botao {
+  min-height: 2.75rem;
+  padding: 0.3rem 0.8rem;
+  font-size: 0.9rem;
+}
+
+.atividade__titulo {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+  text-align: center;
+  flex: 1;
+  min-width: 0;
+}
+
+.atividade__titulo small {
+  color: var(--cor-texto-suave);
+}
+
+.atividade__titulo strong {
+  font-size: 0.95rem;
+}
+
+.atividade__ajustes {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  border-radius: var(--raio);
+  border: 2px solid var(--cor-borda);
+  background: var(--cor-superficie);
+}
+
+.atividade__progresso {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.atividade__progresso .passo-rotulo {
+  margin: 0;
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+.atividade__progresso .progresso-passos {
+  flex: 1;
+  margin: 0;
+}
+
+.atividade__palco {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.atividade__palco .celular {
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* guia do passo: fica sempre acima do app, com a instrução, o aviso e a ajuda */
+.guia {
+  display: flex;
+  gap: 0.6rem;
+  align-items: flex-start;
+  padding: 0.6rem 0.75rem;
+  border-radius: var(--raio);
+  border: 3px solid var(--cor-primaria);
+  background: var(--cor-superficie);
+}
+
+.guia__rosto {
+  font-size: 1.9rem;
+  line-height: 1;
+}
+
+.guia__corpo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.4rem;
+  min-width: 0;
+}
+
+.guia__texto {
+  margin: 0;
+  font-weight: 700;
+  font-size: 1.05rem;
+  line-height: 1.35;
+}
+
+.guia__ouvir {
+  font: inherit;
+  font-size: 0.85rem;
+  color: var(--cor-primaria);
+  background: none;
+  border: 0;
+  padding: 0.2rem 0;
+  text-decoration: underline;
+  min-height: 0;
+}
+
+.guia__aviso {
+  margin: 0;
+  padding: 0.4rem 0.6rem;
+  border-left: 6px solid var(--cor-borda);
+  background: var(--cor-aviso-fundo);
+  width: 100%;
+  font-size: 0.95rem;
+}
+
+.guia__aviso--erro {
+  border-color: var(--cor-erro);
+}
+
+.guia__aviso--ok {
+  border-color: var(--cor-acerto);
+}
+
+.guia__aviso--dica {
+  border-color: var(--cor-primaria);
+}
+
+/* barra de ajuda sempre à vista, na parte de baixo */
+.atividade__barra {
+  position: sticky;
+  bottom: 0;
+  display: flex;
+  gap: 0.5rem;
+  margin-top: auto;
+  padding: 0.5rem 0 calc(0.5rem + env(safe-area-inset-bottom));
+  background: var(--cor-fundo);
+  border-top: 2px solid var(--cor-borda);
+  z-index: 5;
+}
+
+.atividade__barra .botao {
+  flex: 1;
+  min-height: 3rem;
+  font-size: 0.95rem;
+  padding: 0.4rem 0.6rem;
+}
+
+/* Janela que aparece sozinha (pop-up) dentro de uma tela de app */
+.app__janela {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  align-items: stretch;
+  padding: 2.2rem var(--espaco) var(--espaco);
+  text-align: center;
+  background: var(--app-cartao);
+  border: 3px solid #d98a00;
+  border-radius: 1rem;
+  box-shadow: 0 0.6rem 1.4rem rgb(0 0 0 / 35%);
+}
+.app__janela--perigo {
+  border-color: #c0261c;
+  background: #fff1f0;
+  color: #1a1a1a;
+}
+.app__janela p {
+  margin: 0;
+}
+.app__janela-titulo {
+  font-size: 1.15rem;
+}
+.app__janela-x {
+  position: absolute;
+  top: 0;
+  display: grid;
+  place-items: center;
+  width: 2.8rem;
+  height: 2.8rem;
+  padding: 0;
+  font-size: 0.95rem;
+  color: #555;
+  background: transparent;
+  border: 0;
+}
+.app__janela-x > span {
+  display: grid;
+  place-items: center;
+  width: 1.3rem;
+  height: 1.3rem;
+  background: #eee;
+  border: 1px solid #aaa;
+  border-radius: 50%;
+}
+.app__janela-x--direita {
+  right: 0;
+}
+.app__janela-x--esquerda {
+  left: 0;
+}
+.app__janela-x.destacado {
+  outline: 4px solid #ff7a00;
+  outline-offset: -4px;
+  border-radius: 50%;
+}
+.app__janela .app__botao-largo.destacado {
+  outline: 4px solid #ff7a00;
+}
+.app__link-pequeno {
+  align-self: center;
+  padding: 0.6rem 1rem;
+  font-size: 0.85rem;
+  color: #666;
+  background: none;
+  border: 0;
+  text-decoration: underline;
+}
+
+/* Perguntas dentro de uma tela de app: a resposta fica logo abaixo do conteúdo, sem vão no meio */
+.app:has(.app__painel) .app__espaco-bloco {
+  display: none;
+}
+.app:has(.app__painel) .app__painel {
+  gap: 0.4rem;
+  padding: 0.6rem var(--espaco);
+}
+.app:has(.app__painel) .app__painel .botao {
+  min-height: 3rem;
+  padding-top: 0.3rem;
+  padding-bottom: 0.3rem;
+}
+.app:has(.app__painel) .app__painel p {
+  font-size: 0.9rem;
+}
+.atividade__palco {
+  padding-bottom: 0.5rem;
+}
+
+/* Compacta o alto da atividade para a tela do app caber no celular */
+.atividade {
+  gap: 0.5rem;
+}
+.atividade__topo .botao {
+  min-height: 2.5rem;
+  padding: 0.2rem 0.8rem;
+}
+.atividade__topo .botao[aria-label='Ajustes'] {
+  min-width: 2.75rem;
+  padding: 0.2rem 0.6rem;
+  font-size: 1.15rem;
+}
+.atividade__titulo strong {
+  font-size: 1rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.atividade__titulo small {
+  display: none;
+}
+.guia {
+  padding: 0.45rem 0.65rem;
+  gap: 0.5rem;
+}
+.guia__rosto {
+  font-size: 1.5rem;
+}
+.guia__corpo {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.2rem 0.4rem;
+}
+.guia__texto {
+  font-size: 1rem;
+  line-height: 1.3;
+}
+.guia__ouvir {
+  align-self: start;
+  white-space: nowrap;
+}
+.guia__corpo > :not(.guia__texto):not(.guia__ouvir) {
+  grid-column: 1 / -1;
+}
+.atividade .app {
+  gap: 0.55rem;
+}
+.atividade .app__cartao {
+  padding: 0.55rem 0.75rem;
+  font-size: 0.95rem;
+}
+.atividade__barra {
+  gap: 0.4rem;
+  padding-top: 0.35rem;
+}
+.atividade__barra .botao {
+  min-height: 2.75rem;
+  font-size: 0.85rem;
+  line-height: 1.15;
+  padding: 0.2rem 0.4rem;
+}

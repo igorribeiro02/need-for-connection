@@ -2,6 +2,7 @@ import type { CSSProperties } from 'react'
 import type { Passo } from '../../core/engine/stepTypes'
 
 type Props = {
+  nomeBanco: string
   passo: Passo
   nome: string
   destacar: boolean
@@ -12,9 +13,9 @@ type Props = {
 /**
  * Tela inicial de um app de banco: faixa colorida com saudação e saldo, grade de atalhos
  * e lista de serviços. Estrutura baseada numa captura real do aplicativo da Caixa (Caixa Tem).
- * Os ícones do alto (sino, busca...) são só enfeite: nesta simulação só os botões do exercício funcionam.
+ * Os ícones do alto (sino, busca...) são só enfeite: só os botões do exercício funcionam.
  */
-export function InicioBanco({ passo, nome, destacar, aoResponder, aoVoltarPasso }: Props) {
+export function InicioBanco({ nomeBanco, passo, nome, destacar, aoResponder, aoVoltarPasso }: Props) {
   const tela = passo.tela
   const todos = passo.elementos ?? []
   const pilula = todos.find((e) => e.grupo === 'saldo')
@@ -29,7 +30,7 @@ export function InicioBanco({ passo, nome, destacar, aoResponder, aoVoltarPasso 
           <button type="button" className="banco__voltar" onClick={aoVoltarPasso} aria-label="Voltar">
             <span aria-hidden="true">←</span>
           </button>
-          <strong>Banco simulado</strong>
+          <strong>{nomeBanco}</strong>
           <span aria-hidden="true">🔔 ▶ 🔍 ⋮</span>
         </div>
         <div className="inicio__ola">

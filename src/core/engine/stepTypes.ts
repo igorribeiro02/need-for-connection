@@ -170,6 +170,7 @@ export type BlocoApp =
   | { tipo: 'botao'; item: ItemApp }
   | { tipo: 'folha'; texto: string; botao: ItemApp }
   | { tipo: 'navegacao'; itens: ItemApp[]; ativo: number; central?: number; ativoCheio?: boolean }
+  | { tipo: 'janela'; titulo: string; texto?: string; fechar?: ItemApp; lado?: 'direita' | 'esquerda'; botoes: ItemApp[]; perigo?: boolean } // janela que aparece sozinha (pop-up): X pequeno no canto e botões grandes de enganar
   | { tipo: 'espaco' } // empurra o que vem depois para baixo (botão no pé da tela)
   | { tipo: 'texto'; texto: string; centro?: boolean; link?: boolean }
 

@@ -1,10 +1,15 @@
 import type { BancoConfig, Fase, Mundo } from '../core/engine/stepTypes'
 import { bancos } from './banks'
 import { w0Andar } from './phases/w0-andar'
+import { w0Desbloquear, w0Icones } from './phases/w0-celular-inicial'
 import { w0Deslizar } from './phases/w0-deslizar'
 import { w0Teclado } from './phases/w0-teclado'
 import { w0Tocar } from './phases/w0-tocar'
 import { fasesMundo1 } from './phases/w1-celular'
+import { fasesMundo2 } from './phases/w2-mensagens'
+import { fasesMundo3 } from './phases/w3-fotos'
+import { fasesMundo5 } from './phases/w5-golpes'
+import { fasesMundo6 } from './phases/w6-servicos'
 import { w4PixChave, w4PixNome } from './phases/w4-pix'
 import { w799Pedir, w7ConferirMotorista, w7UberPedir } from './phases/w7-transporte'
 
@@ -16,7 +21,7 @@ export const mundos: Mundo[] = [
     descricao: 'Aprenda os gestos da tela, um de cada vez.',
     obrigatorio: true,
     dia: 'Domingo, a chegada',
-    fases: [w0Tocar, w0Deslizar, w0Teclado, w0Andar],
+    fases: [w0Tocar, w0Desbloquear, w0Icones, w0Deslizar, w0Teclado, w0Andar],
     historiaFinal: {
       falas: [
         { quem: 'ana', texto: 'Oi, {nome}! Soube que você chegou na vila. Amanhã eu te ligo.' },
@@ -40,8 +45,34 @@ export const mundos: Mundo[] = [
       premio: { emoji: '📞', titulo: 'A chamada de vídeo' },
     },
   },
-  { numero: 2, dia: 'Terça', titulo: 'Mensagens', descricao: 'Ler, responder e mandar fotos.', fases: [] },
-  { numero: 3, dia: 'Quarta', titulo: 'Fotos e arquivos', descricao: 'Salvar, editar e enviar.', fases: [] },
+  {
+    numero: 2,
+    dia: 'Terça',
+    titulo: 'Mensagens',
+    descricao: 'Ler, responder, mandar foto e áudio no WhatsApp.',
+    fases: fasesMundo2,
+    historiaFinal: {
+      falas: [
+        { quem: 'ana', texto: 'Recebi tudo, vó! Foto, resposta e até o áudio. Você está ótima.' },
+        { quem: 'neuza', texto: 'Amanhã vamos cuidar das fotos e dos arquivos do celular.' },
+      ],
+      premio: { emoji: '💌', titulo: 'Conversa em dia' },
+    },
+  },
+  {
+    numero: 3,
+    dia: 'Quarta',
+    titulo: 'Fotos e arquivos',
+    descricao: 'Tirar, cortar e enviar o arquivo certo.',
+    fases: fasesMundo3,
+    historiaFinal: {
+      falas: [
+        { quem: 'ana', texto: 'O convite ficou lindo com a foto do bolo, {nome}! Já mandei imprimir.' },
+        { quem: 'neuza', texto: 'Amanhã é dia de Pix. Respire fundo: você já está bem preparada.' },
+      ],
+      premio: { emoji: '🖼️', titulo: 'O álbum da festa' },
+    },
+  },
   {
     numero: 4,
     dia: 'Quinta',
@@ -56,8 +87,34 @@ export const mundos: Mundo[] = [
       premio: { emoji: '🎟️', titulo: 'Pix sem susto' },
     },
   },
-  { numero: 5, dia: 'Sexta', titulo: 'Golpes', descricao: 'Saber quando desconfiar.', fases: [] },
-  { numero: 6, dia: 'Sábado', titulo: 'Serviços e compras', descricao: 'Consulta, gov.br e compras.', fases: [] },
+  {
+    numero: 5,
+    dia: 'Sexta',
+    titulo: 'Golpes',
+    descricao: 'Mensagens, ligações e pedidos falsos: saber quando desconfiar.',
+    fases: fasesMundo5,
+    historiaFinal: {
+      falas: [
+        { quem: 'sorrateiro', texto: 'Hmpf... esta aí não caiu. Vou procurar outra vítima.' },
+        { quem: 'neuza', texto: 'Na dúvida, pare, respire e confira por outro caminho. Isso vale mais que qualquer pressa.' },
+      ],
+      premio: { emoji: '🦊', titulo: 'Ninguém te engana' },
+    },
+  },
+  {
+    numero: 6,
+    dia: 'Sábado',
+    titulo: 'Serviços e compras',
+    descricao: 'Marcar consulta, entrar no gov.br e comprar com cuidado.',
+    fases: fasesMundo6,
+    historiaFinal: {
+      falas: [
+        { quem: 'neuza', texto: 'Consulta marcada, documentos à mão e presente comprado. Amanhã é a festa!' },
+        { quem: 'ana', texto: 'Estou ansiosa, vó! O carro vai buscar você no domingo.' },
+      ],
+      premio: { emoji: '🎁', titulo: 'Tudo pronto' },
+    },
+  },
   {
     numero: 7,
     dia: 'Domingo, a festa',

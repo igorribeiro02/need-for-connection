@@ -33,7 +33,7 @@ export const w7UberPedir: Fase = {
     fechamento: [{ quem: 'neuza', texto: 'Pedido feito. Agora é esperar o carro chegar.' }],
     premio: { emoji: '🚗', titulo: 'A carona até a festa' },
   },
-  cenario: `Você precisa ir até o ${VIAGEM.destino}. Vamos pedir um carro no aplicativo, passo a passo. É só treino: nenhum carro vem de verdade.`,
+  cenario: `Você precisa ir até o ${VIAGEM.destino}. Vamos pedir um carro no aplicativo, passo a passo.`,
   passos: [
     toque(
       'inicio',
@@ -124,7 +124,7 @@ export const w799Pedir: Fase = {
     fechamento: [{ quem: 'neuza', texto: 'Viu? Aprendendo um, você já sabe o outro.' }],
     premio: { emoji: '📲', titulo: 'Dois aplicativos no bolso' },
   },
-  cenario: `Você precisa ir até o ${VIAGEM.destino}. Vamos pedir um carro no aplicativo da 99, passo a passo. É só treino: nenhum carro vem de verdade.`,
+  cenario: `Você precisa ir até o ${VIAGEM.destino}. Vamos pedir um carro no aplicativo da 99, passo a passo.`,
   passos: [
     toque(
       'inicio',

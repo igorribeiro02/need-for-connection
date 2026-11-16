@@ -21,17 +21,13 @@ export function TelaBanco({ banco, passo, destacar, nome, aoResponder, aoVoltarP
     <div
       className={`celular banco${banco.tema.escuro ? ' banco--escuro' : ''}`}
       role="group"
-      aria-label="Tela do aplicativo de banco (simulação)"
+      aria-label="Tela do aplicativo do banco"
       style={{ '--banco-cor': banco.tema.corPrincipal } as CSSProperties}
     >
-      <p className="faixa-simulacao">
-        Simulação no estilo do app: {banco.nomeNaLista === 'Outro banco / não sei' ? 'um banco qualquer' : banco.nomeNaLista}. Nada aqui é
-        de verdade. Só funcionam os botões do exercício.
-      </p>
       {passo.tela?.layout === 'app' && passo.tela.app ? (
         <TelaApp tema={banco.tema} passo={passo} nome={nome} destacar={destacar} aoResponder={aoResponder} aoVoltarPasso={aoVoltarPasso} />
       ) : passo.tela?.layout === 'inicio' ? (
-        <InicioBanco passo={passo} nome={nome} destacar={destacar} aoResponder={aoResponder} aoVoltarPasso={aoVoltarPasso} />
+        <InicioBanco nomeBanco={banco.nomeNaLista === 'Outro banco / não sei' ? 'Seu banco' : banco.nomeNaLista} passo={passo} nome={nome} destacar={destacar} aoResponder={aoResponder} aoVoltarPasso={aoVoltarPasso} />
       ) : passo.tela?.layout === 'menu-pix' && banco.fluxo.menuPix ? (
         <MenuPixBanco banco={banco} passo={passo} destacar={destacar} aoResponder={aoResponder} aoVoltarPasso={aoVoltarPasso} />
       ) : (
@@ -41,7 +37,7 @@ export function TelaBanco({ banco, passo, destacar, nome, aoResponder, aoVoltarP
   )
 }
 
-function TelaInterna({ passo, destacar, aoResponder, aoVoltarPasso }: Omit<Props, 'nome'>) {
+function TelaInterna({ banco, passo, destacar, aoResponder, aoVoltarPasso }: Omit<Props, 'nome'>) {
   const tela = passo.tela
   const senha = passo.tipo === 'digitar' && passo.teclado === 'senha'
   return (
@@ -50,7 +46,7 @@ function TelaInterna({ passo, destacar, aoResponder, aoVoltarPasso }: Omit<Props
         <button type="button" className="banco__voltar" onClick={aoVoltarPasso} aria-label="Voltar">
           <span aria-hidden="true">←</span>
         </button>
-        <span>Banco simulado</span>
+        <span>{banco.nomeNaLista === 'Outro banco / não sei' ? 'Seu banco' : banco.nomeNaLista}</span>
       </div>
 
       {tela?.saldo && (

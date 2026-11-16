@@ -20,9 +20,9 @@ export function TelaAlbum({ aoVoltar }: { aoVoltar: () => void }) {
         {ganhos} de {total} páginas. Cada fase que você termina guarda uma lembrança da semana até a festa.
       </p>
       {paginas.map((pg) => (
-        <section key={pg.mundo} className="album__pagina" aria-label={`Mundo ${pg.mundo}: ${pg.tituloMundo}`}>
+        <section key={pg.mundo} className="album__pagina" aria-label={`Fase ${pg.mundo}: ${pg.tituloMundo}`}>
           <h2 className="album__titulo">
-            Mundo {pg.mundo} · {pg.tituloMundo}
+            Fase {pg.mundo} · {pg.tituloMundo}
           </h2>
           {pg.dia && <p className="album__dia">{pg.dia}</p>}
           <div className="album__grade">
