@@ -631,3 +631,34 @@
   line-height: 1.15;
   padding: 0.2rem 0.4rem;
 }
+
+/* Letra grande: nada passa da borda da tela */
+.guia__corpo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
+.guia__texto {
+  flex: 1 1 10rem;
+  min-width: 0;
+}
+.guia__ouvir {
+  flex: 0 0 auto;
+}
+.guia__corpo > :not(.guia__texto):not(.guia__ouvir) {
+  flex: 1 1 100%;
+}
+.atividade__progresso {
+  flex-wrap: wrap;
+}
+.atividade__progresso .progresso-passos {
+  flex: 1 1 8rem;
+  min-width: 0;
+}
+.guia__texto {
+  flex: 1 1 60%;
+  overflow-wrap: anywhere;
+}
+.atividade__progresso .passo-rotulo {
+  white-space: normal;
+}

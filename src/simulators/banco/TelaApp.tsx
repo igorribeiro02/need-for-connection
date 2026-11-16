@@ -230,7 +230,7 @@ export function TelaApp({ tema, passo, nome, destacar, aoResponder, aoVoltarPass
                 b.acao.icone ? <><span aria-hidden="true">{b.acao.icone}</span><span className="sr-only">{b.acao.rotulo}</span></> : b.acao.rotulo,
                 'ta',
               )}
-            {b.apoio && <p className="app__apoio app__apoio--cheio">{b.apoio}</p>}
+            {b.apoio && <p className="app__apoio app__apoio--cheio">{t(b.apoio)}</p>}
           </div>
         )
       case 'campo':

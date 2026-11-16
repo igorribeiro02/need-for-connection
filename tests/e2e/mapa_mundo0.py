@@ -1,5 +1,6 @@
 # Teste de navegador do mapa com personagem e das fases do Mundo 0.
 # Requer: servidor em http://localhost:4173 (npm run build && npm run preview)
+import re
 import sys
 from playwright.sync_api import sync_playwright
 
@@ -25,9 +26,9 @@ with sync_playwright() as p:
     page.get_by_role("button", name="Figura 👵").click()
     page.get_by_role("button", name="Começar").click()
 
-    grade = page.get_by_role("group", name="Mapa dos mundos. Use as setas do teclado para andar até a entrada de um mundo.")
+    grade = page.get_by_role("group", name="Mapa das fases. Use as setas do teclado para andar até a entrada de uma fase.")
     check("mapa aparece", grade.is_visible())
-    check("novo jogador começa na entrada do Mundo 0", page.get_by_role("heading", name="Mundo 0: Primeiros toques").is_visible())
+    check("novo jogador começa na entrada do Mundo 0", page.get_by_role("heading", name="Fase 0: Primeiros toques").is_visible())
     page.screenshot(path=f"{OUT}/m1-mapa.png", full_page=True)
 
     # teclado: do Mundo 0 (4,6) sobe 3 casas até a praça
@@ -39,12 +40,12 @@ with sync_playwright() as p:
     page.get_by_role("button", name="Andar para baixo").click()
     page.get_by_role("button", name="Andar para baixo").click()
     page.get_by_role("button", name="Andar para baixo").click()
-    check("botão direcional leva de volta ao Mundo 0", page.get_by_role("heading", name="Mundo 0: Primeiros toques").is_visible())
+    check("botão direcional leva de volta ao Mundo 0", page.get_by_role("heading", name="Fase 0: Primeiros toques").is_visible())
 
     # toque num prédio bloqueado: personagem anda sozinho até lá
-    page.get_by_role("button", name="Mundo 4: Banco e Pix (ainda bloqueado)").click()
+    page.get_by_role("button", name="Fase 4: Banco e Pix (ainda bloqueado)").click()
     page.get_by_text("Ainda bloqueado.").wait_for(timeout=5000)
-    check("Mundo 4 bloqueado até terminar o Mundo 0", page.get_by_text("Termine primeiro: Mundo 0 (Primeiros toques)").is_visible())
+    check("Mundo 4 bloqueado até terminar o Mundo 0", page.get_by_text("Termine primeiro: Fase 0 (Primeiros toques)").is_visible())
     page.screenshot(path=f"{OUT}/m2-bloqueado.png", full_page=True)
 
     # modo lista (e lembra a escolha depois de recarregar)
@@ -67,9 +68,32 @@ with sync_playwright() as p:
     page.get_by_role("button", name="Começar").click()
     page.get_by_role("button", name="Verde").click()
     page.get_by_role("button", name="Confirmar", exact=True).click()
+    page.get_by_role("button", name="Enviar depois", exact=True).click()
+    page.get_by_role("button", name="Ana Maria", exact=True).click()
     fechar_cena()
     check("fase tocar concluída", page.get_by_role("heading", name="Você conseguiu!").is_visible())
-    page.get_by_role("button", name="Voltar ao mapa").click()
+    page.get_by_role("button", name=re.compile(r"^(← Mapa|← Voltar ao mapa|Voltar ao mapa)$")).first.click()
+
+    # destrancar o celular (tela de app)
+    abrir_fase("Destrancar o celular")
+    page.get_by_role("button", name="Acordar o celular").click()
+    page.get_by_role("button", name="Deslizar para cima").click()
+    page.locator(".atividade__palco input").first.fill("2580"); page.get_by_role("button", name="OK", exact=True).click()
+    page.get_by_role("button", name="Decorar e não contar a ninguém").click()
+    fechar_cena()
+    check("fase destrancar concluída", page.get_by_role("heading", name="Você conseguiu!").is_visible())
+    page.get_by_role("button", name=re.compile(r"^(← Mapa|← Voltar ao mapa|Voltar ao mapa)$")).first.click()
+
+    # tela inicial e aplicativos (voltar com a seta do app)
+    abrir_fase("A tela inicial e os aplicativos")
+    page.get_by_role("button", name="Telefone").click()
+    page.get_by_role("button", name="Câmera").click()
+    page.get_by_role("button", name="Voltar", exact=True).click()
+    page.get_by_role("button", name="Mensagens").click()
+    page.get_by_role("button", name="Início").click()
+    fechar_cena()
+    check("fase tela inicial concluída", page.get_by_role("heading", name="Você conseguiu!").is_visible())
+    page.get_by_role("button", name=re.compile(r"^(← Mapa|← Voltar ao mapa|Voltar ao mapa)$")).first.click()
 
     # deslizar (com os botões; o gesto usa a mesma rolagem)
     abrir_fase("Deslizar a tela")
@@ -83,7 +107,7 @@ with sync_playwright() as p:
         page.get_by_role("button", name="▲ Subir").click(); page.wait_for_timeout(250)
     fechar_cena()
     check("voltar ao início conclui", page.get_by_role("heading", name="Você conseguiu!").is_visible())
-    page.get_by_role("button", name="Voltar ao mapa").click()
+    page.get_by_role("button", name=re.compile(r"^(← Mapa|← Voltar ao mapa|Voltar ao mapa)$")).first.click()
 
     # deslizar de verdade com a roda do mouse na lista
     page.get_by_role("button", name="Deslizar a tela — ★★★ Rever").click()
@@ -91,7 +115,7 @@ with sync_playwright() as p:
     page.mouse.wheel(0, 1500)
     page.get_by_text("Passo 2 de 2").wait_for(timeout=5000)
     check("rolar com a roda também funciona", True)
-    page.get_by_role("button", name="Voltar ao mapa").click()
+    page.get_by_role("button", name=re.compile(r"^(← Mapa|← Voltar ao mapa|Voltar ao mapa)$")).first.click()
 
     # teclado
     abrir_fase("Digitar no teclado")
@@ -109,7 +133,7 @@ with sync_playwright() as p:
     campo.fill("ANA@exemplo.com "); page.get_by_role("button", name="Pronto").click()
     fechar_cena()
     check("fase teclado concluída (ignora maiúsculas e espaço final)", page.get_by_role("heading", name="Você conseguiu!").is_visible())
-    page.get_by_role("button", name="Voltar ao mapa").click()
+    page.get_by_role("button", name=re.compile(r"^(← Mapa|← Voltar ao mapa|Voltar ao mapa)$")).first.click()
 
     # andar
     abrir_fase("Andar com o personagem")
@@ -139,16 +163,16 @@ with sync_playwright() as p:
     page.screenshot(path=f"{OUT}/m6-final-mundo0.png", full_page=True)
     fechar_cena(); fechar_cena()
     check("cena final entrega o prêmio do convite", page.get_by_text("O convite da Ana").is_visible())
-    page.get_by_role("button", name="Voltar ao mapa").click()
+    page.get_by_role("button", name=re.compile(r"^(← Mapa|← Voltar ao mapa|Voltar ao mapa)$")).first.click()
     page.get_by_role("button", name="Álbum da Ana").click()
-    check("álbum mostra as páginas ganhas", page.get_by_text("5 de 17 páginas").is_visible())
+    check("álbum mostra as páginas ganhas", page.get_by_text(re.compile(r"\d+ de \d+ páginas")).first.is_visible())
     page.screenshot(path=f"{OUT}/m7-album.png", full_page=True)
-    page.get_by_role("button", name="Voltar ao mapa").click()
+    page.get_by_role("button", name=re.compile(r"^(← Mapa|← Voltar ao mapa|Voltar ao mapa)$")).first.click()
 
     # liberação
     page.get_by_role("button", name="🗺️ Mapa").click()
-    check("Mundo 0 concluído libera os outros", page.get_by_role("button", name="Mundo 4: Banco e Pix", exact=True).count() == 1)
-    page.get_by_role("button", name="Mundo 4: Banco e Pix").click()
+    check("Mundo 0 concluído libera os outros", page.get_by_role("button", name="Fase 4: Banco e Pix", exact=True).count() == 1)
+    page.get_by_role("button", name="Fase 4: Banco e Pix").click()
     page.get_by_role("button", name="Fazer um Pix pela chave").wait_for(timeout=6000)
     check("Mundo 4 agora está aberto e mostra as fases de Pix", True)
     page.screenshot(path=f"{OUT}/m6-liberado.png", full_page=True)

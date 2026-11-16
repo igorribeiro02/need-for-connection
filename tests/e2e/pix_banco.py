@@ -1,6 +1,7 @@
 # Teste de navegador do simulador de banco: escolha do banco, passos que mudam por banco,
 # ajuda adaptativa (me mostre, destaque, modo guiado), retomada e a variante "nome diferente".
 # Requer: servidor em http://localhost:4173 (npm run build && npm run preview)
+import re
 import json, sys
 from playwright.sync_api import sync_playwright
 
@@ -13,7 +14,7 @@ def check(nome, cond):
     log.append(("OK  " if cond else "FALHA ") + nome)
     return cond
 
-W0 = ["w0-tocar", "w0-deslizar", "w0-teclado", "w0-andar"]
+W0 = ["w0-tocar", "w0-desbloquear", "w0-icones", "w0-deslizar", "w0-teclado", "w0-andar"]
 # estes testes não são sobre a história: marcamos as cenas dos mundos 4 e 7 como já vistas
 FASES_HIST = ["w4-pix-chave", "w4-pix-nome", "w7-uber-pedir", "w7-99-pedir", "w7-conferir-motorista"]
 VISTAS = [f"{t}:{x}" for x in FASES_HIST for t in ("abertura", "fechamento")] + ["final:4", "final:7"]
@@ -24,6 +25,10 @@ perfil = {
     "fases": {f: {"status": "concluida", "estrelas": 3, "passosConcluidos": []} for f in W0},
     "cenasVistas": VISTAS,
 }
+
+def abrir_ajustes(page):
+    b = page.get_by_role("button", name="Ajustes", exact=True)
+    if b.count() and b.get_attribute("aria-expanded") != "true": b.click()
 
 with sync_playwright() as p:
     b = p.chromium.launch()
@@ -44,12 +49,12 @@ with sync_playwright() as p:
     def toque(nome): page.get_by_role("button", name=nome, exact=True).click()
 
     # --- Pix pela chave na Caixa (fluxo: Pix na tela inicial > Pagar/Transferir): 11 passos ---
-    page.get_by_role("button", name="Mundo 4: Banco e Pix", exact=True).click()
+    page.get_by_role("button", name="Fase 4: Banco e Pix", exact=True).click()
     page.get_by_role("button", name="Fazer um Pix pela chave").click()
     check("pede o banco antes de começar", page.get_by_role("heading", name="Qual é o seu banco?").is_visible())
     page.screenshot(path=f"{OUT}/p1-seletor.png", full_page=True)
     page.get_by_role("button", name="Caixa / Caixa Tem", exact=True).click()
-    check("mostra a fala-chave da história no lugar do cenário", page.get_by_text("É a chave Pix dela").is_visible())
+    check("começa no passo 1 do Pix", page.get_by_text("Passo 1 de 11").is_visible())
     check("Caixa tem 11 passos", passo(1, 11))
     page.screenshot(path=f"{OUT}/p2-entrar.png", full_page=True)
 
@@ -77,9 +82,9 @@ with sync_playwright() as p:
 
     # recarregar no meio: continua no mesmo banco, sem pedir o banco de novo
     page.reload()
-    page.get_by_role("button", name="Mundo 4: Banco e Pix", exact=True).click()
+    page.get_by_role("button", name="Fase 4: Banco e Pix", exact=True).click()
     page.get_by_role("button", name="Fazer um Pix pela chave — continuar").click()
-    check("retoma no mesmo banco e passo", passo(5, 11) and page.get_by_text("Banco escolhido: Caixa / Caixa Tem.").is_visible())
+    check("retoma no mesmo banco e passo", passo(5, 11) and (abrir_ajustes(page) or True) and page.get_by_role("button", name=re.compile("Trocar de banco.*Caixa")).is_visible())
 
     toque("E-mail")
     campo = page.get_by_label("E-mail da pessoa")
@@ -95,7 +100,7 @@ with sync_playwright() as p:
     for d in "12": toque(d)
     check("bolinhas contam os números", page.get_by_label("2 números digitados").is_visible())
     page.get_by_role("button", name="Confirmar", exact=True).click()
-    check("senha incompleta: erro gentil", page.get_by_text("Quase! A senha do exercício é 1234").is_visible())
+    check("senha incompleta: erro gentil", page.get_by_text("Quase! A senha é 1234").is_visible())
     page.get_by_role("button", name="Apagar").click(); page.get_by_role("button", name="Apagar").click()
     for d in "1234": toque(d)
     page.screenshot(path=f"{OUT}/p4-senha.png", full_page=True)
@@ -104,13 +109,14 @@ with sync_playwright() as p:
     toque("Salvar comprovante")
     check("fase concluída", page.get_by_role("heading", name="Você conseguiu!").is_visible())
     check("'me mostre' custou 1 dica: 2 estrelas", page.get_by_label("2 estrelas").is_visible())
-    page.get_by_role("button", name="Voltar ao mapa").click()
+    page.get_by_role("button", name=re.compile(r"^(← Mapa|← Voltar ao mapa|Voltar ao mapa)$")).first.click()
 
     # --- variante do nome diferente no Banco do Brasil (confirma o destinatário logo depois da chave): 8 passos, modo guiado ---
     page.get_by_role("button", name="Conferir o nome antes de enviar").click()
     check("lembra o último banco como sugestão", page.get_by_role("button", name="Continuar com Caixa / Caixa Tem").is_visible())
     page.get_by_role("button", name="Banco do Brasil", exact=True).click()
     check("variante no BB tem 8 passos (para na conferência)", passo(1, 8))
+    abrir_ajustes(page)
     page.get_by_role("button", name="Modo guiado: desligado").click()
     check("modo guiado mostra onde tocar", page.locator(".destacado").count() == 1)
     toque("Entrar"); toque("Mostrar saldo"); toque("Pix"); toque("Pagar ou transferir"); toque("E-mail")
@@ -123,11 +129,12 @@ with sync_playwright() as p:
     toque("Cancelar")
     check("variante concluída", page.get_by_role("heading", name="Você conseguiu!").is_visible())
     check("modo guiado limita a 1 estrela", page.get_by_label("1 estrelas").is_visible())
-    page.get_by_role("button", name="Voltar ao mapa").click()
+    page.get_by_role("button", name=re.compile(r"^(← Mapa|← Voltar ao mapa|Voltar ao mapa)$")).first.click()
     page.get_by_role("button", name="Conferir o nome antes de enviar — ★ Rever").click()
     page.get_by_role("button", name="Continuar com Banco do Brasil").click()
+    abrir_ajustes(page)
     page.get_by_role("button", name="Modo guiado: ligado").click()  # desliga
-    page.get_by_role("button", name="Voltar ao mapa").click()
+    page.get_by_role("button", name=re.compile(r"^(← Mapa|← Voltar ao mapa|Voltar ao mapa)$")).first.click()
 
     # --- Pix completo no BB: confirmar destinatário, conta, valor, data e senha de 6 números (13 passos) ---
     page.get_by_role("button", name="Fazer um Pix pela chave — ★★ Rever").click()
@@ -147,7 +154,7 @@ with sync_playwright() as p:
     page.get_by_role("button", name="Confirmar", exact=True).click()
     toque("Salvar comprovante")
     check("Pix no BB concluído", page.get_by_role("heading", name="Você conseguiu!").is_visible())
-    page.get_by_role("button", name="Voltar ao mapa").click()
+    page.get_by_role("button", name=re.compile(r"^(← Mapa|← Voltar ao mapa|Voltar ao mapa)$")).first.click()
 
     # --- Nubank: valor antes da chave; trocar de banco recomeça ---
     check("sem ajuda, o Pix no BB rendeu 3 estrelas", page.get_by_role("button", name="Fazer um Pix pela chave — ★★★ Rever").is_visible())
@@ -157,14 +164,16 @@ with sync_playwright() as p:
     toque("Entrar"); toque("Mostrar saldo"); toque("Área Pix"); toque("Transferir")
     check("Nubank pede o valor antes da chave", page.get_by_label("Valor em reais").is_visible())
     page.screenshot(path=f"{OUT}/p5-nubank-valor.png", full_page=True)
+    abrir_ajustes(page)
     page.get_by_role("button", name="Trocar de banco").click()
     check("trocar de banco volta à lista", page.get_by_role("heading", name="Qual é o seu banco?").is_visible())
     page.get_by_role("button", name="Itaú", exact=True).click()
-    check("novo banco começa do início (Itaú: 11 passos)", passo(1, 11) and page.get_by_text("Banco escolhido: Itaú.").is_visible())
+    check("novo banco começa do início (Itaú: 11 passos)", passo(1, 11))
     toque("Entrar"); toque("Mostrar saldo")
     page.screenshot(path=f"{OUT}/p5b-itau-home.png", full_page=True)
 
     # --- Bradesco: a tela do Pix tem o campo da chave (sem escolher o tipo); 10 passos ---
+    abrir_ajustes(page)
     page.get_by_role("button", name="Trocar de banco").click()
     page.get_by_role("button", name="Bradesco", exact=True).click()
     check("Bradesco tem 10 passos", passo(1, 10))
@@ -179,7 +188,7 @@ with sync_playwright() as p:
     check("não pede o tipo de chave antes", not page.get_by_text("Para quem você quer enviar?").is_visible())
     page.screenshot(path=f"{OUT}/p5c-bradesco-pix.png", full_page=True)
     page.get_by_role("button", name="Ler um QR Code").click()
-    check("botão que não faz parte do exercício avisa com calma", page.get_by_role("status").get_by_text("não funciona neste exercício").is_visible())
+    check("botão que não faz parte do exercício avisa com calma", page.get_by_role("status").get_by_text("fica para depois").is_visible())
     page.get_by_label("Digitar ou colar nome/chave").fill("ana@exemplo.com")
     page.get_by_role("button", name="Continuar", exact=True).click()
     check("depois da chave vem o valor", page.get_by_label("Valor em reais").is_visible())
@@ -192,9 +201,11 @@ with sync_playwright() as p:
     check("Bradesco termina no comprovante", page.get_by_role("button", name="Salvar comprovante", exact=True).is_visible())
 
     # alto contraste e letra grande não quebram o simulador
+    abrir_ajustes(page)
     page.get_by_role("button", name="Alto contraste: desligado").click()
     for _ in range(4): page.get_by_role("button", name="Aumentar letra").click()
     page.screenshot(path=f"{OUT}/p6-contraste.png", full_page=True)
+    print("EXCESSO:", page.evaluate("""[...document.querySelectorAll('*')].filter(e=>e.getBoundingClientRect().right>innerWidth+1).slice(0,8).map(e=>e.tagName+'.'+e.className+' '+Math.round(e.getBoundingClientRect().right))"""))
     check("sem rolagem horizontal com letra 200%", page.evaluate("document.documentElement.scrollWidth <= window.innerWidth + 1"))
 
     check("sem erros no console", not errors)

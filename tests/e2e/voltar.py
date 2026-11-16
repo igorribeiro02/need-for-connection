@@ -1,5 +1,6 @@
 # Teste de navegador do "voltar": botão da fase, seta ← dentro dos apps, botão voltar do celular/navegador.
 # Requer: servidor em http://localhost:4173 (npm run build && npm run preview)
+import re
 import sys
 from playwright.sync_api import sync_playwright
 
@@ -12,7 +13,7 @@ def check(nome, cond):
     log.append(("OK  " if cond else "FALHA ") + nome)
     return cond
 
-W0 = ["w0-tocar", "w0-deslizar", "w0-teclado", "w0-andar"]
+W0 = ["w0-tocar", "w0-desbloquear", "w0-icones", "w0-deslizar", "w0-teclado", "w0-andar"]
 # estes testes não são sobre a história: marcamos as cenas dos mundos 4 e 7 como já vistas
 FASES_HIST = ["w4-pix-chave", "w4-pix-nome", "w7-uber-pedir", "w7-99-pedir", "w7-conferir-motorista"]
 VISTAS = [f"{t}:{x}" for x in FASES_HIST for t in ("abertura", "fechamento")] + ["final:4", "final:7"]
@@ -23,6 +24,10 @@ perfil = {
     "fases": {f: {"status": "concluida", "estrelas": 3, "passosConcluidos": []} for f in W0},
     "cenasVistas": VISTAS,
 }
+
+def abrir_ajustes(page):
+    b = page.get_by_role("button", name="Ajustes", exact=True)
+    if b.count() and b.get_attribute("aria-expanded") != "true": b.click()
 
 with sync_playwright() as p:
     b = p.chromium.launch()
@@ -42,8 +47,8 @@ with sync_playwright() as p:
     def passo(n, total): return page.get_by_text(f"Passo {n} de {total}").is_visible()
     def toque(nome): page.get_by_role("button", name=nome, exact=True).click()
     def esperar_passo(n, total): page.get_by_text(f"Passo {n} de {total}").wait_for(timeout=3000)
-    def mapa(): return page.get_by_text("Escolha um mundo para treinar").is_visible()
-    def abrir_mundo4(): page.get_by_role("button", name="Mundo 4: Banco e Pix").click()
+    def mapa(): return page.get_by_text("Escolha uma fase para treinar").is_visible()
+    def abrir_mundo4(): page.get_by_role("button", name="Fase 4: Banco e Pix").click()
 
     # ---------- Bradesco: Voltar um passo, seta ← do app, botão voltar do celular ----------
     abrir_mundo4()
@@ -75,15 +80,15 @@ with sync_playwright() as p:
     page.go_back(); esperar_passo(2, 10)
     page.go_back(); esperar_passo(1, 10)
     page.go_back()
-    page.get_by_text("Escolha um mundo para treinar").wait_for(timeout=3000)
+    page.get_by_text("Escolha uma fase para treinar").wait_for(timeout=3000)
     check("no primeiro passo, voltar do celular leva ao mapa", mapa())
 
     # entrar de novo, avançar e usar 'Voltar ao mapa': o histórico não fica sujo
     abrir_mundo4()
     page.get_by_role("button", name="Fazer um Pix pela chave").click()
     toque("Entrar"); esperar_passo(2, 10)
-    page.get_by_role("button", name="Voltar ao mapa").click()
-    page.get_by_text("Escolha um mundo para treinar").wait_for(timeout=3000)
+    page.get_by_role("button", name=re.compile(r"^(← Mapa|← Voltar ao mapa|Voltar ao mapa)$")).first.click()
+    page.get_by_text("Escolha uma fase para treinar").wait_for(timeout=3000)
     page.go_back()
     page.wait_for_timeout(300)
     check("depois de 'Voltar ao mapa', voltar do celular não reabre a fase", not page.get_by_text("Passo 2 de 10").is_visible())
@@ -93,6 +98,7 @@ with sync_playwright() as p:
     # ---------- Itaú: seta ← dentro das telas copiadas ----------
     abrir_mundo4()
     page.get_by_role("button", name="Fazer um Pix pela chave").click()
+    abrir_ajustes(page)
     page.get_by_role("button", name="Trocar de banco").click()
     page.get_by_role("button", name="Itaú", exact=True).click()
     toque("Entrar"); toque("Mostrar saldo")
@@ -105,9 +111,10 @@ with sync_playwright() as p:
     page.screenshot(path=f"{OUT}/voltar-itau.png", full_page=True)
 
     # ---------- Inter: a seta ← não é 'erro' no passo de confirmar ----------
-    page.get_by_role("button", name="Voltar ao mapa").click()
+    page.get_by_role("button", name=re.compile(r"^(← Mapa|← Voltar ao mapa|Voltar ao mapa)$")).first.click()
     abrir_mundo4()
     page.get_by_role("button", name="Fazer um Pix pela chave").click()
+    abrir_ajustes(page)
     page.get_by_role("button", name="Trocar de banco").click()
     page.get_by_role("button", name="Inter", exact=True).click()
     toque("Entrar"); toque("Mostrar saldo"); toque("Pix"); toque("Pagar")
@@ -119,8 +126,8 @@ with sync_playwright() as p:
     check("Inter: seta ← volta um passo", not page.get_by_text("Quase!").is_visible())
 
     # ---------- Uber: seta ← dentro do app de transporte ----------
-    page.get_by_role("button", name="Voltar ao mapa").click()
-    page.get_by_role("button", name="Mundo 7: Transporte por aplicativo").click()
+    page.get_by_role("button", name=re.compile(r"^(← Mapa|← Voltar ao mapa|Voltar ao mapa)$")).first.click()
+    page.get_by_role("button", name="Fase 7: Transporte por aplicativo").click()
     page.get_by_role("button", name="Pedir um Uber").click()
     toque("Para onde?"); esperar_passo(2, 8)
     page.get_by_role("button", name="Voltar", exact=True).click()

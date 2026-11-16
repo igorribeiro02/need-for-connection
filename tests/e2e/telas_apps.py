@@ -12,7 +12,7 @@ def check(nome, cond):
     log.append(("OK  " if cond else "FALHA ") + nome)
     return cond
 
-W0 = ["w0-tocar", "w0-deslizar", "w0-teclado", "w0-andar"]
+W0 = ["w0-tocar", "w0-desbloquear", "w0-icones", "w0-deslizar", "w0-teclado", "w0-andar"]
 # estes testes não são sobre a história: marcamos as cenas dos mundos 4 e 7 como já vistas
 FASES_HIST = ["w4-pix-chave", "w4-pix-nome", "w7-uber-pedir", "w7-99-pedir", "w7-conferir-motorista"]
 VISTAS = [f"{t}:{x}" for x in FASES_HIST for t in ("abertura", "fechamento")] + ["final:4", "final:7"]
@@ -23,6 +23,10 @@ perfil = {
     "fases": {f: {"status": "concluida", "estrelas": 3, "passosConcluidos": []} for f in W0},
     "cenasVistas": VISTAS,
 }
+
+def abrir_ajustes(page):
+    b = page.get_by_role("button", name="Ajustes", exact=True)
+    if b.count() and b.get_attribute("aria-expanded") != "true": b.click()
 
 with sync_playwright() as p:
     b = p.chromium.launch()
@@ -44,9 +48,10 @@ with sync_playwright() as p:
     def shot(nome): page.locator(".celular.banco").screenshot(path=f"{OUT}/{nome}.png")
     def abrir(banco, primeira=False):
         if primeira:
-            page.get_by_role("button", name="Mundo 4: Banco e Pix", exact=True).click()
+            page.get_by_role("button", name="Fase 4: Banco e Pix", exact=True).click()
             page.get_by_role("button", name="Fazer um Pix pela chave").click()
         else:
+            abrir_ajustes(page)
             page.get_by_role("button", name="Trocar de banco").click()
         page.get_by_role("button", name=banco, exact=True).click()
 
@@ -58,7 +63,7 @@ with sync_playwright() as p:
     check("Inter: saldo escondido com olho no alto", page.get_by_role("button", name="Mostrar saldo").is_visible())
     # errar de propósito mostra a dica gentil e não perde estrela
     page.get_by_role("button", name="Ajuda").click()
-    check("botão de enfeite avisa com calma", page.get_by_role("status").get_by_text("não funciona neste exercício").is_visible())
+    check("botão de enfeite avisa com calma", page.get_by_role("status").get_by_text("não é o que precisamos agora").is_visible())
     page.get_by_role("button", name="Mostrar saldo").click()
     check("Inter: saldo aparece", page.get_by_text("R$ 1.250,00").first.is_visible())
     shot("inter-2-saldo")
@@ -74,7 +79,7 @@ with sync_playwright() as p:
     check("Inter: Valor a pagar mostra 'Pagar para' e o nome da Ana", page.get_by_text("Pagar para", exact=True).is_visible() and page.get_by_text("Ana Beatriz Souza").first.is_visible())
     page.get_by_label("Valor em reais").fill("25"); page.get_by_role("button", name="Continuar", exact=True).click()
     shot("inter-6-revisao")
-    check("Inter: Revisão mostra 'Quem vai receber' e a pergunta do exercício", page.get_by_role("heading", name="Quem vai receber").is_visible() and page.get_by_text("Pergunta do exercício").is_visible())
+    check("Inter: Revisão mostra 'Quem vai receber' e a pergunta do exercício", page.get_by_role("heading", name="Quem vai receber").is_visible() and page.get_by_text("Responda aqui:").is_visible())
     page.get_by_role("button", name="Pagar R$ 25,00").click()
     check("Inter: Pagar ainda bloqueado antes de responder", page.get_by_role("status").get_by_text("Primeiro responda").is_visible())
     toque("Sim, está certo")
@@ -131,7 +136,7 @@ with sync_playwright() as p:
     page.get_by_label("Digite a chave Pix ou nome").fill("ana@exemplo.com")
     page.get_by_role("button", name="Continuar", exact=True).click()
     shot("itau-4-nome")
-    check("Itaú: o nome aparece junto do valor e vem a pergunta do exercício", page.get_by_text("Transferir para Ana Beatriz Souza").is_visible() and page.get_by_text("Pergunta do exercício").is_visible())
+    check("Itaú: o nome aparece junto do valor e vem a pergunta do exercício", page.get_by_text("Transferir para Ana Beatriz Souza").is_visible() and page.get_by_text("Responda aqui:").is_visible())
     toque("Sim, está certo")
     shot("itau-5-quanto")
     check("Itaú: 'Quanto você vai transferir?'", page.get_by_role("heading", name="Quanto você vai transferir?").is_visible())
@@ -150,7 +155,9 @@ with sync_playwright() as p:
     toque("Entrar")
     for _ in range(3): page.get_by_role("button", name="Brasil").click()  # enfeites não contam como erro
     check("enfeites não ativam a ajuda automática", not page.get_by_role("button", name="Me mostre onde tocar").is_visible())
+    abrir_ajustes(page)
     page.get_by_role("button", name="Alto contraste: desligado").click()
+    abrir_ajustes(page)
     for _ in range(4): page.get_by_role("button", name="Aumentar letra").click()
     shot("inter-contraste-200")
     check("sem rolagem horizontal com letra 200% (Inter, alto contraste)", page.evaluate("document.documentElement.scrollWidth <= window.innerWidth + 1"))
@@ -158,6 +165,7 @@ with sync_playwright() as p:
     for _ in range(4): page.get_by_role("button", name="Diminuir letra").click()
     for nome, sel in [("PicPay", "PicPay"), ("Mercado Pago", "Mercado Pago")]:
         abrir(nome); toque("Entrar")
+    abrir_ajustes(page)
     for _ in range(4): page.get_by_role("button", name="Aumentar letra").click()
     check("sem rolagem horizontal com letra 200% (Mercado Pago)", page.evaluate("document.documentElement.scrollWidth <= window.innerWidth + 1"))
 
