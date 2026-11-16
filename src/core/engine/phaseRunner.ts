@@ -48,6 +48,12 @@ function confere(passo: Passo, resposta: string): boolean {
   if (passo.tipo === 'tocar' || passo.tipo === 'arrastar' || passo.tipo === 'andar' || passo.tipo === 'deslizar') {
     return normalizar(resposta) === normalizar(passo.alvo)
   }
+  if (passo.livre) return resposta.trim().length > 0
+  if (passo.soDigitos) {
+    const numeros = (t: string) => t.replace(/\D/g, '')
+    const lista = Array.isArray(passo.esperado) ? passo.esperado : [passo.esperado ?? '']
+    return numeros(resposta) !== '' && lista.some((e) => numeros(e) === numeros(resposta))
+  }
   const esperado = Array.isArray(passo.esperado) ? passo.esperado : [passo.esperado ?? '']
   return esperado.some((e) => normalizar(e) === normalizar(resposta))
 }

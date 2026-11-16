@@ -13,7 +13,7 @@ def check(nome, cond):
     log.append(("OK  " if cond else "FALHA ") + nome)
     return cond
 
-W0 = ["w0-tocar", "w0-desbloquear", "w0-icones", "w0-deslizar", "w0-teclado", "w0-andar"]
+W0 = ["w0-desbloquear", "w0-icones", "w0-deslizar", "w0-teclado", "w0-andar"]
 perfil = {
     "versao": 1,
     "perfil": {"id": "p1", "nome": "Dona Maria da Silva", "avatar": "👵"},
@@ -72,11 +72,33 @@ with sync_playwright() as p:
     # ---------------- Brilho ----------------
     abrir("Aumentar o brilho da tela")
     page.get_by_role("button", name="Pular história").click()
-    toque("Brilho")
+    check("começa no passo 1 de 4", page.get_by_text("Passo 1 de 4").is_visible())
     page.screenshot(path=f"{OUT}/w1-3-brilho-escuro.png")
-    for _ in range(3): toque("+ Aumentar")
-    check("brilho no máximo", page.get_by_role("img", name="Brilho: 4 de 4").is_visible())
-    toque("Pronto"); cont()
+
+    def arrastar(seletor, de, ate):
+        r = page.locator(seletor).bounding_box()
+        vert = r["height"] > r["width"]
+        pos = lambda f: (r["x"] + r["width"] / 2, r["y"] + r["height"] * (1 - f)) if vert else (r["x"] + r["width"] * f, r["y"] + r["height"] / 2)
+        (x0, y0), (x1, y1) = pos(de), pos(ate)
+        page.mouse.move(x0, y0); page.mouse.down(); page.mouse.move(x1, y1, steps=6); page.mouse.up(); page.wait_for_timeout(250)
+
+    # 1) toque curto na bolinha não vale; só deslizar para baixo
+    bol = page.locator(".cel-bril__bolinha").bounding_box()
+    page.mouse.click(bol["x"] + bol["width"] / 2, bol["y"] + bol["height"] / 2); page.wait_for_timeout(150)
+    check("toque curto não abre o painel", page.get_by_text("Passo 1 de 4").is_visible())
+    page.mouse.move(bol["x"] + bol["width"] / 2, bol["y"] + bol["height"] / 2); page.mouse.down()
+    page.mouse.move(bol["x"] + bol["width"] / 2, bol["y"] + bol["height"] / 2 + 70, steps=8); page.mouse.up(); page.wait_for_timeout(250)
+    check("deslizar para baixo abre o painel", page.get_by_text("Passo 2 de 4").is_visible())
+    # 2) só a metade não é suficiente; até o fim sim
+    arrastar(".cel-bril__barra", 0.2, 0.5)
+    check("brilho pela metade ainda não conclui o passo", page.get_by_text("Passo 2 de 4").is_visible())
+    page.screenshot(path=f"{OUT}/w1-3b-brilho-meio.png")
+    arrastar(".cel-bril__barra", 0.5, 0.99)
+    check("brilho alto avança sem botão de concluir", page.get_by_text("Passo 3 de 4").is_visible())
+    page.locator(".cel-bril__msg-botao").click()
+    check("passo 4: baixar o brilho", page.get_by_text("Passo 4 de 4").is_visible())
+    arrastar(".cel-bril__barra", 0.99, 0.4)
+    cont()
     check("fase de brilho concluída", page.get_by_role("heading", name="Você conseguiu!").is_visible())
     page.get_by_role("button", name=re.compile(r"^(← Mapa|← Voltar ao mapa|Voltar ao mapa)$")).first.click()
 

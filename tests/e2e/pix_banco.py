@@ -14,10 +14,10 @@ def check(nome, cond):
     log.append(("OK  " if cond else "FALHA ") + nome)
     return cond
 
-W0 = ["w0-tocar", "w0-desbloquear", "w0-icones", "w0-deslizar", "w0-teclado", "w0-andar"]
+W0 = ["w0-desbloquear", "w0-icones", "w0-deslizar", "w0-teclado", "w0-andar"]
 # estes testes não são sobre a história: marcamos as cenas dos mundos 4 e 7 como já vistas
 FASES_HIST = ["w4-pix-chave", "w4-pix-nome", "w7-uber-pedir", "w7-99-pedir", "w7-conferir-motorista"]
-VISTAS = [f"{t}:{x}" for x in FASES_HIST for t in ("abertura", "fechamento")] + ["final:4", "final:7"]
+VISTAS = [f"{t}:{x}" for x in FASES_HIST for t in ("abertura", "fechamento")] + ["final:3", "final:6"]
 perfil = {
     "versao": 1,
     "perfil": {"id": "p1", "nome": "Seu João", "avatar": "👴"},
@@ -49,8 +49,8 @@ with sync_playwright() as p:
     def toque(nome): page.get_by_role("button", name=nome, exact=True).click()
 
     # --- Pix pela chave na Caixa (fluxo: Pix na tela inicial > Pagar/Transferir): 11 passos ---
-    page.get_by_role("button", name="Fase 4: Banco e Pix", exact=True).click()
-    page.get_by_role("button", name="Fazer um Pix pela chave").click()
+    page.get_by_role("button", name="Fase 3: Banco e Pix", exact=True).click()
+    page.get_by_role("button", name="Pix pela chave: e-mail").click()
     check("pede o banco antes de começar", page.get_by_role("heading", name="Qual é o seu banco?").is_visible())
     page.screenshot(path=f"{OUT}/p1-seletor.png", full_page=True)
     page.get_by_role("button", name="Caixa / Caixa Tem", exact=True).click()
@@ -82,8 +82,8 @@ with sync_playwright() as p:
 
     # recarregar no meio: continua no mesmo banco, sem pedir o banco de novo
     page.reload()
-    page.get_by_role("button", name="Fase 4: Banco e Pix", exact=True).click()
-    page.get_by_role("button", name="Fazer um Pix pela chave — continuar").click()
+    page.get_by_role("button", name="Fase 3: Banco e Pix", exact=True).click()
+    page.get_by_role("button", name="Pix pela chave: e-mail — continuar").click()
     check("retoma no mesmo banco e passo", passo(5, 11) and (abrir_ajustes(page) or True) and page.get_by_role("button", name=re.compile("Trocar de banco.*Caixa")).is_visible())
 
     toque("E-mail")
@@ -137,7 +137,7 @@ with sync_playwright() as p:
     page.get_by_role("button", name=re.compile(r"^(← Mapa|← Voltar ao mapa|Voltar ao mapa)$")).first.click()
 
     # --- Pix completo no BB: confirmar destinatário, conta, valor, data e senha de 6 números (13 passos) ---
-    page.get_by_role("button", name="Fazer um Pix pela chave — ★★ Rever").click()
+    page.get_by_role("button", name="Pix pela chave: e-mail — ★★ Rever").click()
     page.get_by_role("button", name="Continuar com Banco do Brasil").click()
     check("BB tem 13 passos", passo(1, 13))
     toque("Entrar"); toque("Mostrar saldo"); toque("Pix"); toque("Pagar ou transferir"); toque("E-mail")
@@ -157,8 +157,8 @@ with sync_playwright() as p:
     page.get_by_role("button", name=re.compile(r"^(← Mapa|← Voltar ao mapa|Voltar ao mapa)$")).first.click()
 
     # --- Nubank: valor antes da chave; trocar de banco recomeça ---
-    check("sem ajuda, o Pix no BB rendeu 3 estrelas", page.get_by_role("button", name="Fazer um Pix pela chave — ★★★ Rever").is_visible())
-    page.get_by_role("button", name="Fazer um Pix pela chave — ★★★ Rever").click()
+    check("sem ajuda, o Pix no BB rendeu 3 estrelas", page.get_by_role("button", name="Pix pela chave: e-mail — ★★★ Rever").is_visible())
+    page.get_by_role("button", name="Pix pela chave: e-mail — ★★★ Rever").click()
     page.get_by_role("button", name="Nubank", exact=True).click()
     check("Nubank tem 11 passos", passo(1, 11))
     toque("Entrar"); toque("Mostrar saldo"); toque("Área Pix"); toque("Transferir")

@@ -67,7 +67,7 @@ export const telasItau: TelasBanco = {
         texto: 'Meu Itaú',
         acao: c.saldoVisivel
           ? { rotulo: 'Esconder saldo', icone: '👁', id: 'esconder-saldo' }
-          : { rotulo: 'Mostrar saldo', icone: '👁', id: 'ver-saldo' },
+          : { rotulo: 'Mostrar saldo', icone: '👁', id: 'ver-saldo', anel: true },
       },
       {
         tipo: 'atalhos',

@@ -1,5 +1,6 @@
 import { useState, type FormEvent, type ReactNode } from 'react'
 import type { Passo } from '../../core/engine/stepTypes'
+import { guardarDigitacao } from '../../core/engine/ultimaDigitacao'
 
 type Props = { passo: Passo; destacar?: boolean; aoResponder: (resposta: string) => void; children?: ReactNode }
 
@@ -20,6 +21,7 @@ export function CampoDigitar({ passo, destacar = false, aoResponder, children }:
 
   function enviar(e: FormEvent) {
     e.preventDefault()
+    guardarDigitacao(texto)
     aoResponder(texto)
   }
 
@@ -39,7 +41,7 @@ export function CampoDigitar({ passo, destacar = false, aoResponder, children }:
           autoCorrect="off"
           spellCheck={false}
         />
-        {destacar && <p className="ajuda-campo">Escreva: {primeiraResposta(passo)}</p>}
+        {destacar && <p className="ajuda-campo">{passo.livre ? 'Sugestão' : 'Escreva'}: {primeiraResposta(passo)}</p>}
       </div>
       {children}
       <button type="submit" className="botao">

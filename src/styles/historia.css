@@ -1184,3 +1184,491 @@
 .zap-anexo__circulo--3 { background: #ffd9a8; }
 .zap-anexo__circulo--4 { background: #c8f0d2; }
 .zap-anexo__circulo--5 { background: #bfe3ff; }
+
+/* Anel de destaque em volta de um botão pequeno (ex.: o olho "Mostrar saldo" do Itaú) */
+.app__anel {
+  position: relative;
+  border-radius: 50%;
+  outline: 4px solid #ff7a00;
+  outline-offset: 5px;
+  animation: anel-pulsa 1.4s ease-in-out infinite;
+}
+.app__anel::after {
+  content: '👈 Mostrar saldo';
+  position: absolute;
+  top: 50%;
+  left: calc(100% + 1rem);
+  transform: translateY(-50%);
+  padding: 0.15rem 0.5rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  white-space: nowrap;
+  color: #fff;
+  background: #ff7a00;
+  border-radius: 0.5rem;
+  pointer-events: none;
+}
+@keyframes anel-pulsa {
+  50% {
+    outline-offset: 9px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .app__anel {
+    animation: none;
+  }
+}
+
+/* WhatsApp: contato desconhecido, menu, documentos e caixa de pergunta */
+.zap-aviso {
+  padding: 0.6rem 0.7rem;
+  font-size: 0.9rem;
+  text-align: center;
+  background: #fff3c4;
+  border-bottom: 1px solid #e6d48a;
+}
+.zap-aviso p {
+  margin: 0 0 0.4rem;
+}
+.zap-aviso__acoes {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+}
+.zap-aviso__botao {
+  min-height: 2.5rem;
+  padding: 0 1rem;
+  font: inherit;
+  font-weight: 700;
+  color: #008069;
+  background: #fff;
+  border: 1px solid #c9c9c9;
+  border-radius: 1.4rem;
+}
+.zap-aviso__botao.destacado {
+  outline: 4px solid #ff7a00;
+}
+.zap-menu {
+  position: absolute;
+  top: 3.3rem;
+  right: 0.6rem;
+  width: min(15rem, 80%);
+  margin: 0 !important;
+  padding: 0.3rem 0;
+  list-style: none;
+  background: #fff;
+  border-radius: 0.7rem;
+  box-shadow: 0 4px 14px rgb(0 0 0 / 30%);
+  z-index: 2;
+}
+.zap-menu__item {
+  display: block;
+  width: 100%;
+  min-height: 2.9rem;
+  padding: 0 1rem;
+  font: inherit;
+  font-size: 1.05rem;
+  text-align: left;
+  color: #111b21;
+  background: none;
+  border: 0;
+}
+.zap-menu__item.destacado,
+.zap-documento.destacado,
+.zap-dialogo__botao.destacado {
+  outline: 4px solid #ff7a00;
+  outline-offset: -3px;
+}
+.zap-documentos {
+  background: #fff;
+}
+.zap-documentos h3 {
+  margin: 0;
+  padding: 0.6rem 0.9rem;
+  font-size: 0.9rem;
+  color: var(--zap-cinza);
+}
+.zap-documentos ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.zap-documento {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  width: 100%;
+  padding: 0.55rem 0.9rem;
+  font: inherit;
+  text-align: left;
+  color: inherit;
+  background: none;
+  border: 0;
+  border-bottom: 1px solid #eef0f2;
+}
+.zap-doc,
+.zap-documento {
+  min-width: 0;
+}
+.zap-doc {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.2rem;
+  padding: 0.5rem 0.6rem;
+  background: rgb(0 0 0 / 6%);
+  border-radius: 0.5rem;
+}
+.zap-doc__icone {
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  width: 2.4rem;
+  height: 2.8rem;
+  font-size: 1.5rem;
+  background: #ffe1e1;
+  border-radius: 0.4rem;
+}
+.zap-doc__texto {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.zap-doc__texto strong {
+  font-size: 0.95rem;
+  overflow-wrap: anywhere;
+}
+.zap-doc__texto small {
+  font-size: 0.78rem;
+  color: var(--zap-cinza);
+}
+.zap-dialogo {
+  position: absolute;
+  top: 50%;
+  right: 1rem;
+  left: 1rem;
+  margin: 0 !important;
+  transform: translateY(-50%);
+  padding: 1.1rem 1rem 0.5rem;
+  color: #111b21;
+  background: #fff;
+  border-radius: 1rem;
+  box-shadow: 0 6px 22px rgb(0 0 0 / 40%);
+  z-index: 3;
+}
+.zap-dialogo h3 {
+  margin: 0 0 0.6rem;
+  font-size: 1.2rem;
+}
+.zap-dialogo p {
+  margin: 0 0 0.6rem;
+  font-size: 1rem;
+}
+.zap-dialogo__doc {
+  padding: 0.5rem 0.6rem;
+  font-weight: 700;
+  background: #f0f2f5;
+  border-radius: 0.5rem;
+}
+.zap-dialogo__marcado {
+  color: #008069;
+}
+.zap-dialogo__botoes {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.4rem;
+}
+.zap-dialogo__botao {
+  min-height: 2.9rem;
+  padding: 0 1rem;
+  font: inherit;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #008069;
+  background: none;
+  border: 0;
+  border-radius: 0.5rem;
+}
+
+/* Barra de endereço do navegador */
+.cel-endereco {
+  margin: 0;
+  padding: 0.55rem 0.9rem;
+  font-size: 1rem;
+  font-weight: 700;
+  background: var(--app-leve);
+  border: 2px solid var(--app-borda);
+  border-radius: 2rem;
+  overflow-wrap: anywhere;
+}
+
+/* ---------- Celular de brilho (igual ao desenho do guia, mas interativo) ---------- */
+.cel-bril,
+.cel-bril * {
+  -webkit-user-select: none;
+  user-select: none;
+}
+.cel-bril {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.7rem 0.5rem 0.9rem;
+  background: #eef2fa;
+  border-radius: 1rem;
+  color: #14213d;
+}
+.cel-bril__rotulos {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  width: 100%;
+}
+.cel-bril__rotulo {
+  margin: 0;
+  padding: 0.4rem 0.5rem;
+  font-size: 1rem;
+  font-weight: 800;
+  line-height: 1.2;
+  text-align: center;
+  color: #4b5563;
+  background: #e1e7f2;
+  border: 3px solid transparent;
+  border-radius: 0.7rem;
+}
+.cel-bril__rotulo.ativo {
+  color: #fff;
+  background: #1b4b8f;
+  border-color: #14213d;
+}
+.cel-bril__celular {
+  position: relative;
+  width: 9.4rem;
+  height: 14.5rem;
+  padding: 0.35rem;
+  background: #2b3445;
+  border-radius: 1.8rem;
+}
+.cel-bril__ilha {
+  position: absolute;
+  top: 0.65rem;
+  left: 50%;
+  z-index: 5;
+  width: 3rem;
+  height: 0.85rem;
+  background: #111827;
+  border-radius: 1rem;
+  transform: translateX(-50%);
+}
+.cel-bril--samsung .cel-bril__ilha,
+.cel-bril--xiaomi .cel-bril__ilha,
+.cel-bril--motorola .cel-bril__ilha {
+  width: 0.85rem;
+  height: 0.85rem;
+}
+.cel-bril__lado {
+  position: absolute;
+  width: 0.3rem;
+  background: #6b7488;
+  border-radius: 0.2rem;
+}
+.cel-bril__lado--dir {
+  top: 5rem;
+  right: -0.25rem;
+  height: 3rem;
+}
+.cel-bril__lado--esq {
+  display: none;
+}
+.cel-bril--iphone .cel-bril__lado--esq {
+  top: 4rem;
+  left: -0.25rem;
+  display: block;
+  height: 4rem;
+}
+.cel-bril__tela {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #f4f7fd;
+  border-radius: 1.45rem;
+}
+/* escurece só o fundo, para os botões continuarem fáceis de ver */
+.cel-bril__escuro {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: #000;
+  pointer-events: none;
+  transition: opacity 0.08s linear;
+}
+.cel-bril__bolinha {
+  position: absolute;
+  top: 1.9rem;
+  z-index: 3;
+  width: 2.9rem;
+  height: 2.9rem;
+  margin: 0;
+  padding: 0;
+  background: #ff7a00;
+  border: 3px solid #fff;
+  border-radius: 50%;
+  box-shadow: 0 2px 6px rgb(0 0 0 / 40%);
+  touch-action: none;
+  cursor: grab;
+}
+.cel-bril__bolinha--direita {
+  right: 0.55rem;
+}
+.cel-bril__bolinha--centro {
+  left: calc(50% - 1.45rem);
+}
+.cel-bril__bolinha.destacado {
+  outline: 4px solid #14213d;
+  outline-offset: 3px;
+}
+.cel-bril__seta {
+  position: absolute;
+  top: 4.9rem;
+  z-index: 3;
+  width: 0;
+  height: 4.5rem;
+  border-left: 4px solid #ff7a00;
+}
+.cel-bril__seta::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: -10px;
+  border-top: 14px solid #ff7a00;
+  border-right: 8px solid transparent;
+  border-left: 8px solid transparent;
+}
+.cel-bril__seta--direita {
+  right: 1.95rem;
+}
+.cel-bril__seta--centro {
+  left: calc(50% - 2px);
+}
+.cel-bril__painel {
+  position: absolute;
+  top: 2.9rem;
+  right: 0.45rem;
+  left: 0.45rem;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  gap: 0.3rem;
+  height: 7.8rem;
+  padding: 0.5rem;
+  background: #dce6f5;
+  border: 2px solid #8fa4c8;
+  border-radius: 0.9rem;
+}
+.cel-bril__dica {
+  flex: 1;
+  font-size: 0.85rem;
+  font-weight: 800;
+  line-height: 1.15;
+}
+.cel-bril__barra {
+  position: relative;
+  background: #aab8d0;
+  border-radius: 1.4rem;
+  touch-action: none;
+  cursor: pointer;
+}
+.cel-bril__barra--em-pe {
+  flex: none;
+  width: 3rem;
+  height: 6.6rem;
+  overflow: hidden;
+}
+.cel-bril__barra--deitada {
+  flex: 1;
+  height: 1.3rem;
+  margin: 0 1.2rem 0 0.6rem;
+}
+.cel-bril__enchimento {
+  position: absolute;
+  background: #ff7a00;
+  border-radius: 1.4rem;
+}
+.cel-bril__barra--em-pe .cel-bril__enchimento {
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+.cel-bril__barra--deitada .cel-bril__enchimento {
+  top: 0;
+  bottom: 0;
+  left: 0;
+}
+.cel-bril__sol {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  width: 2.4rem;
+  height: 2.4rem;
+  color: #ff7a00;
+  background: #fff;
+  border: 3px solid #ff7a00;
+  border-radius: 50%;
+  pointer-events: none;
+}
+.cel-bril__barra--em-pe .cel-bril__sol {
+  left: 0.15rem;
+}
+.cel-bril__barra--deitada .cel-bril__sol {
+  top: -0.55rem;
+}
+.cel-bril__barra:focus-visible,
+.cel-bril__barra.destacado {
+  outline: 4px solid #14213d;
+  outline-offset: 3px;
+}
+.cel-bril__seta-brilho {
+  flex: none;
+  font-size: 1.6rem;
+  font-weight: 800;
+  line-height: 1;
+  color: #b45300;
+}
+.cel-bril__mensagem {
+  position: absolute;
+  right: 0.45rem;
+  bottom: 0.5rem;
+  left: 0.45rem;
+  z-index: 0;
+}
+.cel-bril__msg-botao,
+.cel-bril__msg-fixa {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  width: 100%;
+  margin: 0;
+  padding: 0.45rem 0.55rem;
+  font: inherit;
+  font-size: 0.9rem;
+  line-height: 1.2;
+  text-align: left;
+  color: #14213d;
+  background: #fff;
+  border: 2px solid #c9d3e6;
+  border-radius: 0.7rem;
+}
+.cel-bril__msg-botao {
+  position: relative;
+  z-index: 3;
+  cursor: pointer;
+}
+.cel-bril__msg-botao.destacado {
+  outline: 4px solid #ff7a00;
+}
+.cel-bril__sol svg {
+  width: 1.6rem;
+  height: 1.6rem;
+}

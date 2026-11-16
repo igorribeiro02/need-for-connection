@@ -26,11 +26,11 @@ describe('storage', () => {
 
   it('salva progresso e lembra o perfil ativo', () => {
     const d = criarPerfil(perfil)
-    d.fases['w0-tocar'] = { status: 'em-andamento', estrelas: 0, passosConcluidos: ['tocar-comecar'] }
+    d.fases['w0-desbloquear'] = { status: 'em-andamento', estrelas: 0, passosConcluidos: ['tocar-comecar'] }
     salvarPerfil(d)
     definirPerfilAtivo('p1')
     expect(perfilAtivoId()).toBe('p1')
-    expect(carregarPerfil('p1')?.fases['w0-tocar'].passosConcluidos).toEqual(['tocar-comecar'])
+    expect(carregarPerfil('p1')?.fases['w0-desbloquear'].passosConcluidos).toEqual(['tocar-comecar'])
   })
 
   it('remove um perfil e limpa o ativo', () => {
@@ -64,7 +64,7 @@ describe('schema', () => {
 describe('código de backup', () => {
   it('exporta e importa sem perder nada, inclusive acentos e emoji', () => {
     const d = novosDados(perfil)
-    d.fases['w0-tocar'] = { status: 'concluida', estrelas: 2, ultimaPratica: '2026-11-03', passosConcluidos: ['a', 'b'] }
+    d.fases['w0-desbloquear'] = { status: 'concluida', estrelas: 2, ultimaPratica: '2026-11-03', passosConcluidos: ['a', 'b'] }
     const r = importarCodigo(exportarCodigo(d))
     expect(r.ok).toBe(true)
     if (r.ok) expect(r.dados).toEqual(d)

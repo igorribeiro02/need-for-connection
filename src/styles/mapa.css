@@ -628,7 +628,7 @@
   margin-left: 0;
   margin-right: 0;
 }
-.app--escurecida > *:not(.app__folha):not(.app__janela):not(.app__selo) {
+.app--escurecida > *:not(.app__folha):not(.app__janela):not(.app__selo):not(.zap-dialogo):not(.zap-menu) {
   opacity: 0.45;
 }
 .app__selo {

@@ -6,12 +6,75 @@ import type { BancoConfig, ContextoTela, Passo, TelaApp } from '../../core/engin
 import { elementosDaTela } from '../../core/engine/telaApp'
 
 export type VariantePix = 'normal' | 'nome-diferente'
+export type TipoChave = 'email' | 'celular' | 'cpf' | 'cnpj'
+
+/** O que muda de uma chave Pix para outra: quem recebe, o formato e como a pessoa digita. */
+type PerfilChave = {
+  rotuloTipo: string // 'E-mail', 'Celular', 'CPF', 'CNPJ'
+  idTipo: string // id da opção na escolha do tipo de chave (CPF e CNPJ dividem a mesma)
+  valor: string
+  nome: string // quem aparece na tela do banco
+  artigo: string // 'a Ana'
+  deQuem: string // 'da Ana'
+  chaveFrase: string // 'o e-mail dela'
+  teclado: NonNullable<Passo['teclado']>
+  soDigitos: boolean
+  formato: string // dica de como digitar
+}
+
+const PERFIS: Record<TipoChave, PerfilChave> = {
+  email: {
+    rotuloTipo: 'E-mail',
+    idTipo: 'email',
+    valor: 'ana@exemplo.com',
+    nome: 'Ana Beatriz Souza',
+    artigo: 'a Ana',
+    deQuem: 'da Ana',
+    chaveFrase: 'o e-mail dela',
+    teclado: 'email',
+    soDigitos: false,
+    formato: 'tudo junto, sem espaços',
+  },
+  celular: {
+    rotuloTipo: 'Celular',
+    idTipo: 'celular',
+    valor: '(21) 99999-0001',
+    nome: 'Ana Beatriz Souza',
+    artigo: 'a Ana',
+    deQuem: 'da Ana',
+    chaveFrase: 'o número do celular dela',
+    teclado: 'numero',
+    soDigitos: true,
+    formato: 'com o DDD na frente. Pode escrever só os números, sem parênteses nem traço',
+  },
+  cpf: {
+    rotuloTipo: 'CPF',
+    idTipo: 'cpf',
+    valor: '123.456.789-09',
+    nome: 'Lúcia Ferreira Alves',
+    artigo: 'a Lúcia',
+    deQuem: 'da Lúcia',
+    chaveFrase: 'o CPF dela',
+    teclado: 'numero',
+    soDigitos: true,
+    formato: 'são 11 números. Pode escrever sem pontos nem traço',
+  },
+  cnpj: {
+    rotuloTipo: 'CNPJ',
+    idTipo: 'cpf',
+    valor: '12.345.678/0001-90',
+    nome: 'Padaria Pão Quente Ltda',
+    artigo: 'a padaria',
+    deQuem: 'da padaria',
+    chaveFrase: 'o CNPJ dela',
+    teclado: 'numero',
+    soDigitos: true,
+    formato: 'são 14 números, o número da empresa. Pode escrever sem pontos, barra nem traço',
+  },
+}
 
 // Dados inventados do exercício. Nada aqui é de uma pessoa real.
 const DADOS = {
-  nome: 'Ana Beatriz Souza',
-  primeiroNome: 'Ana',
-  email: 'ana@exemplo.com',
   valor: '25,00',
   nomeEstranho: 'Carlos Alberto Lima',
   saldo: 'R$ 1.250,00',
@@ -110,16 +173,17 @@ function passoToqueApp(
   }
 }
 
-export function montarPix(banco: BancoConfig, variante: VariantePix): Passo[] {
+export function montarPix(banco: BancoConfig, variante: VariantePix, tipo: TipoChave = 'email'): Passo[] {
+  const P = PERFIS[tipo]
   const f = banco.fluxo
   const semente = banco.id
-  const nomeNaTela = variante === 'nome-diferente' ? DADOS.nomeEstranho : DADOS.nome
+  const nomeNaTela = variante === 'nome-diferente' ? DADOS.nomeEstranho : P.nome
   const digitos = f.confirmacao.digitos
   const senha = SENHA_TREINO.slice(0, digitos)
   const confirmaNoDestinatario = f.extras.includes('confirmar-destinatario')
   const valorPrimeiro = f.ordem === 'valor-primeiro'
   const T = banco.telas
-  const ctx: ContextoTela = { saldoVisivel: false, nomeDestino: nomeNaTela, email: DADOS.email, valor: DADOS.valor, saldo: DADOS.saldo }
+  const ctx: ContextoTela = { saldoVisivel: false, nomeDestino: nomeNaTela, chave: P.valor, tipoChave: P.rotuloTipo, valor: DADOS.valor, saldo: DADOS.saldo }
 
   // ---- tela inicial e caminho até a escolha da chave ----
   const entrar = passoToque(
@@ -246,44 +310,49 @@ export function montarPix(banco: BancoConfig, variante: VariantePix): Passo[] {
   })
 
   // ---- dados do Pix ----
+  const opcoesTipo = [
+    { id: 'cpf', rotulo: 'CPF ou CNPJ' },
+    { id: 'celular', rotulo: 'Celular' },
+    { id: 'email', rotulo: 'E-mail' },
+    { id: 'aleatoria', rotulo: 'Chave aleatória' },
+  ]
+  const rotuloOpcao = opcoesTipo.find((o) => o.id === P.idTipo)!.rotulo
+  const posicaoOpcao = ORDINAL[opcoesTipo.findIndex((o) => o.id === P.idTipo)]
+  const Artigo = P.artigo.charAt(0).toUpperCase() + P.artigo.slice(1)
   const tipoChave = passoEscolha(
     'tipo-chave',
-    `A ${DADOS.primeiroNome} passou o e-mail dela para você pagar. Escolha E-mail.`,
+    `${Artigo} passou ${P.chaveFrase} para você pagar. Escolha ${rotuloOpcao}.`,
     { titulo: 'Para quem você quer enviar?', linhas: ['Escolha como encontrar a pessoa.'] },
-    [
-      { id: 'cpf', rotulo: 'CPF ou CNPJ' },
-      { id: 'celular', rotulo: 'Celular' },
-      { id: 'email', rotulo: 'E-mail' },
-      { id: 'aleatoria', rotulo: 'Chave aleatória' },
-    ],
-    'email',
-    ['A chave é a "identidade" da pessoa no Pix: pode ser CPF, celular, e-mail ou um código.', 'Escolha a opção E-mail, a terceira da lista.'],
-    'Quase! A Ana passou o e-mail dela. Escolha E-mail.',
-    'Pergunte à pessoa qual é a chave Pix dela (CPF, celular ou e-mail) e escolha o mesmo tipo no aplicativo.',
+    opcoesTipo,
+    P.idTipo,
+    ['A chave é a "identidade" da pessoa no Pix: pode ser CPF, CNPJ, celular, e-mail ou um código.', `Escolha a opção ${rotuloOpcao}, a ${posicaoOpcao} da lista.`],
+    `Quase! ${Artigo} passou ${P.chaveFrase}. Escolha ${rotuloOpcao}.`,
+    'Pergunte à pessoa qual é a chave Pix dela (CPF, CNPJ, celular ou e-mail) e escolha o mesmo tipo no aplicativo.',
   )
 
   const caixaDaChave = T ? T.rotuloCampoChave : menu?.rotuloCampo
   const chave: Passo = {
     id: 'chave',
     instrucao: caixaDaChave
-      ? `Na caixa "${caixaDaChave}", escreva o e-mail da ${DADOS.primeiroNome}: ${DADOS.email}`
-      : `Digite o e-mail da ${DADOS.primeiroNome}: ${DADOS.email}`,
+      ? `Na caixa "${caixaDaChave}", escreva ${P.chaveFrase.replace(' dela', '')} ${P.deQuem}: ${P.valor}`
+      : `Digite ${P.chaveFrase.replace(' dela', '')} ${P.deQuem}: ${P.valor}`,
     tipo: 'digitar',
     alvo: 'campo',
-    esperado: DADOS.email,
-    teclado: 'email',
-    rotuloCampo: caixaDaChave ?? 'E-mail da pessoa',
+    esperado: P.valor,
+    soDigitos: P.soDigitos,
+    teclado: P.teclado,
+    rotuloCampo: caixaDaChave ?? `${P.rotuloTipo} da pessoa`,
     rotuloBotao: f.rotuloAvancar,
     tela: T
       ? { titulo: 'Chave', layout: 'app', app: T.chave(ctx) }
       : menu
         ? { titulo: 'Pix', layout: 'menu-pix', menuPix: menu }
-        : { titulo: 'Digite a chave', linhas: ['Confira cada letra: um erro manda o dinheiro para outra pessoa.'] },
+        : { titulo: 'Digite a chave', linhas: ['Confira cada número e cada letra: um erro manda o dinheiro para outra pessoa.'] },
     dicas: caixaDaChave
-      ? [`Toque na caixa "${caixaDaChave}" e escreva tudo junto, sem espaços.`, `Escreva: ${DADOS.email}`]
-      : ['Toque na caixa para abrir o teclado e escreva tudo junto, sem espaços.', `Escreva: ${DADOS.email}`],
-    erroGentil: `Quase! Confira se está escrito ${DADOS.email}, sem espaços.`,
-    lembrete: 'Digite a chave com calma e confira cada letra antes de continuar. Um erro manda o dinheiro para outra pessoa.',
+      ? [`Toque na caixa "${caixaDaChave}" e escreva ${P.formato}.`, `Escreva: ${P.valor}`]
+      : [`Toque na caixa para abrir o teclado e escreva ${P.formato}.`, `Escreva: ${P.valor}`],
+    erroGentil: `Quase! Confira se está escrito ${P.valor}.`,
+    lembrete: 'Digite a chave com calma e confira cada número ou letra antes de continuar. Um erro manda o dinheiro para outra pessoa.',
   }
 
   const valor: Passo = {
@@ -343,7 +412,7 @@ export function montarPix(banco: BancoConfig, variante: VariantePix): Passo[] {
   // ---- conferência do nome (aqui mora a proteção contra golpe) ----
   const resumo = (comValor: boolean, comConta: boolean): Tela['resumo'] => [
     { rotulo: 'Para', valor: nomeNaTela },
-    { rotulo: 'E-mail', valor: DADOS.email },
+    { rotulo: P.rotuloTipo, valor: P.valor },
     ...(comValor ? [{ rotulo: 'Valor', valor: `R$ ${DADOS.valor}` }] : []),
     ...(comConta ? [{ rotulo: 'Conta', valor: 'Conta corrente' }] : []),
   ]
@@ -359,7 +428,7 @@ export function montarPix(banco: BancoConfig, variante: VariantePix): Passo[] {
     variante === 'normal'
       ? passoEscolha(
           'revisar',
-          `Confira: o nome é da ${DADOS.primeiroNome}${confirmaNoDestinatario && !valorJaEscolhido ? '' : ' e o valor é R$ ' + DADOS.valor}? Se sim, toque em "Sim, está certo".`,
+          `Confira: o nome é ${P.deQuem}${confirmaNoDestinatario && !valorJaEscolhido ? '' : ' e o valor é R$ ' + DADOS.valor}? Se sim, toque em "Sim, está certo".`,
           {
             titulo: confirmaNoDestinatario ? 'Confirme quem vai receber' : 'Confira antes de enviar',
             resumo: resumo(!confirmaNoDestinatario || valorJaEscolhido, !confirmaNoDestinatario && f.extras.includes('conta')),
@@ -367,20 +436,20 @@ export function montarPix(banco: BancoConfig, variante: VariantePix): Passo[] {
           opcoesSimNao,
           'sim',
           ['Leia o nome e o valor na tela. Eles batem com o que você queria?', 'Está tudo certo: toque em "Sim, está certo".'],
-          'Leia de novo: o nome é da Ana. Está tudo certo.',
+          `Leia de novo: o nome é ${P.deQuem}. Está tudo certo.`,
           'Antes de confirmar, leia o nome de quem vai receber e o valor. É a sua última chance de evitar um erro.',
         )
       : passoEscolha(
           'revisar',
-          `Confira: o nome na tela é o da ${DADOS.primeiroNome}? Se for de outra pessoa, toque em "Não, está diferente".`,
+          `Confira: o nome na tela é o ${P.deQuem}? Se for de outra pessoa, toque em "Não, está diferente".`,
           {
             titulo: confirmaNoDestinatario ? 'Confirme quem vai receber' : 'Confira antes de enviar',
             resumo: resumo(!confirmaNoDestinatario || valorJaEscolhido, false),
           },
           opcoesSimNao,
           'nao',
-          [`Você quer pagar a ${DADOS.primeiroNome}. Que nome aparece na tela?`, `O nome na tela é ${DADOS.nomeEstranho}, e não ${DADOS.nome}. Toque em "Não, está diferente".`],
-          `Atenção! O nome na tela não é o da ${DADOS.primeiroNome}. Se o nome estiver diferente, não envie.`,
+          [`Você quer pagar ${P.artigo}. Que nome aparece na tela?`, `O nome na tela é ${DADOS.nomeEstranho}, e não ${P.nome}. Toque em "Não, está diferente".`],
+          `Atenção! O nome na tela não é o ${P.deQuem}. Se o nome estiver diferente, não envie.`,
           'Nome diferente do que você esperava? Não envie. Pare e confirme a chave com a pessoa, por outro meio, como ligar para ela.',
         )
 
@@ -403,7 +472,7 @@ export function montarPix(banco: BancoConfig, variante: VariantePix): Passo[] {
 
   const cancelarBase = passoToque(
     'cancelar',
-    'Toque em Cancelar. Depois, confirme a chave com a Ana, por outro meio.',
+    `Toque em Cancelar. Depois, confirme a chave com ${P.artigo}, por outro meio.`,
     { titulo: 'Confirmar o Pix', resumo: resumoFinal },
     botoesConfirmar,
     'cancelar',
@@ -433,7 +502,7 @@ export function montarPix(banco: BancoConfig, variante: VariantePix): Passo[] {
     ? {
         ...passoToqueApp(
           'cancelar',
-          'Toque na seta ← do alto, para voltar sem pagar. Depois, confirme a chave com a Ana, por outro meio.',
+          `Toque na seta ← do alto, para voltar sem pagar. Depois, confirme a chave com ${P.artigo}, por outro meio.`,
           T.revisao(ctx, 'pagar'),
           'cancelar',
           'seta ←',
@@ -446,7 +515,7 @@ export function montarPix(banco: BancoConfig, variante: VariantePix): Passo[] {
       ? {
           ...passoToqueApp(
             'cancelar',
-            'Toque na seta < do alto, para voltar sem transferir. Depois, confirme a chave com a Ana, por outro meio.',
+            `Toque na seta < do alto, para voltar sem transferir. Depois, confirme a chave com ${P.artigo}, por outro meio.`,
             T!.valor!(ctx),
             'cancelar',
             'seta <',
@@ -494,7 +563,7 @@ export function montarPix(banco: BancoConfig, variante: VariantePix): Passo[] {
       titulo: 'Pix enviado ✓',
       resumo: [
         { rotulo: 'Valor', valor: `R$ ${DADOS.valor}` },
-        { rotulo: 'Para', valor: DADOS.nome },
+        { rotulo: 'Para', valor: P.nome },
       ],
     },
     misturar({ id: 'salvar', rotulo: 'Salvar comprovante' }, enganos('Compartilhar', 'Voltar ao início'), `${semente}-comprovante`),

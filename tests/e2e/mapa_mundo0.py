@@ -42,17 +42,17 @@ with sync_playwright() as p:
     page.get_by_role("button", name="Andar para baixo").click()
     check("botão direcional leva de volta ao Mundo 0", page.get_by_role("heading", name="Fase 0: Primeiros toques").is_visible())
 
-    # nenhum prédio tem cadeado: a Fase 4 já abre sem ter feito a Fase 0
+    # nenhum prédio tem cadeado: a Fase 3 já abre sem ter feito a Fase 0
     check("mapa sem cadeados", page.get_by_role("button", name=re.compile("ainda bloqueado")).count() == 0)
-    page.get_by_role("button", name="Fase 4: Banco e Pix").click()
-    check("Fase 4 abre sem restrições", page.get_by_text("Ainda bloqueado.").count() == 0)
+    page.get_by_role("button", name="Fase 3: Banco e Pix").click()
+    check("Fase 3 abre sem restrições", page.get_by_text("Ainda bloqueado.").count() == 0)
     page.screenshot(path=f"{OUT}/m2-aberto.png", full_page=True)
 
     # modo lista (e lembra a escolha depois de recarregar)
     page.get_by_role("button", name="📋 Lista").click()
-    check("lista mostra os 8 mundos", page.get_by_role("heading", level=2).count() == 8)
+    check("lista mostra os 7 mundos", page.get_by_role("heading", level=2).count() == 7)
     page.reload()
-    check("modo lista foi lembrado", page.get_by_role("heading", level=2).count() == 8)
+    check("modo lista foi lembrado", page.get_by_role("heading", level=2).count() == 7)
     page.screenshot(path=f"{OUT}/m3-lista.png", full_page=True)
 
     # --- Mundo 0 ---
@@ -63,16 +63,6 @@ with sync_playwright() as p:
 
     def fechar_cena():
         page.get_by_role("button", name="Continuar", exact=True).click()
-
-    abrir_fase("Tocar na tela")
-    page.get_by_role("button", name="Começar").click()
-    page.get_by_role("button", name="Verde").click()
-    page.get_by_role("button", name="Confirmar", exact=True).click()
-    page.get_by_role("button", name="Enviar depois", exact=True).click()
-    page.get_by_role("button", name="Ana Maria", exact=True).click()
-    fechar_cena()
-    check("fase tocar concluída", page.get_by_role("heading", name="Você conseguiu!").is_visible())
-    page.get_by_role("button", name=re.compile(r"^(← Mapa|← Voltar ao mapa|Voltar ao mapa)$")).first.click()
 
     # destrancar o celular (tela de app)
     abrir_fase("Destrancar o celular")
@@ -171,10 +161,10 @@ with sync_playwright() as p:
 
     # liberação
     page.get_by_role("button", name="🗺️ Mapa").click()
-    check("Mundo 0 concluído libera os outros", page.get_by_role("button", name="Fase 4: Banco e Pix", exact=True).count() == 1)
-    page.get_by_role("button", name="Fase 4: Banco e Pix").click()
-    page.get_by_role("button", name="Fazer um Pix pela chave").wait_for(timeout=6000)
-    check("Mundo 4 agora está aberto e mostra as fases de Pix", True)
+    check("Mundo 0 concluído libera os outros", page.get_by_role("button", name="Fase 3: Banco e Pix", exact=True).count() == 1)
+    page.get_by_role("button", name="Fase 3: Banco e Pix").click()
+    page.get_by_role("button", name="Pix pela chave: e-mail").wait_for(timeout=6000)
+    check("Fase 3 agora está aberto e mostra as fases de Pix", True)
     page.screenshot(path=f"{OUT}/m6-liberado.png", full_page=True)
 
     # movimento reduzido: o personagem não deve explodir nada, só chegar

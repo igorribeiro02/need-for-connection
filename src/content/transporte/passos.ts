@@ -33,19 +33,24 @@ export function digitar(
   rotuloCampo: string,
   rotuloBotao: string,
   lembrete: string,
+  opcoes: { livre?: boolean; soDigitos?: boolean; teclado?: Passo['teclado'] } = {},
 ): Passo {
   return {
     id,
     instrucao,
     tipo: 'digitar',
+    livre: opcoes.livre,
+    soDigitos: opcoes.soDigitos,
     alvo: 'campo',
     esperado,
-    teclado: 'texto',
+    teclado: opcoes.teclado ?? 'texto',
     rotuloCampo,
     rotuloBotao,
     tela: { titulo: '', layout: 'app', app },
-    dicas: [`Toque na caixa "${rotuloCampo}" e escreva o que o guia pede.`, `Escreva: ${esperado}`],
-    erroGentil: `Quase! Confira se está escrito ${esperado}.`,
+    dicas: opcoes.livre
+      ? [`Toque na caixa "${rotuloCampo}" e escreva o que quiser.`, `Se não souber o que escrever, use a sugestão: ${esperado}`]
+      : [`Toque na caixa "${rotuloCampo}" e escreva o que o guia pede.`, `Escreva: ${esperado}`],
+    erroGentil: opcoes.livre ? 'Escreva alguma coisa na caixa antes de enviar.' : `Quase! Confira se está escrito ${esperado}.`,
     lembrete,
   }
 }

@@ -91,74 +91,70 @@ export const w1Volume: Fase = {
   ],
 }
 
+const APP_CELULAR: AppTransporte = {
+  id: 'celular',
+  nome: 'Celular',
+  tema: { corPrincipal: '#1b4b8f', corDestaque: '#1b4b8f', link: '#1b4b8f' },
+  fonte: 'Barra de cima e painel rápido, como aparecem na maioria dos celulares Android e iPhone. O desenho muda de marca para marca.',
+}
+
+
+const celularBrilho = (etapa: 'puxar' | 'ajustar' | 'ler', valor: number, item: { rotulo: string; id: string }, limites: { minimo?: number; maximo?: number } = {}): TelaApp => ({
+  blocos: [{ tipo: 'celularBrilho', etapa, valor, item, ...limites }],
+})
+
 export const w1Brilho: Fase = {
   id: 'w1-brilho',
   guiaReal: 'brilho',
   mundo: 1,
   titulo: 'Aumentar o brilho da tela',
   simulador: 'celular',
+  aplicativo: APP_CELULAR,
   historia: {
     abertura: [
       { quem: 'neuza', texto: 'Você saiu para a varanda e a tela ficou escura demais para ler.' },
-      { quem: 'neuza', texto: 'O sol está forte. Aumente o brilho para ver a mensagem da Ana.' },
+      { quem: 'neuza', texto: 'O sol está forte. Faça como no celular de verdade: puxe a barra de cima e arraste o brilho.' },
     ],
     fechamento: [{ quem: 'neuza', texto: 'Agora dá para ler até debaixo do sol.' }],
     premio: { emoji: '☀️', titulo: 'A varanda ensolarada' },
   },
   passos: [
-    toque({
-      id: 'abrir-brilho',
-      instrucao: 'A tela está escura. Toque em Brilho.',
-      alvo: 'brilho',
-      elementos: ajustes,
-      painel: { titulo: 'Ajustes', linhas: ['Quase não dá para ler.'], estilo: 'escuro' },
-      dicas: ['O brilho é a luz da tela.', 'Toque no botão Brilho.'],
-      erroGentil: 'Quase! Para clarear a tela, toque em Brilho.',
-      lembrete: 'A luz da tela se muda nos Ajustes, em Brilho.',
-    }),
-    toque({
-      id: 'mais-1',
-      instrucao: 'Toque em + Aumentar para clarear a tela.',
-      alvo: 'mais',
-      elementos: maisMenos,
-      painel: { titulo: 'Tela', medidor: { rotulo: 'Brilho', nivel: 1, max: 4 }, estilo: 'escuro' },
-      dicas: ['O sinal + deixa a tela mais clara.', 'Toque em + Aumentar.'],
-      erroGentil: 'Esse botão escurece a tela. Toque em + Aumentar.',
-      lembrete: 'O sinal + clareia a tela e o sinal − escurece.',
-    }),
-    toque({
-      id: 'mais-2',
-      instrucao: 'Ainda está escura. Toque em + Aumentar de novo.',
-      alvo: 'mais',
-      elementos: maisMenos,
-      painel: { titulo: 'Tela', medidor: { rotulo: 'Brilho', nivel: 2, max: 4 }, estilo: 'escuro' },
-      dicas: ['Cada toque clareia um pouquinho.', 'Toque em + Aumentar mais uma vez.'],
-      erroGentil: 'Quase! Toque em + Aumentar.',
-      lembrete: 'Cada toque em + clareia um pouco. Toque até conseguir ler bem.',
-    }),
-    toque({
-      id: 'mais-3',
-      instrucao: 'Mais uma vez, para ficar bem clara.',
-      alvo: 'mais',
-      elementos: maisMenos,
-      painel: { titulo: 'Tela', medidor: { rotulo: 'Brilho', nivel: 3, max: 4 }, linhas: ['Já dá para ler melhor.'] },
-      dicas: ['Falta pouco.', 'Toque em + Aumentar.'],
-      erroGentil: 'Quase! Toque em + Aumentar.',
-      lembrete: 'No sol forte, deixe o brilho bem alto.',
-    }),
-    toque({
-      id: 'pronto',
-      instrucao: 'Agora dá para ler! Toque em Pronto para terminar.',
-      alvo: 'pronto',
-      elementos: [
-        { id: 'pronto', rotulo: 'Pronto' },
-        { id: 'menos', rotulo: '− Diminuir' },
-      ],
-      painel: { titulo: 'Tela', medidor: { rotulo: 'Brilho', nivel: 4, max: 4 }, linhas: ['Mensagem da Ana: “Bom dia! Já acordou?”'] },
-      dicas: ['O brilho já está bom.', 'Toque no botão Pronto.'],
-      erroGentil: 'Isso escurece a tela. Toque em Pronto.',
-      lembrete: 'Gastar mais brilho consome mais bateria. Baixe de novo quando sair do sol.',
-    }),
+    toqueApp(
+      'puxar',
+      'A tela do celular está escura. Ponha o dedo na bolinha laranja e arraste para baixo, como quem puxa uma cortina.',
+      celularBrilho('puxar', 20, { rotulo: 'Bolinha da barra de cima', id: 'puxar' }),
+      'puxar',
+      'Bolinha da barra de cima',
+      'No celular de verdade, o painel com o brilho aparece quando você puxa a parte de cima da tela para baixo.',
+      'É a bolinha laranja no alto do celular. Arraste o dedo dela para baixo, sem soltar.',
+    ),
+    toqueApp(
+      'ajustar',
+      'O painel abriu! Arraste a bolinha do sol até o fim, para deixar a tela bem clara, e solte o dedo.',
+      celularBrilho('ajustar', 20, { rotulo: 'Brilho', id: 'brilho-alto' }, { minimo: 80 }),
+      'brilho-alto',
+      'Brilho',
+      'Quanto mais cheia a barra laranja, mais clara fica a tela. Pode ir até o final.',
+      'É a barra com o sol, dentro do quadro azul-claro. Encoste o dedo no sol e arraste.',
+    ),
+    toqueApp(
+      'ler',
+      'Agora dá para ler! Toque na mensagem da Ana.',
+      celularBrilho('ler', 100, { rotulo: 'Mensagem da Ana', id: 'abrir-msg' }),
+      'abrir-msg',
+      'Mensagem da Ana',
+      'Gastar mais brilho consome mais bateria. Baixe de novo quando sair do sol.',
+      'É o cartão branco no pé da tela do celular, com o nome da Ana.',
+    ),
+    toqueApp(
+      'economizar',
+      'Saiu do sol? Arraste a bolinha do sol um pouco para trás, até a metade, para economizar a bateria.',
+      celularBrilho('ajustar', 100, { rotulo: 'Brilho', id: 'brilho-medio' }, { maximo: 70 }),
+      'brilho-medio',
+      'Brilho',
+      'À sombra, um brilho médio já basta e a bateria dura mais.',
+      'É a mesma barra. Arraste o sol para trás, até a metade ou menos.',
+    ),
   ],
 }
 

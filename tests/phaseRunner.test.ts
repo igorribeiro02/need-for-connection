@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { estrelas, iniciar, mostrarOnde, passoAtual, pedirDica, responder, voltarPasso } from '../src/core/engine/phaseRunner'
 import type { Fase } from '../src/core/engine/stepTypes'
-import { w0Tocar } from '../src/content/phases/w0-tocar'
 
 const fase: Fase = {
   id: 'teste',
@@ -11,6 +10,17 @@ const fase: Fase = {
   passos: [
     { id: 'a', instrucao: 'A', tipo: 'tocar', alvo: 'botao-a', dicas: ['d1', 'd2'], erroGentil: 'erro a', lembrete: 'la' },
     { id: 'b', instrucao: 'B', tipo: 'digitar', alvo: 'campo', esperado: ['Maria', 'maria silva'], dicas: ['d'], erroGentil: 'erro b', lembrete: 'lb' },
+  ],
+}
+
+const w0Tocar: Fase = {
+  id: 'w0-exemplo',
+  mundo: 0,
+  titulo: 'Exemplo',
+  simulador: 'celular',
+  passos: [
+    { id: 'p1', instrucao: 'Toque em Começar.', tipo: 'tocar', alvo: 'comecar', elementos: [{ id: 'comecar', rotulo: 'Começar' }], dicas: ['a', 'b'], erroGentil: 'e', lembrete: 'l' },
+    { id: 'p2', instrucao: 'Toque em Verde.', tipo: 'tocar', alvo: 'verde', elementos: [{ id: 'verde', rotulo: 'Verde' }, { id: 'azul', rotulo: 'Azul' }], dicas: ['a', 'b'], erroGentil: 'e', lembrete: 'l' },
   ],
 }
 
@@ -41,6 +51,20 @@ describe('phaseRunner', () => {
     let e = responder(fase, iniciar(fase), 'botao-a')
     e = responder(fase, e, '  MARIA SILVA ')
     expect(e.concluida).toBe(true)
+  })
+
+  it('digitar livre aceita qualquer texto, menos vazio', () => {
+    const livre: Fase = { ...fase, passos: [{ id: 'l', instrucao: 'L', tipo: 'digitar', alvo: 'campo', esperado: 'Sugestão', livre: true, dicas: ['d'], erroGentil: 'e', lembrete: 'l' }] }
+    expect(responder(livre, iniciar(livre), '   ').indice).toBe(0)
+    expect(responder(livre, iniciar(livre), 'Oi, Ana!').concluida).toBe(true)
+  })
+
+  it('digitar só com números ignora pontos, traços e parênteses', () => {
+    const cpf: Fase = { ...fase, passos: [{ id: 'c', instrucao: 'C', tipo: 'digitar', alvo: 'campo', esperado: '123.456.789-09', soDigitos: true, dicas: ['d'], erroGentil: 'e', lembrete: 'l' }] }
+    expect(responder(cpf, iniciar(cpf), '12345678909').concluida).toBe(true)
+    expect(responder(cpf, iniciar(cpf), '123.456.789-09').concluida).toBe(true)
+    expect(responder(cpf, iniciar(cpf), '12345678900').indice).toBe(0)
+    expect(responder(cpf, iniciar(cpf), 'abc').indice).toBe(0)
   })
 
   it('não responde depois de concluída', () => {

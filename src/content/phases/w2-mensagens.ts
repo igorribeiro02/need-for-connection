@@ -1,92 +1,6 @@
-import type { AppTransporte, BlocoApp, Fase, ItemApp, TelaApp, ZapConversa, ZapMensagem } from '../../core/engine/stepTypes'
+import type { Fase, TelaApp, ZapConversa, ZapMensagem } from '../../core/engine/stepTypes'
+import { ANEXAR, APP_ZAP, CAMERA, CAMPO, MICROFONE, MSG_ANA, VOLTAR, conversa, lista, type Barra } from '../zap'
 import { digitar, pergunta, toque } from '../transporte/passos'
-
-// Interface copiada do WhatsApp (barra verde, balões, barra de mensagem redonda, microfone que se segura).
-const APP_ZAP: AppTransporte = {
-  id: 'zap',
-  nome: 'WhatsApp',
-  tema: { corPrincipal: '#008069', corDestaque: '#00a884', link: '#008069' },
-  fonte:
-    'Layout do WhatsApp (lista de conversas, balões, anexos e microfone de segurar) reproduzido de capturas e tutoriais oficiais. Conferir no app do grupo.',
-}
-
-const nav: BlocoApp = {
-  tipo: 'navegacao',
-  ativo: 0,
-  itens: [
-    { rotulo: 'Conversas', icone: '💬', inerte: true },
-    { rotulo: 'Atualizações', icone: '⭕', inerte: true },
-    { rotulo: 'Comunidades', icone: '👥', inerte: true },
-    { rotulo: 'Chamadas', icone: '📞', inerte: true },
-  ],
-}
-
-const CONVERSAS: ZapConversa[] = [
-  { id: 'conv-ana', nome: 'Ana', avatar: '👩', previa: 'Vó, você vem no meu aniversário? 🎂', hora: '09:12', naoLidas: 1 },
-  { id: 'conv-grupo', nome: 'Família Silva', avatar: '👪', previa: 'Tia Rosa: gente, olhem o convite!', hora: '08:50', naoLidas: 3 },
-  { id: 'conv-osvaldo', nome: 'Seu Osvaldo', avatar: '👴', previa: 'Bom dia, vizinha! 🌞', hora: 'Ontem', ticks: 'lida' },
-  { id: 'conv-desconhecido', nome: '+55 21 9xxxx-0000', avatar: '👤', previa: 'Você ganhou um prêmio! Clique aqui', hora: 'Ontem' },
-]
-
-const lista = (): TelaApp => ({
-  zap: true,
-  blocos: [
-    {
-      tipo: 'zapTopo',
-      titulo: 'WhatsApp',
-      acoes: [
-        { rotulo: 'Câmera', icone: '📷', inerte: true },
-        { rotulo: 'Buscar', icone: '🔍', inerte: true },
-        { rotulo: 'Mais opções', icone: '⋮', inerte: true },
-      ],
-    },
-    {
-      tipo: 'zapConversas',
-      filtros: ['Todas', 'Não lidas', 'Favoritas', 'Grupos'],
-      itens: CONVERSAS,
-      novo: { rotulo: 'Nova conversa', icone: '➕', inerte: true },
-    },
-    nav,
-  ],
-})
-
-const VOLTAR: ItemApp = { rotulo: 'Voltar', icone: '←', id: 'voltar-lista' }
-
-type Barra = {
-  campo?: ItemApp
-  anexar?: ItemApp
-  camera?: ItemApp
-  microfone?: ItemApp
-  enviar?: ItemApp
-  escrevendo?: boolean
-  texto?: string
-}
-
-const conversa = (mensagens: ZapMensagem[], barra: Barra = {}, nome = 'Ana', avatar = '👩', subtitulo = 'online'): TelaApp => ({
-  zap: true,
-  blocos: [
-    {
-      tipo: 'zapTopo',
-      voltar: VOLTAR,
-      titulo: nome,
-      avatar,
-      subtitulo,
-      acoes: [{ rotulo: 'Ligar', icone: '📞', inerte: true }],
-    },
-    { tipo: 'zapChat', mensagens, ...barra },
-  ],
-})
-
-const CAMPO: ItemApp = { rotulo: 'Mensagem', id: 'campo-msg' }
-const ANEXAR: ItemApp = { rotulo: 'Anexar', id: 'clipe' }
-const CAMERA: ItemApp = { rotulo: 'Câmera', id: 'camera-chat', inerte: true }
-const MICROFONE: ItemApp = { rotulo: 'Gravar áudio', id: 'microfone', segurar: true }
-const ENVIAR: ItemApp = { rotulo: 'Enviar', id: 'enviar', principal: true }
-
-const MSG_ANA: ZapMensagem[] = [
-  { de: 'outro', texto: 'Vó, o almoço é domingo, às 12h30, no Mercado Central.', hora: '09:10', dia: 'Hoje' },
-  { de: 'outro', texto: 'Você vem? Responda quando puder 💛', hora: '09:12' },
-]
 
 export const w2Responder: Fase = {
   id: 'w2-responder',
@@ -137,26 +51,18 @@ export const w2Responder: Fase = {
     ),
     digitar(
       'escrever',
-      'Escreva a resposta: Eu vou, Ana!',
+      'Escreva a sua resposta para a Ana, do jeito que quiser, e toque na setinha verde ➤ para enviar. Sugestão: Eu vou, Ana!',
       conversa(MSG_ANA, { escrevendo: true }),
       'Eu vou, Ana!',
       'Mensagem',
       'Enviar',
       'Escreva a resposta e depois toque na setinha verde para enviar.',
-    ),
-    toque(
-      'enviar',
-      'Sua mensagem está escrita. Toque na setinha verde ➤ para mandar.',
-      conversa(MSG_ANA, { campo: CAMPO, texto: 'Eu vou, Ana!', anexar: { ...ANEXAR, inerte: true }, enviar: ENVIAR }),
-      'enviar',
-      'Enviar',
-      'A mensagem só vai depois que você toca na seta verde.',
-      'É o botão redondo verde, no canto de baixo, à direita.',
+      { livre: true },
     ),
     toque(
       'voltar',
-      'Mensagem enviada! Toque na seta ← no alto para voltar à lista de conversas.',
-      conversa([...MSG_ANA, { de: 'eu', texto: 'Eu vou, Ana!', hora: '09:14', estado: 'lida' }], {
+      'Mensagem enviada! Ela aparece no balão verde. Toque na seta ← no alto para voltar à lista de conversas.',
+      conversa([...MSG_ANA, { de: 'eu', texto: '{digitado}', hora: '09:14', estado: 'lida' }], {
         campo: CAMPO,
         anexar: { ...ANEXAR, inerte: true },
         camera: CAMERA,
@@ -171,18 +77,18 @@ export const w2Responder: Fase = {
 }
 
 // ---------------------------------------------------------------- Fase 2.2
-const anexos = (): TelaApp => ({
+const anexos = (mensagens: ZapMensagem[] = [MSG_ANA[1]], nome = 'Ana'): TelaApp => ({
   zap: true,
   blocos: [
     {
       tipo: 'zapTopo',
       voltar: VOLTAR,
-      titulo: 'Ana',
+      titulo: nome,
       avatar: '👩',
       subtitulo: 'online',
       acoes: [{ rotulo: 'Ligar', icone: '📞', inerte: true }],
     },
-    { tipo: 'zapChat', mensagens: [MSG_ANA[1]] },
+    { tipo: 'zapChat', mensagens },
     {
       tipo: 'zapAnexos',
       itens: [
@@ -259,30 +165,164 @@ export const w2Foto: Fase = {
     ),
     digitar(
       'legenda',
-      'Escreva uma legenda: Olha o bolo!',
+      'Escreva uma legenda para a foto, do jeito que quiser, e toque na setinha verde ➤ para enviar. Sugestão: Olha o bolo!',
       conversa([...MSG_ANA, { de: 'eu', foto: '🎂', hora: '09:20', estado: 'enviada' }], { escrevendo: true }),
       'Olha o bolo!',
       'Legenda',
       'Enviar',
-      'A legenda é um textinho que vai junto da foto.',
+      'A legenda é um textinho que vai junto da foto. Confira a foto antes de enviar: depois de enviada, ela não volta.',
+      { livre: true },
     ),
     toque(
-      'enviar',
-      'Confira se é mesmo a foto do bolo e toque na setinha verde ➤ para enviar.',
-      conversa([...MSG_ANA, { de: 'eu', foto: '🎂', texto: 'Olha o bolo!', hora: '09:20', estado: 'enviada' }], {
+      'voltar',
+      'Foto enviada com a sua legenda! Toque na seta ← para voltar à lista de conversas.',
+      conversa([...MSG_ANA, { de: 'eu', foto: '🎂', texto: '{digitado}', hora: '09:20', estado: 'lida' }], {
         campo: CAMPO,
-        texto: 'Olha o bolo!',
-        enviar: ENVIAR,
+        anexar: { ...ANEXAR, inerte: true },
+        camera: CAMERA,
+        microfone: { ...MICROFONE, inerte: true, segurar: false },
       }),
-      'enviar',
-      'Enviar',
-      'Depois de enviada, a foto não volta. Confira antes.',
-      'É o botão redondo verde, no canto de baixo, à direita.',
+      'voltar-lista',
+      'Voltar',
+      'A seta no alto, à esquerda, volta para a lista.',
+      'É a seta ← no alto da tela, à esquerda do nome da Ana.',
     ),
   ],
 }
 
-// ---------------------------------------------------------------- Fase 2.3
+// ---------------------------------------------------------------- Fase 2.3: enviar o arquivo certo
+const CONVERSAS_ARQ: ZapConversa[] = [
+  { id: 'conv-vizinha', nome: 'Ana Clara (vizinha do 12)', avatar: '👤', previa: 'Bom dia, dona! Tudo bem?', hora: '08:10' },
+  { id: 'conv-ana', nome: 'Ana (neta)', avatar: '👩', previa: 'Vó, me manda o convite em PDF?', hora: '09:30', naoLidas: 1 },
+  { id: 'conv-grupo', nome: 'Família Silva', avatar: '👪', previa: 'Tia Rosa: gente, olhem o convite!', hora: '08:50' },
+  { id: 'conv-osvaldo', nome: 'Seu Osvaldo', avatar: '👴', previa: 'Bom dia, vizinha! 🌞', hora: 'Ontem', ticks: 'lida' },
+]
+
+const MSG_PDF: ZapMensagem[] = [
+  { de: 'outro', texto: 'Vó, me manda o convite da festa em PDF? Quero imprimir.', hora: '09:30', dia: 'Hoje' },
+]
+
+const NOME_ARQ = 'Convite Ana FINAL.pdf'
+
+const documentos = (): TelaApp => ({
+  zap: true,
+  blocos: [
+    {
+      tipo: 'zapTopo',
+      voltar: { rotulo: 'Voltar', icone: '←', id: 'voltar-anexos' },
+      titulo: 'Escolher documento',
+      acoes: [{ rotulo: 'Buscar', icone: '🔍', inerte: true }],
+    },
+    {
+      tipo: 'zapDocumentos',
+      titulo: 'Documentos recentes',
+      itens: [
+        { rotulo: 'Convite Ana (rascunho).pdf', id: 'arq-rascunho', detalhe: 'Ontem, 21:15 · 98 KB' },
+        { rotulo: NOME_ARQ, id: 'arq-final', detalhe: 'Hoje, 09:10 · 120 KB' },
+        { rotulo: 'Convite Ana (antigo).pdf', id: 'arq-antigo', detalhe: 'Há 2 meses · 64 KB' },
+        { rotulo: 'Receita do bolo.pdf', id: 'arq-receita', detalhe: 'Hoje, 08:30 · 40 KB' },
+      ],
+    },
+  ],
+})
+
+export const w2Arquivo: Fase = {
+  id: 'w2-arquivo',
+  mundo: 2,
+  titulo: 'Enviar o arquivo certo',
+  simulador: 'mensagens',
+  aplicativo: APP_ZAP,
+  historia: {
+    abertura: [
+      { quem: 'osvaldo', texto: 'Dona {nome}, a Ana pediu o convite em PDF para imprimir.' },
+      { quem: 'neuza', texto: 'Há versões parecidas no celular. Escolha a mais nova e mande só para a Ana.' },
+    ],
+    fechamento: [{ quem: 'ana', texto: 'Chegou o convite certinho, vó! Vou imprimir agora.' }],
+    premio: { emoji: '📄', titulo: 'O convite certo' },
+  },
+  passos: [
+    toque(
+      'abrir',
+      'Há duas Anas na lista. Abra a conversa da sua neta: "Ana (neta)".',
+      lista(CONVERSAS_ARQ),
+      'conv-ana',
+      'Ana (neta)',
+      'Dois contatos têm nomes parecidos. Leia o nome inteiro, com a explicação entre parênteses.',
+      'É a segunda da lista, com a foto de uma moça e um recado novo.',
+    ),
+    toque(
+      'clipe',
+      'A Ana pediu o convite em PDF. Toque no clipe 📎 para anexar um arquivo.',
+      conversa(
+        MSG_PDF,
+        { campo: CAMPO, anexar: ANEXAR, camera: CAMERA, microfone: { ...MICROFONE, inerte: true, segurar: false } },
+        'Ana (neta)',
+      ),
+      'clipe',
+      'Anexar',
+      'O clipe serve para mandar coisas: foto, documento, áudio.',
+      'É o clipe 📎, no lado direito da caixa de mensagem.',
+    ),
+    toque(
+      'documento',
+      'Um PDF é um documento. Toque em "Documento".',
+      anexos(MSG_PDF, 'Ana (neta)'),
+      'documento',
+      'Documento',
+      '"Galeria" é para fotos e vídeos. Para arquivos como PDF, use "Documento".',
+      'É o primeiro botão, o roxo, com uma folha de papel.',
+    ),
+    toque(
+      'qual-arquivo',
+      'Há quatro arquivos. Toque na versão FINAL, a mais nova.',
+      documentos(),
+      'arq-final',
+      NOME_ARQ,
+      'Olhe a data embaixo de cada nome: a mais nova é a de hoje, às 09:10.',
+      'O nome diz FINAL e a data é de hoje, às 09:10.',
+    ),
+    toque(
+      'enviar',
+      'Confira: arquivo FINAL, para a Ana (neta). Toque em "Enviar".',
+      {
+        zap: true,
+        escurecida: true,
+        blocos: [
+          { tipo: 'zapTopo', voltar: VOLTAR, titulo: 'Ana (neta)', avatar: '👩', subtitulo: 'online' },
+          { tipo: 'zapChat', mensagens: MSG_PDF },
+          {
+            tipo: 'zapDialogo',
+            titulo: 'Enviar documento para Ana (neta)?',
+            documento: NOME_ARQ,
+            botoes: [
+              { rotulo: 'Cancelar', id: 'cancelar-envio' },
+              { rotulo: 'Enviar', id: 'enviar' },
+            ],
+          },
+        ],
+      },
+      'enviar',
+      'Enviar',
+      'Antes de enviar, leia a pergunta: qual arquivo e para quem. Depois de enviado, não volta.',
+      'É o botão verde "Enviar", no canto de baixo da caixa branca.',
+    ),
+    toque(
+      'voltar',
+      'Enviado! O convite aparece no balão verde. Toque na seta ← para voltar à lista.',
+      conversa(
+        [...MSG_PDF, { de: 'eu', documento: { nome: NOME_ARQ, info: 'PDF · 120 KB' }, hora: '09:34', estado: 'lida' }],
+        { campo: CAMPO, anexar: { ...ANEXAR, inerte: true }, camera: CAMERA, microfone: { ...MICROFONE, inerte: true, segurar: false } },
+        'Ana (neta)',
+      ),
+      'voltar-lista',
+      'Voltar',
+      'A seta no alto, à esquerda, volta para a lista.',
+      'É a seta ← no alto da tela.',
+    ),
+  ],
+}
+
+// ---------------------------------------------------------------- Fase 2.4
 const GRUPO: ZapMensagem[] = [
   { de: 'outro', autor: 'Tia Rosa', texto: 'Gente, o almoço da Ana é domingo, às 12h30!', hora: '08:44', dia: 'Hoje' },
   { de: 'outro', autor: 'Tio Beto', texto: 'Eu levo os refrigerantes.', hora: '08:47' },
@@ -361,4 +401,4 @@ export const w2Audio: Fase = {
   ],
 }
 
-export const fasesMundo2: Fase[] = [w2Responder, w2Foto, w2Audio]
+export const fasesMundo2: Fase[] = [w2Responder, w2Foto, w2Arquivo, w2Audio]

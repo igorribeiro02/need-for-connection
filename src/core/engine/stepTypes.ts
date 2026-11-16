@@ -37,6 +37,10 @@ export type Passo = {
   posicaoInicial?: 'topo' | 'fim'
   /** 'digitar': texto que já vem escrito na caixa (para treinar a apagar). */
   valorInicial?: string
+  /** 'digitar': aceita qualquer texto (não vazio); `esperado` vira só uma sugestão. */
+  livre?: boolean
+  /** 'digitar': compara só os números (CPF com ou sem pontos e traço, telefone com ou sem parênteses). */
+  soDigitos?: boolean
   /** 'digitar': tipo de teclado que o celular abre. */
   teclado?: 'texto' | 'numero' | 'email' | 'valor' | 'senha'
   /** 'digitar': nome do campo e do botão de enviar. */
@@ -151,6 +155,7 @@ export type ItemApp = {
   etiqueta?: string // selinho: "Novo", "Até 24x"
   principal?: boolean // botão cheio, na cor do banco
   inerte?: boolean
+  anel?: boolean // desenha um círculo bem visível em volta do botão (para botões pequenos, como o olho do saldo)
   segurar?: boolean // só vale se a pessoa SEGURAR o dedo (ex.: microfone para gravar áudio) e soltar depois
 }
 
@@ -163,6 +168,7 @@ export type ZapMensagem = {
   foto?: string // emoji da foto enviada
   estado?: 'enviada' | 'entregue' | 'lida'
   dia?: string // separador de dia antes da mensagem
+  documento?: { nome: string; info: string } // arquivo enviado (cartão com ícone de PDF)
 }
 
 export type ZapConversa = { id: string; nome: string; avatar: string; previa: string; hora: string; naoLidas?: number; ticks?: 'entregue' | 'lida'; fixa?: boolean }
@@ -189,8 +195,13 @@ export type BlocoApp =
   | { tipo: 'janela'; titulo: string; texto?: string; fechar?: ItemApp; lado?: 'direita' | 'esquerda'; botoes: ItemApp[]; perigo?: boolean } // janela que aparece sozinha (pop-up): X pequeno no canto e botões grandes de enganar
   | { tipo: 'zapTopo'; titulo?: string; voltar?: ItemApp; avatar?: string; subtitulo?: string; acoes?: ItemApp[] } // barra verde do WhatsApp (lista ou conversa)
   | { tipo: 'zapConversas'; filtros?: string[]; itens: ZapConversa[]; novo?: ItemApp } // lista de conversas
-  | { tipo: 'zapChat'; mensagens: ZapMensagem[]; campo?: ItemApp; anexar?: ItemApp; camera?: ItemApp; microfone?: ItemApp; enviar?: ItemApp; escrevendo?: boolean; texto?: string } // conversa com balões e barra de mensagem
+  | { tipo: 'zapChat'; mensagens: ZapMensagem[]; campo?: ItemApp; anexar?: ItemApp; camera?: ItemApp; microfone?: ItemApp; enviar?: ItemApp; escrevendo?: boolean; texto?: string; aviso?: { texto: string; acoes?: ItemApp[] } } // conversa com balões e barra de mensagem; `aviso` = faixa de contato desconhecido
+  | { tipo: 'zapMenu'; itens: ItemApp[] } // menu que abre nos três pontinhos
+  | { tipo: 'zapDocumentos'; titulo?: string; itens: ItemApp[] } // escolher um documento do celular (nome em `rotulo`, data e tamanho em `detalhe`)
+  | { tipo: 'zapDialogo'; titulo: string; texto?: string; marcado?: string; documento?: string; botoes: ItemApp[] } // caixa de pergunta do WhatsApp
   | { tipo: 'zapAnexos'; itens: ItemApp[] } // folha de anexos: documento, câmera, galeria...
+  | { tipo: 'celularBrilho'; etapa: 'puxar' | 'ajustar' | 'ler'; valor: number; item: ItemApp; minimo?: number; maximo?: number } // desenho de um celular em que a pessoa desliza a barra de cima e arrasta o brilho; `item` é o que vale como resposta
+  | { tipo: 'endereco'; texto: string; seguro?: boolean } // barra de endereço do navegador, com cadeado
   | { tipo: 'espaco' } // empurra o que vem depois para baixo (botão no pé da tela)
   | { tipo: 'texto'; texto: string; centro?: boolean; link?: boolean }
 
@@ -202,7 +213,7 @@ export type TelaApp = {
 }
 
 /** Dados que mudam as telas (a variante "nome diferente" troca o nome de quem recebe). */
-export type ContextoTela = { saldoVisivel: boolean; nomeDestino: string; email: string; valor: string; saldo: string }
+export type ContextoTela = { saldoVisivel: boolean; nomeDestino: string; chave: string; tipoChave: string; valor: string; saldo: string }
 
 /** Telas próprias de um banco, copiadas de capturas reais. O que não estiver aqui usa a tela genérica. */
 export type TelasBanco = {

@@ -37,10 +37,10 @@ describe('história', () => {
   it('as cenas vistas sobrevivem ao backup e backups antigos continuam valendo', () => {
     const d = {
       ...novosDados({ id: 'x', nome: 'Ana', avatar: '🙂' }),
-      cenasVistas: ['abertura:w0-tocar'],
+      cenasVistas: ['abertura:w0-desbloquear'],
     }
     const volta = importarCodigo(exportarCodigo(d))
-    expect(volta.ok && volta.dados.cenasVistas).toEqual(['abertura:w0-tocar'])
+    expect(volta.ok && volta.dados.cenasVistas).toEqual(['abertura:w0-desbloquear'])
     const { cenasVistas: _antigo, ...semCampo } = d
     expect(migrar(semCampo)?.cenasVistas).toEqual([])
   })

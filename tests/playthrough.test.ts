@@ -15,7 +15,7 @@ describe('todas as fases podem ser terminadas, passo a passo', () => {
         }
         const resposta = passo.tipo === 'digitar' ? String(Array.isArray(passo.esperado) ? passo.esperado[0] : passo.esperado) : passo.alvo
         if (passo.tipo !== 'andar' && passo.tipo !== 'deslizar') {
-          const errado = responder(fase, estado, '__resposta-errada__')
+          const errado = responder(fase, estado, passo.livre ? '   ' : '__resposta-errada__')
           expect(errado.indice, `${passo.id}: errar não avança`).toBe(estado.indice)
         }
         estado = responder(fase, estado, resposta)

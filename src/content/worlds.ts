@@ -4,13 +4,11 @@ import { w0Andar } from './phases/w0-andar'
 import { w0Desbloquear, w0Icones } from './phases/w0-celular-inicial'
 import { w0Deslizar } from './phases/w0-deslizar'
 import { w0Teclado } from './phases/w0-teclado'
-import { w0Tocar } from './phases/w0-tocar'
 import { fasesMundo1 } from './phases/w1-celular'
 import { fasesMundo2 } from './phases/w2-mensagens'
-import { fasesMundo3 } from './phases/w3-fotos'
 import { fasesMundo5 } from './phases/w5-golpes'
 import { fasesMundo6 } from './phases/w6-servicos'
-import { w4PixChave, w4PixNome } from './phases/w4-pix'
+import { w4PixChave, w4PixCelular, w4PixCnpj, w4PixCpf, w4PixNome } from './phases/w4-pix'
 import { w799Pedir, w7ConferirMotorista, w7UberPedir } from './phases/w7-transporte'
 
 // Para criar uma fase nova: crie o arquivo em phases/ e coloque-a na lista do mundo.
@@ -21,7 +19,7 @@ export const mundos: Mundo[] = [
     descricao: 'Aprenda os gestos da tela, um de cada vez.',
     obrigatorio: true,
     dia: 'Domingo, a chegada',
-    fases: [w0Tocar, w0Desbloquear, w0Icones, w0Deslizar, w0Teclado, w0Andar],
+    fases: [w0Desbloquear, w0Icones, w0Deslizar, w0Teclado, w0Andar],
     historiaFinal: {
       falas: [
         { quem: 'ana', texto: 'Oi, {nome}! Soube que você chegou na vila. Amanhã eu te ligo.' },
@@ -49,12 +47,12 @@ export const mundos: Mundo[] = [
     numero: 2,
     dia: 'Terça',
     titulo: 'Mensagens',
-    descricao: 'Ler, responder, mandar foto e áudio no WhatsApp.',
+    descricao: 'Ler, responder, mandar foto, arquivo e áudio no WhatsApp.',
     fases: fasesMundo2,
     historiaFinal: {
       falas: [
-        { quem: 'ana', texto: 'Recebi tudo, vó! Foto, resposta e até o áudio. Você está ótima.' },
-        { quem: 'neuza', texto: 'Amanhã vamos cuidar das fotos e dos arquivos do celular.' },
+        { quem: 'ana', texto: 'Recebi tudo, vó! Foto, convite, resposta e até o áudio. Você está ótima.' },
+        { quem: 'neuza', texto: 'Amanhã é dia de Pix. Respire fundo: você já está bem preparada.' },
       ],
       premio: { emoji: '💌', titulo: 'Conversa em dia' },
     },
@@ -62,23 +60,9 @@ export const mundos: Mundo[] = [
   {
     numero: 3,
     dia: 'Quarta',
-    titulo: 'Fotos e arquivos',
-    descricao: 'Tirar, cortar e enviar o arquivo certo.',
-    fases: fasesMundo3,
-    historiaFinal: {
-      falas: [
-        { quem: 'ana', texto: 'O convite ficou lindo com a foto do bolo, {nome}! Já mandei imprimir.' },
-        { quem: 'neuza', texto: 'Amanhã é dia de Pix. Respire fundo: você já está bem preparada.' },
-      ],
-      premio: { emoji: '🖼️', titulo: 'O álbum da festa' },
-    },
-  },
-  {
-    numero: 4,
-    dia: 'Quinta',
     titulo: 'Banco e Pix',
     descricao: 'Fazer um Pix passo a passo, no aplicativo parecido com o do seu banco.',
-    fases: [w4PixChave, w4PixNome],
+    fases: [w4PixChave, w4PixCelular, w4PixCpf, w4PixCnpj, w4PixNome],
     historiaFinal: {
       falas: [
         { quem: 'ana', texto: 'Bolo pago e festa quase pronta! Você está craque no Pix, {nome}.' },
@@ -88,8 +72,8 @@ export const mundos: Mundo[] = [
     },
   },
   {
-    numero: 5,
-    dia: 'Sexta',
+    numero: 4,
+    dia: 'Quinta',
     titulo: 'Golpes',
     descricao: 'Mensagens, ligações e pedidos falsos: saber quando desconfiar.',
     fases: fasesMundo5,
@@ -102,21 +86,21 @@ export const mundos: Mundo[] = [
     },
   },
   {
-    numero: 6,
-    dia: 'Sábado',
+    numero: 5,
+    dia: 'Sexta',
     titulo: 'Serviços e compras',
     descricao: 'Marcar consulta, entrar no gov.br e comprar com cuidado.',
     fases: fasesMundo6,
     historiaFinal: {
       falas: [
-        { quem: 'neuza', texto: 'Consulta marcada, documentos à mão e presente comprado. Amanhã é a festa!' },
+        { quem: 'neuza', texto: 'Consulta marcada, documentos à mão e presente comprado. Daqui a pouco é a festa!' },
         { quem: 'ana', texto: 'Estou ansiosa, vó! O carro vai buscar você no domingo.' },
       ],
       premio: { emoji: '🎁', titulo: 'Tudo pronto' },
     },
   },
   {
-    numero: 7,
+    numero: 6,
     dia: 'Domingo, a festa',
     titulo: 'Transporte por aplicativo',
     descricao: 'Pedir um carro no Uber ou na 99 e conferir o motorista, passo a passo.',

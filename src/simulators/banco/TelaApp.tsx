@@ -1,7 +1,9 @@
 import { Fragment, useRef, useState, type CSSProperties, type ReactNode } from 'react'
 import type { BancoConfig, BlocoApp, ItemApp, Passo } from '../../core/engine/stepTypes'
 import { idDoItem } from '../../core/engine/telaApp'
+import { ultimaDigitacao } from '../../core/engine/ultimaDigitacao'
 import { CampoDigitar } from '../celular/CampoDigitar'
+import { CelularBrilho } from './CelularBrilho'
 
 type Props = {
   tema: BancoConfig['tema']
@@ -38,7 +40,7 @@ export function TelaApp({ tema, passo, nome, destacar, aoResponder, aoVoltarPass
       .map((p) => p[0]!.toUpperCase())
       .join('') || 'EU'
   const [hoje] = useState(() => new Date().toLocaleDateString('pt-BR'))
-  const t = (texto: string | undefined) => texto?.replaceAll('{nome}', primeiroNome).replaceAll('{iniciais}', iniciais).replaceAll('{hoje}', hoje)
+  const t = (texto: string | undefined) => texto?.replaceAll('{nome}', primeiroNome).replaceAll('{iniciais}', iniciais).replaceAll('{hoje}', hoje).replaceAll('{digitado}', ultimaDigitacao() || 'Eu vou, Ana!')
 
   function tocou(item: ItemApp) {
     if (item.inerte || !toque) {
@@ -84,7 +86,7 @@ export function TelaApp({ tema, passo, nome, destacar, aoResponder, aoVoltarPass
   const selo = (item: ItemApp) => (item.etiqueta ? <small className="app__selo-item">{item.etiqueta}</small> : null)
 
   const botao = (item: ItemApp, classe: string, filhos: ReactNode, chave: string) => (
-    <button key={chave} type="button" className={`${classe}${item.principal ? ' app__cheio' : ''}${marca(item)}`} onClick={() => tocou(item)}>
+    <button key={chave} type="button" aria-label={item.anel ? item.rotulo : undefined} className={`${classe}${item.principal ? ' app__cheio' : ''}${item.anel ? ' app__anel' : ''}${marca(item)}`} onClick={() => tocou(item)}>
       {filhos}
     </button>
   )
@@ -449,6 +451,16 @@ export function TelaApp({ tema, passo, nome, destacar, aoResponder, aoVoltarPass
         const gravando = gravado !== null && !!b.microfone
         return (
           <div key={i} className="zap-chat">
+            {b.aviso && (
+              <div className="zap-aviso">
+                <p>{b.aviso.texto}</p>
+                {b.aviso.acoes && (
+                  <div className="zap-aviso__acoes">
+                    {b.aviso.acoes.map((a, k) => botao(a, 'zap-aviso__botao', a.rotulo, `zav${k}`))}
+                  </div>
+                )}
+              </div>
+            )}
             <div className="zap-chat__mensagens" role="log" aria-label="Mensagens da conversa">
               {b.mensagens.map((m, k) => (
                 <Fragment key={k}>
@@ -458,6 +470,17 @@ export function TelaApp({ tema, passo, nome, destacar, aoResponder, aoVoltarPass
                     {m.foto && (
                       <span className="zap-foto" role="img" aria-label="Foto enviada">
                         {m.foto}
+                      </span>
+                    )}
+                    {m.documento && (
+                      <span className="zap-doc" role="img" aria-label={`Documento ${m.documento.nome}`}>
+                        <span className="zap-doc__icone" aria-hidden="true">
+                          📄
+                        </span>
+                        <span className="zap-doc__texto">
+                          <strong>{m.documento.nome}</strong>
+                          <small>{m.documento.info}</small>
+                        </span>
                       </span>
                     )}
                     {m.audio && (
@@ -539,6 +562,60 @@ export function TelaApp({ tema, passo, nome, destacar, aoResponder, aoVoltarPass
           </div>
         )
       }
+      case 'zapMenu':
+        return (
+          <ul key={i} className="zap-menu" role="menu">
+            {b.itens.map((x, k) => (
+              <li key={k} role="none">
+                {botao(x, 'zap-menu__item', x.rotulo, `zm${k}`)}
+              </li>
+            ))}
+          </ul>
+        )
+      case 'zapDocumentos':
+        return (
+          <div key={i} className="zap-documentos">
+            {b.titulo && <h3>{b.titulo}</h3>}
+            <ul>
+              {b.itens.map((x, k) => (
+                <li key={k}>
+                  {botao(
+                    x,
+                    'zap-documento',
+                    <>
+                      <span className="zap-doc__icone" aria-hidden="true">
+                        📄
+                      </span>
+                      <span className="zap-doc__texto">
+                        <strong>{x.rotulo}</strong>
+                        {x.detalhe && <small>{x.detalhe}</small>}
+                      </span>
+                    </>,
+                    `zd${k}`,
+                  )}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )
+      case 'zapDialogo':
+        return (
+          <div key={i} className="zap-dialogo" role="dialog" aria-label={b.titulo}>
+            <h3>{t(b.titulo)}</h3>
+            {b.documento && (
+              <p className="zap-dialogo__doc">
+                <span aria-hidden="true">📄</span> {b.documento}
+              </p>
+            )}
+            {b.texto && <p>{t(b.texto)}</p>}
+            {b.marcado && (
+              <p className="zap-dialogo__marcado">
+                <span aria-hidden="true">☑</span> {b.marcado}
+              </p>
+            )}
+            <div className="zap-dialogo__botoes">{b.botoes.map((x, k) => botao(x, 'zap-dialogo__botao', x.rotulo, `zb${k}`))}</div>
+          </div>
+        )
       case 'zapAnexos':
         return (
           <div key={i} className="zap-anexos" role="group" aria-label="Anexar">
@@ -556,6 +633,27 @@ export function TelaApp({ tema, passo, nome, destacar, aoResponder, aoVoltarPass
               ),
             )}
           </div>
+        )
+      case 'endereco':
+        return (
+          <p key={i} className="cel-endereco" aria-label={`Endereço do site: ${b.texto}`}>
+            <span aria-hidden="true">{b.seguro === false ? '⚠️' : '🔒'}</span> {b.texto}
+          </p>
+        )
+      case 'celularBrilho':
+        return (
+          <CelularBrilho
+            key={i}
+            etapa={b.etapa}
+            valor={b.valor}
+            minimo={b.minimo}
+            maximo={b.maximo}
+            item={b.item}
+            ativo={toque}
+            destacado={marca(b.item) !== ''}
+            aoAcertar={() => tocou(b.item)}
+            aoAvisar={setAviso}
+          />
         )
       case 'espaco':
         return <div key={i} className="app__espaco-bloco" aria-hidden="true" />

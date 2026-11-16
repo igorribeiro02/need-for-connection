@@ -46,12 +46,12 @@ O arquivo `.github/workflows/deploy.yml` publica no GitHub Pages a cada push na 
 ## Teste de navegador
 
 `tests/e2e/fluxo_basico.py` percorre cadastro, fase, retomada, backup e PIN com Playwright (Python).
-`tests/e2e/mapa_mundo0.py` percorre o mapa com personagem e as quatro fases do Mundo 0 (precisa do site rodando em `localhost:4173`: `npm run build && npm run preview`).
+`tests/e2e/mapa_mundo0.py` percorre o mapa com personagem e as cinco fases do Mundo 0 (precisa do site rodando em `localhost:4173`: `npm run build && npm run preview`).
 Rode `npm run build`, depois `npx vite preview --port 4173` em outro terminal, e então o script.
 
 ## O que falta (ver plano no documento)
 
-Mapa com personagem, simuladores (celular, mensagens, banco), Modo Lembrar completo, mundos 1 a 3, 5 e 6.
+Mapa com personagem, simuladores (celular, mensagens, banco), Modo Lembrar completo, fases 1, 2, 4 e 5.
 
 
 ## Banco e Pix (etapa 4)
@@ -78,9 +78,10 @@ Mapa com personagem, simuladores (celular, mensagens, banco), Modo Lembrar compl
   - Itaú: início (Meu Itaú), Pix e transferir, Para quem, Quanto (o nome de quem recebe aparece junto do valor, e é ali que o exercício pede a conferência) e Escolha a conta. Ordem real: chave > valor > conta. Falta revisão/confirmação, senha ou biometria e comprovante.
   - PicPay: início, Área Pix e "Escolha pra quem transferir". Mercado Pago: início e tela do Pix.
   - Na revisão, a pergunta "o nome é o da Ana?" fica num painel do exercício, fora do desenho do app.
+- O Pix tem fases por tipo de chave: e-mail, celular, CPF e CNPJ (perfis em `PERFIS`, `montarPix.ts`); celular, CPF e CNPJ aceitam com ou sem pontos (`soDigitos`).
 - Dados do exercício (Ana, ana@exemplo.com, R$ 25,00, senha 1234 ou 123456) são inventados e ficam em `montarPix.ts`.
 
-## Transporte por aplicativo (Mundo 7: Uber e 99)
+## Transporte por aplicativo (Fase 6: Uber e 99)
 
 - Simulador `transporte` (`src/simulators/transporte/TelaTransporte.tsx`): usa o mesmo desenhador de telas por blocos dos bancos
   (`TelaApp`, agora recebendo só o `tema`). Cada fase diz de qual app são as telas em `aplicativo` (nome, cores e `fonte`).
@@ -112,3 +113,10 @@ O visual foi desenhado no Claude Design com as personas Maria Alice, Elaine e Ed
 letra grande (fonte Atkinson Hyperlegible, embutida, sem depender da internet), progresso em segmentos,
 instrução em destaque com botão "Ouvir", botões grandes e "Continue de onde parou" no mapa.
 A lista de prints necessários para mapear mais telas está em `docs/prints-necessarios.md`.
+
+
+## Numeração das fases
+
+O jogo tem as fases 0 a 6 (Primeiros toques, Celular, Mensagens, Banco e Pix, Golpes, Serviços e compras, Transporte). Os ids das
+fases (`w4-pix-chave`, `w7-uber-pedir`...) guardam o número antigo e não mudam, para não perder o progresso salvo; o que vale é o
+campo `mundo` e o `numero` em `src/content/worlds.ts`.

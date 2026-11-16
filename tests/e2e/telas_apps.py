@@ -12,10 +12,10 @@ def check(nome, cond):
     log.append(("OK  " if cond else "FALHA ") + nome)
     return cond
 
-W0 = ["w0-tocar", "w0-desbloquear", "w0-icones", "w0-deslizar", "w0-teclado", "w0-andar"]
+W0 = ["w0-desbloquear", "w0-icones", "w0-deslizar", "w0-teclado", "w0-andar"]
 # estes testes não são sobre a história: marcamos as cenas dos mundos 4 e 7 como já vistas
 FASES_HIST = ["w4-pix-chave", "w4-pix-nome", "w7-uber-pedir", "w7-99-pedir", "w7-conferir-motorista"]
-VISTAS = [f"{t}:{x}" for x in FASES_HIST for t in ("abertura", "fechamento")] + ["final:4", "final:7"]
+VISTAS = [f"{t}:{x}" for x in FASES_HIST for t in ("abertura", "fechamento")] + ["final:3", "final:6"]
 perfil = {
     "versao": 1,
     "perfil": {"id": "p1", "nome": "Seu João", "avatar": "👴"},
@@ -48,8 +48,8 @@ with sync_playwright() as p:
     def shot(nome): page.locator(".celular.banco").screenshot(path=f"{OUT}/{nome}.png")
     def abrir(banco, primeira=False):
         if primeira:
-            page.get_by_role("button", name="Fase 4: Banco e Pix", exact=True).click()
-            page.get_by_role("button", name="Fazer um Pix pela chave").click()
+            page.get_by_role("button", name="Fase 3: Banco e Pix", exact=True).click()
+            page.get_by_role("button", name="Pix pela chave: e-mail").click()
         else:
             abrir_ajustes(page)
             page.get_by_role("button", name="Trocar de banco").click()

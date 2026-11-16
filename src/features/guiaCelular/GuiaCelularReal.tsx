@@ -4,7 +4,9 @@ import { DesenhoCelular } from './DesenhoCelular'
 
 const CHAVE = 'nfc:v1:marca-celular'
 
-function marcaSalva(): Marca {
+export const EVENTO_MARCA = 'nfc-marca'
+
+export function marcaSalva(): Marca {
   try {
     const m = localStorage.getItem(CHAVE)
     if (m && marcas.some((x) => x.id === m)) return m as Marca
@@ -17,13 +19,14 @@ function marcaSalva(): Marca {
 /** Mostra, num desenho de celular, como fazer a tarefa com as mãos em cada marca. */
 export function GuiaCelularReal({ tema }: { tema: Tema }) {
   const [marca, setMarca] = useState<Marca>(marcaSalva)
-  const [aberto, setAberto] = useState(true)
+  const [aberto, setAberto] = useState(tema !== 'brilho')
   const guia = guias[tema][marca]
 
   const escolher = (m: Marca) => {
     setMarca(m)
     try {
       localStorage.setItem(CHAVE, m)
+      window.dispatchEvent(new Event(EVENTO_MARCA))
     } catch {
       // ignora
     }

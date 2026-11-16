@@ -15,7 +15,7 @@ export function TelaTransporte({ app, passo, destacar, nome, aoResponder, aoVolt
   return (
     <div className="celular banco" role="group" aria-label={`Tela do aplicativo ${app.nome}`}>
       {passo.tela?.layout === 'app' && passo.tela.app && (
-        <TelaApp tema={app.tema} passo={passo} nome={nome} destacar={destacar} aoResponder={aoResponder} aoVoltarPasso={aoVoltarPasso} />
+        <TelaApp key={passo.id} tema={app.tema} passo={passo} nome={nome} destacar={destacar} aoResponder={aoResponder} aoVoltarPasso={aoVoltarPasso} />
       )}
     </div>
   )

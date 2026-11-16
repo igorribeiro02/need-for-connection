@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import { iniciar, responder } from '../src/core/engine/phaseRunner'
 import { mapaDosMundos, mundoEm } from '../src/content/worldMap'
 import { bancos } from '../src/content/banks'
 import { mundos, todasAsFases, todasAsFasesResolvidas } from '../src/content/worlds'
@@ -90,6 +91,17 @@ describe('liberação dos mundos', () => {
     mundos[0].fases.map((f) => [f.id, { status: 'concluida' }]),
   )
 
+  it('as fases são numeradas em sequência, sem buracos (0 a 6)', () => {
+    expect(mundos.map((m) => m.numero)).toEqual([0, 1, 2, 3, 4, 5, 6])
+    for (const m of mundos) for (const f of m.fases) expect(f.mundo, f.id).toBe(m.numero)
+  })
+
+  it('o arquivo certo é enviado no WhatsApp (Fase 2) e "Tocar na tela" e "Golpe ou seguro?" não existem mais', () => {
+    expect(mundos[2].fases.map((f) => f.id)).toContain('w2-arquivo')
+    const ids = mundos.flatMap((m) => m.fases).map((f) => f.id)
+    for (const fora of ['w0-tocar', 'w5-mensagens', 'w3-arquivo', 'w3-tirar-foto', 'w3-editar']) expect(ids).not.toContain(fora)
+  })
+
   it('o Mundo 0 está sempre aberto', () => {
     expect(mundoLiberado(0, mundos, {})).toBe(true)
   })
@@ -118,7 +130,7 @@ describe('bancos e fases de Pix', () => {
   })
 
   it('a tela inicial de cada banco tem o atalho do Pix e os passos de início usam o layout de início', () => {
-    const fase = mundos[4].fases[0]
+    const fase = mundos[3].fases[0]
     for (const b of bancos) {
       expect(b.inicio.atalhos.some((a) => a.rotulo === b.fluxo.entradaPix), b.id).toBe(true)
       const passos = fase.gerarPassos!(b)
@@ -139,7 +151,7 @@ describe('bancos e fases de Pix', () => {
   })
 
   const idsDe = (id: string, variante: 'normal' | 'nome-diferente' = 'normal') => {
-    const fase = mundos[4].fases[variante === 'normal' ? 0 : 1]
+    const fase = mundos.flatMap((m) => m.fases).find((f) => f.id === (variante === 'normal' ? 'w4-pix-chave' : 'w4-pix-nome'))!
     return fase.gerarPassos!(bancos.find((b) => b.id === id)!).map((p) => p.id)
   }
 
@@ -171,7 +183,7 @@ describe('bancos e fases de Pix', () => {
   it('telas copiadas de apps reais: o botão certo existe uma vez e nenhum enfeite vale como resposta', () => {
     for (const b of bancos.filter((x) => x.telas)) {
       for (const variante of [0, 1]) {
-        const passos = mundos[4].fases[variante].gerarPassos!(b)
+        const passos = mundos[3].fases[variante].gerarPassos!(b)
         for (const p of passos.filter((x) => x.tela?.layout === 'app' && x.tipo === 'tocar')) {
           const ids = p.elementos!.map((e) => e.id)
           expect(ids.filter((id) => id === p.alvo).length, `${b.id}/${p.id}`).toBe(1)
@@ -182,11 +194,29 @@ describe('bancos e fases de Pix', () => {
 
   it('Inter: caminho Pix > Pagar > chave > valor > revisão > iSafe, com o nome do destinatário na tela do valor', () => {
     const inter = bancos.find((b) => b.id === 'inter')!
-    const ids = mundos[4].fases[0].gerarPassos!(inter).map((p) => p.id)
+    const ids = mundos[3].fases.find((f) => f.id === 'w4-pix-chave')!.gerarPassos!(inter).map((p) => p.id)
     expect(ids).toEqual(['entrar', 'saldo', 'ir-pix', 'caminho-1', 'chave', 'valor', 'revisar', 'confirmar', 'autenticar', 'comprovante'])
-    const valor = mundos[4].fases[1].gerarPassos!(inter).find((p) => p.id === 'valor')!
+    const valor = mundos[3].fases.find((f) => f.id === 'w4-pix-nome')!.gerarPassos!(inter).find((p) => p.id === 'valor')!
     const campo = valor.tela!.app!.blocos.find((x) => x.tipo === 'campo')!
     expect(campo.tipo === 'campo' && campo.entre).toContain('Carlos Alberto Lima')
+  })
+
+  it('Pix por celular, CPF e CNPJ: aceitam só números e mostram o tipo certo', () => {
+    const casos = [
+      ['w4-pix-celular', '21999990001', 'Celular'],
+      ['w4-pix-cpf', '12345678909', 'CPF'],
+      ['w4-pix-cnpj', '12345678000190', 'CNPJ'],
+    ] as const
+    for (const [id, numeros] of casos) {
+      const fase = mundos.flatMap((m) => m.fases).find((f) => f.id === id)!
+      for (const b of bancos) {
+        const chave = fase.gerarPassos!(b).find((p) => p.id === 'chave')!
+        expect(chave.soDigitos, `${id}/${b.id}`).toBe(true)
+        let e = iniciar({ ...fase, passos: [chave] })
+        e = responder({ ...fase, passos: [chave] }, e, numeros)
+        expect(e.concluida, `${id}/${b.id} aceita ${numeros}`).toBe(true)
+      }
+    }
   })
 
   it('PicPay e Mercado Pago: a chave é digitada na tela copiada, sem escolher o tipo de chave', () => {
@@ -203,7 +233,7 @@ describe('bancos e fases de Pix', () => {
   })
 
   it('a senha tem o tamanho certo para cada banco (BB: 6 números)', () => {
-    const fase = mundos[4].fases[0]
+    const fase = mundos[3].fases[0]
     for (const b of bancos) {
       const passos = fase.gerarPassos!(b)
       if (b.fluxo.confirmacao.digitos === 0) {
@@ -228,7 +258,7 @@ describe('bancos e fases de Pix', () => {
   })
 
   it('o jogador consegue concluir cada fase de Pix em cada banco só com as respostas certas', async () => {
-    const { iniciar, passoAtual, responder } = await import('../src/core/engine/phaseRunner')
+    const { passoAtual } = await import('../src/core/engine/phaseRunner')
     for (const { fase, banco } of todasAsFasesResolvidas()) {
       if (!banco) continue
       let e = iniciar(fase)
@@ -244,7 +274,7 @@ describe('bancos e fases de Pix', () => {
   })
 
   it('nos passos de tocar de banco, o botão certo muda de posição entre os bancos', () => {
-    const pix = mundos[4].fases[0]
+    const pix = mundos[3].fases[0]
     const posicoes = new Set(
       bancos.map((b) => {
         const passo = pix.gerarPassos!(b).find((p) => p.id === 'comprovante')!
@@ -256,10 +286,10 @@ describe('bancos e fases de Pix', () => {
 })
 
 describe('transporte por aplicativo (Uber e 99)', () => {
-  const mundo = mundos.find((m) => m.numero === 7)!
+  const mundo = mundos.find((m) => m.numero === 6)!
   const fase = (id: string) => mundo.fases.find((f) => f.id === id)!
 
-  it('o Mundo 7 existe, tem as três fases e cada fase diz de qual app são as telas', () => {
+  it('o mundo do transporte (Fase 6) existe, tem as três fases e cada fase diz de qual app são as telas', () => {
     expect(mundo.titulo).toContain('Transporte')
     expect(mundo.fases.map((f) => f.id)).toEqual(['w7-uber-pedir', 'w7-99-pedir', 'w7-conferir-motorista'])
     for (const f of mundo.fases) {
@@ -295,7 +325,7 @@ describe('transporte por aplicativo (Uber e 99)', () => {
   })
 
   it('as fases se completam só com as respostas certas, sem erros', async () => {
-    const { iniciar, passoAtual, responder } = await import('../src/core/engine/phaseRunner')
+    const { passoAtual } = await import('../src/core/engine/phaseRunner')
     for (const f of mundo.fases) {
       let e = iniciar(f)
       let guarda = 0

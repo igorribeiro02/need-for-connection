@@ -12,7 +12,7 @@ const APP_GOV: AppTransporte = {
   id: 'gov',
   nome: 'gov.br',
   tema: { corPrincipal: '#1b4b8f', corDestaque: '#1b4b8f', link: '#1b4b8f' },
-  fonte: 'Fluxo de entrada do gov.br descrito em tutoriais oficiais. Falta conferir cada tela no site real.',
+  fonte: 'Estrutura do login do gov.br (portal, CPF, formas de entrar), conforme tutoriais oficiais; cores e desenhos são nossos. Falta conferir cada tela no site real.',
 }
 
 const APP_LOJA: AppTransporte = {
@@ -100,7 +100,7 @@ const confirmarConsulta = (): TelaApp => ({
 
 export const w6Consulta: Fase = {
   id: 'w6-consulta',
-  mundo: 6,
+  mundo: 5,
   titulo: 'Marcar uma consulta',
   simulador: 'arquivos',
   aplicativo: APP_SAUDE,
@@ -167,17 +167,27 @@ export const w6Consulta: Fase = {
 }
 
 // ---------------------------------------------------------------- Fase 6.2: gov.br
+// A estrutura (ordem das telas, textos e botões) segue o login do gov.br; as cores e o desenho são nossos.
 const site = (endereco: string, blocos: BlocoApp[], tituloBarra = 'gov.br'): TelaApp => ({
   blocos: [
     { tipo: 'barra', voltar: voltar('voltar'), titulo: tituloBarra },
-    { tipo: 'dados', linhas: [{ rotulo: 'Endereço', valor: endereco }] },
+    { tipo: 'endereco', texto: endereco },
     ...blocos,
   ],
 })
 
+const OUTRAS_OPCOES: BlocoApp = {
+  tipo: 'lista',
+  titulo: 'Outras opções de identificação',
+  itens: [
+    { rotulo: 'Login com seu banco', icone: '🏦', inerte: true },
+    { rotulo: 'Login com seu certificado digital', icone: '🪪', inerte: true },
+  ],
+}
+
 export const w6Govbr: Fase = {
   id: 'w6-govbr',
-  mundo: 6,
+  mundo: 5,
   titulo: 'Entrar no gov.br com segurança',
   simulador: 'arquivos',
   aplicativo: APP_GOV,
@@ -194,7 +204,7 @@ export const w6Govbr: Fase = {
       'endereco',
       'Qual destes endereços é o do gov.br de verdade?',
       site('?', [
-        { tipo: 'texto', texto: 'O endereço fica no alto da tela. O site oficial termina com .gov.br.', centro: true },
+        { tipo: 'titulo', texto: 'Serviços e informações do Brasil', apoio: 'O endereço fica no alto da tela. O site oficial termina com .gov.br.' },
       ]),
       [
         { id: 'falso1', rotulo: 'acesso-govbr.com' },
@@ -209,37 +219,41 @@ export const w6Govbr: Fase = {
     toque(
       'entrar',
       'Endereço conferido. Toque em "Entrar com gov.br".',
-      site('acesso.gov.br', [
+      site('www.gov.br', [
+        { tipo: 'busca', texto: 'O que você procura?' },
+        { tipo: 'titulo', texto: 'Serviços e informações do Brasil', apoio: 'Entre para ver os seus documentos e serviços.' },
         {
           tipo: 'lista',
-          estilo: 'caixas',
           itens: [
             { rotulo: 'Criar conta', icone: '➕', id: 'criar' },
-            { rotulo: 'Entrar com gov.br', icone: '🔑', id: 'entrar' },
+            { rotulo: 'Entrar com gov.br', icone: '👤', id: 'entrar' },
           ],
         },
       ]),
       'entrar',
       'Entrar com gov.br',
-      'Se você já tem conta, é "Entrar".',
-      'É o botão da direita, com uma chave.',
+      'Se você já tem conta, é "Entrar com gov.br". "Criar conta" é só para quem ainda não tem.',
+      'É o segundo da lista, com o desenho de uma pessoa.',
     ),
-    {
-      ...digitar(
-        'cpf',
-        'Escreva o CPF de exemplo: 111.222.333-44',
-        site('acesso.gov.br', [{ tipo: 'campo', icone: '🪪' }]),
-        '111.222.333-44',
-        'CPF',
-        'Continuar',
-        'O CPF é o número dos seus documentos. Este é só para treinar.',
-      ),
-      teclado: 'numero',
-    },
+    digitar(
+      'cpf',
+      'Escreva o CPF de exemplo: 111.222.333-44. Pode escrever só os números, sem pontos nem traço.',
+      site('acesso.gov.br', [
+        { tipo: 'titulo', texto: 'Identifique-se no gov.br com:' },
+        { tipo: 'campo', icone: '🪪', entre: ['Digite seu CPF para criar ou acessar sua conta gov.br'] },
+        OUTRAS_OPCOES,
+      ]),
+      '111.222.333-44',
+      'Número do CPF',
+      'Continuar',
+      'O CPF é o número dos seus documentos. Este é só para treinar: pode escrever com ou sem pontos.',
+      { soDigitos: true, teclado: 'numero' },
+    ),
     toque(
       'como-entrar',
       'Escolha a forma mais segura: "Entrar com o aplicativo gov.br".',
       site('acesso.gov.br', [
+        { tipo: 'titulo', texto: 'Como você quer entrar?' },
         {
           tipo: 'lista',
           itens: [
@@ -329,7 +343,7 @@ const pagar = (): TelaApp =>
 
 export const w6Compra: Fase = {
   id: 'w6-compra',
-  mundo: 6,
+  mundo: 5,
   titulo: 'Comprar um presente com cuidado',
   simulador: 'arquivos',
   aplicativo: APP_LOJA,

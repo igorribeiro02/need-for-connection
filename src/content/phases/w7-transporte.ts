@@ -21,7 +21,7 @@ const APP_99: AppTransporte = {
 
 export const w7UberPedir: Fase = {
   id: 'w7-uber-pedir',
-  mundo: 7,
+  mundo: 6,
   titulo: 'Pedir um Uber',
   simulador: 'transporte',
   aplicativo: APP_UBER,
@@ -112,7 +112,7 @@ export const w7UberPedir: Fase = {
 
 export const w799Pedir: Fase = {
   id: 'w7-99-pedir',
-  mundo: 7,
+  mundo: 6,
   titulo: 'Pedir um carro na 99',
   simulador: 'transporte',
   aplicativo: APP_99,
@@ -181,7 +181,7 @@ const opcoesSimNao = [
 
 export const w7ConferirMotorista: Fase = {
   id: 'w7-conferir-motorista',
-  mundo: 7,
+  mundo: 6,
   titulo: 'Conferir o motorista antes de entrar',
   simulador: 'transporte',
   aplicativo: APP_UBER,

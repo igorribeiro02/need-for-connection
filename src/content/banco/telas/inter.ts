@@ -39,7 +39,7 @@ function revisao(c: ContextoTela, modo: 'perguntar' | 'pagar', extra?: Partial<T
           { rotulo: 'Nome', valor: c.nomeDestino },
           { rotulo: 'CPF/CNPJ', valor: '•••.456.789-••' },
           { rotulo: 'Instituição', valor: 'Banco Exemplo' },
-          { rotulo: 'Chave de e-mail', valor: c.email },
+          { rotulo: `Chave: ${c.tipoChave}`, valor: c.chave },
         ],
       },
       { tipo: 'texto', texto: 'Adicionar mensagem', link: true },

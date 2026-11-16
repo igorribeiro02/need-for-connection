@@ -1,4 +1,5 @@
-import type { AppTransporte, BlocoApp, Fase, Passo, TelaApp } from '../../core/engine/stepTypes'
+import type { AppTransporte, BlocoApp, Fase, TelaApp, ZapConversa, ZapMensagem } from '../../core/engine/stepTypes'
+import { ANEXAR, APP_ZAP, CAMERA, CAMPO, MICROFONE, VOLTAR, lista } from '../zap'
 import { pergunta, toque } from '../transporte/passos'
 
 const APP_MSG: AppTransporte = {
@@ -7,93 +8,6 @@ const APP_MSG: AppTransporte = {
   tema: { corPrincipal: '#1b4b8f', corDestaque: '#1b4b8f', link: '#1b4b8f' },
   fonte:
     'Mensagens de golpe inventadas a partir de modelos que circulam (falso banco, falso prêmio, falso parente). Nenhum número, link ou nome é real.',
-}
-
-const mensagem = (de: string, texto: string, extra: BlocoApp[] = []): TelaApp => ({
-  blocos: [
-    { tipo: 'barra', voltar: { rotulo: 'Voltar', icone: '←', id: 'voltar' }, titulo: de },
-    { tipo: 'cartao', titulo: texto },
-    { tipo: 'espaco' },
-    ...extra,
-  ],
-})
-
-/** "Golpe ou seguro?" Mostra a mensagem e dois botões; a resposta certa vem em `certo`. */
-function julgarMensagem(id: string, de: string, texto: string, certo: 'golpe' | 'seguro', pista: string, dicas: string[]): Passo {
-  return {
-    ...pergunta(
-      id,
-      'Leia a mensagem com calma. É golpe ou é seguro?',
-      mensagem(de, texto),
-      [
-        { id: 'golpe', rotulo: '🚫 Golpe' },
-        { id: 'seguro', rotulo: '✅ Seguro' },
-      ],
-      certo,
-      dicas,
-      `Quase! ${pista}`,
-      'Desconfie de pressa, prêmio e pedido de dinheiro ou de código.',
-    ),
-    tipo: 'julgar',
-  }
-}
-
-export const w5Mensagens: Fase = {
-  id: 'w5-mensagens',
-  mundo: 5,
-  titulo: 'Golpe ou seguro?',
-  simulador: 'mensagens',
-  aplicativo: APP_MSG,
-  historia: {
-    abertura: [
-      { quem: 'sorrateiro', texto: 'Hehe... mensagens, mensagens! Quem cai, perde o dinheirinho.' },
-      { quem: 'neuza', texto: 'Cuidado, {nome}! Leia cada mensagem e diga se é golpe ou se é seguro.' },
-    ],
-    fechamento: [{ quem: 'neuza', texto: 'Você enxergou todos. Quem desconfia no tempo certo não cai.' }],
-    premio: { emoji: '🕵️', titulo: 'Olho de águia' },
-  },
-  passos: [
-    julgarMensagem(
-      'premio',
-      '+55 21 9xxxx-0000',
-      'PARABÉNS! Você ganhou um celular novo! Clique agora: premio-gratis.xyz/retirar. Só hoje!',
-      'golpe',
-      'Prêmio que você não pediu, com pressa e um link estranho, é golpe.',
-      ['Você participou de algum sorteio?', 'Prêmio de graça, com pressa e link estranho: é golpe.'],
-    ),
-    julgarMensagem(
-      'filha',
-      'Ana',
-      'Vó, cheguei na casa da Maria. Chego em casa às 18h, tá? Beijo!',
-      'seguro',
-      'Essa é só um aviso de chegada, vindo da sua neta que você conhece.',
-      ['Quem mandou? É alguém que você conhece?', 'É a sua neta avisando a hora: não pede dinheiro nem código.'],
-    ),
-    julgarMensagem(
-      'banco',
-      'BANCO-SEGURO',
-      'Sua conta será BLOQUEADA em 1 hora. Atualize os dados em banco-seguro-app.com/atualizar para evitar.',
-      'golpe',
-      'Banco de verdade não manda link para "atualizar dados" com ameaça de bloqueio.',
-      ['Bancos não ameaçam bloquear a conta por mensagem.', 'Pressa, ameaça e link para "atualizar dados": é golpe.'],
-    ),
-    julgarMensagem(
-      'consulta',
-      'Posto de Saúde',
-      'Lembrete: sua consulta é amanhã, às 9h, no Posto de Saúde da Rua das Flores. Não precisa responder.',
-      'seguro',
-      'É um lembrete de uma consulta que você marcou, sem link e sem pedir nada.',
-      ['Você marcou essa consulta? Pede dinheiro ou link?', 'Só avisa o horário de uma consulta marcada: é seguro.'],
-    ),
-    julgarMensagem(
-      'entrega',
-      'Entregas',
-      'Seu pacote não pôde ser entregue. Pague a taxa de R$ 4,90 em entrega-rapida.top/taxa para receber.',
-      'golpe',
-      'Taxa surpresa por link é golpe. Você nem estava esperando um pacote.',
-      ['Você está esperando algum pacote?', 'Cobrar uma "taxinha" por link estranho é golpe.'],
-    ),
-  ],
 }
 
 // ---------------------------------------------------------------- Fase 5.2: ligação do falso banco
@@ -109,7 +23,7 @@ const ligacao = (texto: string, botoes: { rotulo: string; id: string; icone: str
 
 export const w5Ligacao: Fase = {
   id: 'w5-ligacao',
-  mundo: 5,
+  mundo: 4,
   titulo: 'A ligação do "banco"',
   simulador: 'mensagens',
   aplicativo: APP_MSG,
@@ -185,32 +99,65 @@ export const w5Ligacao: Fase = {
   ],
 }
 
-// ---------------------------------------------------------------- Fase 5.3: falso parente
-const zapFalso = (msgs: string[], extra: BlocoApp[] = []): TelaApp => ({
+// ---------------------------------------------------------------- Fase 5.3: falso parente (conversa do WhatsApp)
+const DESCONHECIDO = '+55 21 9xxxx-0000'
+
+const CONVERSAS_NOVAS: ZapConversa[] = [
+  {
+    id: 'conv-desconhecido',
+    nome: DESCONHECIDO,
+    avatar: '👤',
+    previa: 'Preciso pagar uma conta urgente. Pode fazer um Pix…',
+    hora: '10:03',
+    naoLidas: 2,
+  },
+  { id: 'conv-ana', nome: 'Ana', avatar: '👩', previa: 'Vó, você vem no meu aniversário? 🎂', hora: '09:12' },
+  { id: 'conv-grupo', nome: 'Família Silva', avatar: '👪', previa: 'Tia Rosa: gente, olhem o convite!', hora: '08:50' },
+  { id: 'conv-osvaldo', nome: 'Seu Osvaldo', avatar: '👴', previa: 'Bom dia, vizinha! 🌞', hora: 'Ontem', ticks: 'lida' },
+]
+
+const MSGS_FALSO: ZapMensagem[] = [
+  { de: 'outro', texto: 'Oi vó! Troquei de número, salva este.', hora: '10:02', dia: 'Hoje' },
+  { de: 'outro', texto: 'Preciso pagar uma conta urgente. Pode fazer um Pix de R$ 800 agora? Depois explico!', hora: '10:03' },
+]
+
+const falso = (antes: BlocoApp[] = [], escurecida = false): TelaApp => ({
+  zap: true,
+  escurecida,
   blocos: [
     {
-      tipo: 'barra',
-      voltar: { rotulo: 'Voltar', icone: '←', id: 'voltar' },
-      titulo: 'Número novo',
-      acoes: [{ rotulo: 'Menu', icone: '⋮', id: 'menu' }],
+      tipo: 'zapTopo',
+      voltar: VOLTAR,
+      titulo: DESCONHECIDO,
+      avatar: '👤',
+      subtitulo: 'toque para ver os dados',
+      acoes: [{ rotulo: 'Mais opções', icone: '⋮', id: 'menu' }],
     },
-    ...msgs.map((t): BlocoApp => ({ tipo: 'cartao', titulo: t })),
-    { tipo: 'espaco' },
-    ...extra,
+    ...antes,
+    {
+      tipo: 'zapChat',
+      mensagens: MSGS_FALSO,
+      aviso: {
+        texto: 'Este número não está na sua lista de contatos.',
+        acoes: [
+          { rotulo: 'Bloquear', inerte: true },
+          { rotulo: 'Adicionar', inerte: true },
+        ],
+      },
+      campo: CAMPO,
+      anexar: { ...ANEXAR, inerte: true },
+      camera: CAMERA,
+      microfone: { ...MICROFONE, inerte: true, segurar: false },
+    },
   ],
 })
 
-const PEDIDO = [
-  'Oi vó! Troquei de número, salva este.',
-  'Preciso pagar uma conta urgente. Pode fazer um Pix de R$ 800 agora? Depois explico!',
-]
-
 export const w5Parente: Fase = {
   id: 'w5-parente',
-  mundo: 5,
+  mundo: 4,
   titulo: 'Oi, vó! Mudei de número',
   simulador: 'mensagens',
-  aplicativo: APP_MSG,
+  aplicativo: APP_ZAP,
   historia: {
     abertura: [
       { quem: 'sorrateiro', texto: 'Oi, vovó! Sou eu, seu netinho... mande um Pix, vai?' },
@@ -220,10 +167,19 @@ export const w5Parente: Fase = {
     premio: { emoji: '🛡️', titulo: 'Confere antes' },
   },
   passos: [
+    toque(
+      'abrir',
+      'Chegou uma mensagem de um número novo. Abra essa conversa.',
+      lista(CONVERSAS_NOVAS),
+      'conv-desconhecido',
+      DESCONHECIDO,
+      'Número que não está na sua lista de contatos pede cuidado.',
+      'É a primeira da lista, com o número em vez de um nome, e dois recados novos.',
+    ),
     pergunta(
       'sinais',
       'Qual destes é o maior sinal de golpe nessa conversa?',
-      zapFalso(PEDIDO),
+      falso(),
       [
         { id: 'oi', rotulo: 'Ele disse "Oi vó"' },
         { id: 'pix-urgente', rotulo: 'Pede um Pix urgente, de um número novo' },
@@ -237,7 +193,7 @@ export const w5Parente: Fase = {
     pergunta(
       'conferir',
       'Como saber se é mesmo a sua neta?',
-      zapFalso(PEDIDO),
+      falso(),
       [
         { id: 'fazer-pix', rotulo: 'Faço o Pix logo, é urgente' },
         { id: 'ligar', rotulo: 'Ligo para o número antigo dela' },
@@ -251,31 +207,74 @@ export const w5Parente: Fase = {
     toque(
       'menu',
       'Não era ela. Toque nos três pontinhos ⋮ no alto para ver as opções.',
-      zapFalso(PEDIDO),
+      falso(),
       'menu',
-      'Menu',
+      'Mais opções',
       'Os três pontinhos abrem as opções da conversa.',
-      'São os três pontinhos, no canto de cima, à direita.',
+      'São os três pontinhos, no canto de cima, à direita, na barra verde.',
+    ),
+    toque(
+      'mais',
+      'Toque em "Mais" para ver outras opções.',
+      falso([
+        {
+          tipo: 'zapMenu',
+          itens: [
+            { rotulo: 'Ver contato', inerte: true },
+            { rotulo: 'Buscar', inerte: true },
+            { rotulo: 'Silenciar notificações', inerte: true },
+            { rotulo: 'Mais', id: 'mais' },
+          ],
+        },
+      ]),
+      'mais',
+      'Mais',
+      '"Denunciar" fica escondido dentro de "Mais".',
+      'É a última linha do menu branco.',
     ),
     toque(
       'denunciar',
-      'Toque em "Denunciar e bloquear", para ele não escrever mais.',
-      zapFalso(PEDIDO, [
+      'Toque em "Denunciar", para avisar o WhatsApp sobre esse golpe.',
+      falso([
         {
-          tipo: 'lista',
+          tipo: 'zapMenu',
           itens: [
-            { rotulo: 'Silenciar', icone: '🔕', id: 'silenciar' },
-            { rotulo: 'Apenas bloquear', icone: '✋', id: 'bloquear' },
-            { rotulo: 'Denunciar e bloquear', icone: '🚫', id: 'denunciar' },
+            { rotulo: 'Denunciar', id: 'denunciar' },
+            { rotulo: 'Bloquear', id: 'so-bloquear' },
+            { rotulo: 'Limpar conversa', id: 'limpar' },
+            { rotulo: 'Exportar conversa', inerte: true },
           ],
         },
       ]),
       'denunciar',
-      'Denunciar e bloquear',
-      '"Silenciar" só esconde os avisos. Denunciar e bloquear avisa o aplicativo.',
-      'É o último da lista, com o sinal de proibido.',
+      'Denunciar',
+      '"Bloquear" sozinho impede novas mensagens, mas não avisa o WhatsApp. "Denunciar" faz as duas coisas.',
+      'É a primeira linha do menu branco.',
+    ),
+    toque(
+      'confirmar-denuncia',
+      'O WhatsApp pergunta se você quer mesmo denunciar. A caixa já vem marcada para bloquear. Toque em "Denunciar".',
+      falso(
+        [
+          {
+            tipo: 'zapDialogo',
+            titulo: 'Denunciar este contato?',
+            texto: 'As últimas mensagens dele serão enviadas ao WhatsApp. Ele não vai saber que foi você.',
+            marcado: 'Bloquear contato e apagar mensagens desta conversa',
+            botoes: [
+              { rotulo: 'Cancelar', id: 'cancelar-denuncia' },
+              { rotulo: 'Denunciar', id: 'confirmar-denuncia' },
+            ],
+          },
+        ],
+        true,
+      ),
+      'confirmar-denuncia',
+      'Denunciar',
+      'Denunciar e bloquear é a forma de impedir que o golpista tente de novo.',
+      'É o botão verde escrito "Denunciar", no canto de baixo da caixa branca.',
     ),
   ],
 }
 
-export const fasesMundo5: Fase[] = [w5Mensagens, w5Ligacao, w5Parente]
+export const fasesMundo5: Fase[] = [w5Ligacao, w5Parente]

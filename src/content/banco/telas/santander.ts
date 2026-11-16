@@ -29,7 +29,7 @@ function revisao(c: ContextoTela, modo: 'perguntar' | 'pagar'): TelaApp {
           { rotulo: 'Quando vai ser feito', valor: 'Hoje' },
           { rotulo: 'Tipo de pagamento', valor: 'Pix' },
           { rotulo: 'Forma de pagamento', valor: 'Saldo em conta' },
-          { rotulo: 'Chave', valor: c.email },
+          { rotulo: 'Chave', valor: c.chave },
         ],
       },
       { tipo: 'espaco' },
@@ -122,7 +122,7 @@ export const telasSantander: TelasBanco = {
         titulo: `Para ${c.nomeDestino}`,
         linhas: [
           { rotulo: 'Instituição', valor: 'Banco Exemplo' },
-          { rotulo: 'Chave', valor: c.email },
+          { rotulo: 'Chave', valor: c.chave },
         ],
       },
       { tipo: 'campo', valor: 'esquerda' },

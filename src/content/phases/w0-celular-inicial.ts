@@ -27,7 +27,8 @@ export const w0Desbloquear: Fase = {
   aplicativo: APP_INICIO,
   historia: {
     abertura: [
-      { quem: 'neuza', texto: 'Ele acordou, mas está trancado. É para ninguém mexer nas suas coisas.' },
+      { quem: 'neuza', texto: 'Bem-vindo à Vila Conexão, {nome}! Eu sou a Dona Neuza, sua vizinha.' },
+      { quem: 'neuza', texto: 'A Ana deixou este celular para você. Ele está trancado, para ninguém mexer nas suas coisas.' },
       { quem: 'neuza', texto: 'Para destrancar, você usa um código de números. Vamos treinar com o código 2580.' },
     ],
     fechamento: [{ quem: 'neuza', texto: 'Destrancou! Guarde o seu código de verdade só na cabeça, nunca num bilhete.' }],
