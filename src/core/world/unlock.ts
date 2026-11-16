@@ -1,5 +1,6 @@
-// Quais mundos estão abertos. Regra: o Mundo 0 (obrigatório) está sempre aberto;
-// os demais abrem quando todos os mundos obrigatórios foram concluídos.
+// Quais fases estão abertas. Por decisão do projeto, TODAS ficam abertas desde o começo (sem restrições):
+// cada pessoa escolhe por onde começar. Para voltar à regra antiga (a Fase 0 libera as outras), troque TUDO_ABERTO para false.
+export const TUDO_ABERTO = true
 
 import type { Mundo } from '../engine/stepTypes'
 
@@ -17,7 +18,7 @@ export function mundoConcluido(mundo: Mundo, fases: ProgressoMinimo): boolean {
 
 /** Mundos obrigatórios que ainda faltam terminar para abrir `numero`. */
 export function pendenciasParaAbrir(numero: number, mundos: Mundo[], fases: ProgressoMinimo): Mundo[] {
-  if (numero === 0) return []
+  if (TUDO_ABERTO || numero === 0) return []
   return mundos.filter((m) => m.obrigatorio && m.numero !== numero && !mundoConcluido(m, fases))
 }
 

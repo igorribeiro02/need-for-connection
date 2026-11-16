@@ -11,6 +11,10 @@ def check(nome, cond):
     log.append(("OK  " if cond else "FALHA ") + nome)
     return cond
 
+def abrir_ajustes(page):
+    b = page.get_by_role("button", name="Ajustes", exact=True)
+    if b.count() and b.get_attribute("aria-expanded") != "true": b.click()
+
 with sync_playwright() as p:
     b = p.chromium.launch()
     ctx = b.new_context(viewport={"width": 390, "height": 800})

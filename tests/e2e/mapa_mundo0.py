@@ -42,11 +42,11 @@ with sync_playwright() as p:
     page.get_by_role("button", name="Andar para baixo").click()
     check("botão direcional leva de volta ao Mundo 0", page.get_by_role("heading", name="Fase 0: Primeiros toques").is_visible())
 
-    # toque num prédio bloqueado: personagem anda sozinho até lá
-    page.get_by_role("button", name="Fase 4: Banco e Pix (ainda bloqueado)").click()
-    page.get_by_text("Ainda bloqueado.").wait_for(timeout=5000)
-    check("Mundo 4 bloqueado até terminar o Mundo 0", page.get_by_text("Termine primeiro: Fase 0 (Primeiros toques)").is_visible())
-    page.screenshot(path=f"{OUT}/m2-bloqueado.png", full_page=True)
+    # nenhum prédio tem cadeado: a Fase 4 já abre sem ter feito a Fase 0
+    check("mapa sem cadeados", page.get_by_role("button", name=re.compile("ainda bloqueado")).count() == 0)
+    page.get_by_role("button", name="Fase 4: Banco e Pix").click()
+    check("Fase 4 abre sem restrições", page.get_by_text("Ainda bloqueado.").count() == 0)
+    page.screenshot(path=f"{OUT}/m2-aberto.png", full_page=True)
 
     # modo lista (e lembra a escolha depois de recarregar)
     page.get_by_role("button", name="📋 Lista").click()

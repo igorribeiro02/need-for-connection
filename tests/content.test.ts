@@ -94,20 +94,12 @@ describe('liberação dos mundos', () => {
     expect(mundoLiberado(0, mundos, {})).toBe(true)
   })
 
-  it('os demais só abrem depois de concluir todo o Mundo 0', () => {
-    expect(mundoLiberado(4, mundos, {})).toBe(false)
-    expect(pendenciasParaAbrir(4, mundos, {}).map((m) => m.numero)).toEqual([0])
-
-    const metade = { [mundos[0].fases[0].id]: { status: 'concluida' } }
-    expect(mundoLiberado(4, mundos, metade)).toBe(false)
-
+  it('todas as fases ficam abertas desde o começo, sem restrições', () => {
+    for (const m of mundos) {
+      expect(mundoLiberado(m.numero, mundos, {}), `fase ${m.numero}`).toBe(true)
+      expect(pendenciasParaAbrir(m.numero, mundos, {})).toEqual([])
+    }
     expect(mundoConcluido(mundos[0], todasConcluidas)).toBe(true)
-    expect(mundoLiberado(4, mundos, todasConcluidas)).toBe(true)
-  })
-
-  it('"em andamento" não conta como concluída', () => {
-    const andamento = Object.fromEntries(mundos[0].fases.map((f) => [f.id, { status: 'em-andamento' }]))
-    expect(mundoLiberado(1, mundos, andamento)).toBe(false)
   })
 })
 
@@ -316,10 +308,8 @@ describe('transporte por aplicativo (Uber e 99)', () => {
     }
   })
 
-  it('o mundo abre depois do Mundo 0', () => {
-    expect(mundoLiberado(7, mundos, {})).toBe(false)
-    const m0 = Object.fromEntries(mundos[0].fases.map((f) => [f.id, { status: 'concluida' }]))
-    expect(mundoLiberado(7, mundos, m0)).toBe(true)
+  it('o mundo já está aberto, mesmo sem ter feito a Fase 0', () => {
+    expect(mundoLiberado(7, mundos, {})).toBe(true)
   })
 })
 
